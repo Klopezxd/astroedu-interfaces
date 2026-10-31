@@ -250,26 +250,32 @@ body.affective-night-mode .pulse-indicator {
    BARRAS DE CONTROL: ZONA 4 Y ZONA 5
    ========================================== */
 .app-navigation {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  justify-content: space-between;
   gap: 12px;
   background-color: var(--bg-darker);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 8px 14px;
+  padding: 8px 12px;
   align-items: center;
-}
-
-/* ZONA 4: MENÚ TEXTUAL */
-.text-menu-list {
-  display: flex;
-  list-style: none;
-  gap: 6px;
   flex-wrap: wrap;
 }
 
-.menu-item {
+/* ZONA 4: MENÚ UNIFICADO CON ÍCONOS Y TEXTO */
+.nav-tabs-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 14px;
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   font-size: 0.88rem;
   font-weight: 500;
@@ -279,94 +285,63 @@ body.affective-night-mode .pulse-indicator {
   user-select: none;
 }
 
-.menu-item:hover {
+.nav-tab .tab-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.nav-tab .tab-label {
+  font-size: 0.88rem;
+}
+
+.nav-tab:hover {
   color: var(--text-main);
   background-color: var(--bg-surface);
-}
-
-.menu-item.active {
-  color: var(--bg-deep);
-  background-color: var(--color-primary);
-  font-weight: 600;
-  box-shadow: 0 0 12px var(--border-color);
-}
-
-body.affective-night-mode .menu-item.active {
-  color: #110000;
-  background-color: #ef4444;
-}
-
-/* ZONA 5: MENÚ DE ÍCONOS (CON TOOLTIPS Y ENCASILLAMIENTO) */
-.icon-toolbar {
-  display: flex;
-  gap: 6px;
-  background-color: var(--bg-card);
-  padding: 4px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-}
-
-.icon-btn {
-  position: relative;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.icon-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.icon-btn:hover {
-  background-color: var(--bg-surface);
-  color: var(--color-primary);
   border-color: var(--border-color);
 }
 
-.icon-btn.active {
-  background-color: var(--color-primary);
+.nav-tab.active {
   color: var(--bg-deep);
+  background-color: var(--color-primary);
   border-color: var(--color-primary);
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
 }
 
-body.affective-night-mode .icon-btn.active {
-  background-color: #ef4444;
+body.affective-night-mode .nav-tab.active {
   color: #110000;
+  background-color: #ef4444;
+  border-color: #ef4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
 }
 
-/* TOOLTIP EMERGENTE */
-.icon-btn .tooltip {
-  position: absolute;
-  top: 115%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #0f172a;
-  color: #f8fafc;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  font-weight: 500;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  box-shadow: var(--shadow-subtle);
+/* ZONA 5: INSIGNIA DE ATAJOS RÁPIDOS */
+.shortcuts-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--bg-card);
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  z-index: 100;
+  font-size: 0.76rem;
+  color: var(--text-muted);
 }
 
-.icon-btn:hover .tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(4px);
+.shortcuts-badge .badge-label {
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.key-pill {
+  background-color: var(--bg-surface);
+  color: var(--color-secondary);
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================
@@ -613,24 +588,24 @@ body.affective-night-mode .icon-btn.active {
   gap: 14px;
 }
 
-.moon-sphere {
-  width: 170px;
-  height: 170px;
-  background: radial-gradient(circle at 35% 35%, #f1f5f9, #94a3b8 60%, #475569 90%);
-  border-radius: 50%;
+.moon-canvas-box {
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 25px rgba(241, 245, 249, 0.2);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.8) 0%, rgba(3, 6, 17, 0.95) 100%);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
-.moon-shadow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(7, 11, 25, 0.95);
-  transition: all 0.1s ease;
+.moon-canvas {
+  width: 220px;
+  height: 220px;
+  display: block;
+  border-radius: 50%;
 }
 
 .moon-phase-readout {
@@ -924,6 +899,29 @@ body.affective-night-mode .icon-btn.active {
   padding-bottom: 6px;
 }
 
+.quiz-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.quiz-header-row .widget-title {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.quiz-counter {
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  color: var(--color-secondary);
+  background: var(--bg-surface);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+}
+
 .quiz-q {
   font-size: 0.84rem;
   font-weight: 600;
@@ -949,9 +947,14 @@ body.affective-night-mode .icon-btn.active {
   transition: all var(--transition-fast);
 }
 
-.btn-quiz:hover {
+.btn-quiz:hover:not(:disabled) {
   background: var(--border-color);
   color: var(--text-main);
+}
+
+.btn-quiz:disabled {
+  cursor: default;
+  opacity: 0.85;
 }
 
 .btn-quiz.correct {
@@ -969,8 +972,24 @@ body.affective-night-mode .icon-btn.active {
 
 .quiz-feedback {
   font-size: 0.78rem;
-  margin-top: 4px;
-  font-style: italic;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.quiz-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-quiz-action {
+  font-size: 0.75rem;
+  padding: 5px 12px;
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* MONITOR AFECTIVO */

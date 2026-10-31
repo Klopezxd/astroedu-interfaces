@@ -49,15 +49,15 @@
         <div class="banner-card">
           <div class="banner-status">
             <span class="pulse-indicator"></span>
-            <span id="bannerEvent">Cielo Nocturno Despejado • Fase: Cuarto Creciente (42%)</span>
+            <span id="bannerEvent">Cielo Nocturno Despejado • Observación Óptima • Fase: Cuarto Creciente (50%)</span>
           </div>
           <div class="banner-actions">
-            <!-- CONMUTADOR AFECTIVO: MODO VISIÓN ESCOTÓPICA (LUZ ROJA) -->
-            <button id="toggleNightMode" class="btn-affective" title="Activar/Desactivar Modo Afectivo Nocturno (Luz roja para proteger la visión en la oscuridad)">
+            <!-- CONMUTADOR AFECTIVO: MODO VISIÓN NOCTURNA (LUZ ROJA SUAVE) -->
+            <button id="toggleNightMode" class="btn-affective" title="Activar/Desactivar Modo Nocturno (Luz roja suave para cuidar la visión en la oscuridad)">
               <span class="btn-icon">🔴</span>
               <span class="btn-label">Modo Rojo Nocturno</span>
             </button>
-            <button id="toggleAudio" class="btn-audio" title="Activar/Desactivar Sonido Cósmico">
+            <button id="toggleAudio" class="btn-audio" title="Activar/Desactivar Efectos de Sonido">
               <span id="audioIcon">🔊</span>
             </button>
           </div>
@@ -70,45 +70,41 @@
     <!-- ========================================== -->
     <nav class="app-navigation">
       
-      <!-- ZONA 4: MENÚ TEXTUAL (OPCIONES PRINCIPALES) -->
+      <!-- ZONA 4: MENÚ DE NAVEGACIÓN PRINCIPAL (ÍCONOS + TEXTO UNIFICADOS) -->
       <div class="zone zone-4-text-menu" id="zone4">
-        <ul class="text-menu-list" role="tablist">
-          <li class="menu-item active" data-module="solar" role="tab" tabindex="0">1. Sistema Solar</li>
-          <li class="menu-item" data-module="constellations" role="tab" tabindex="0">2. Constelaciones</li>
-          <li class="menu-item" data-module="moon" role="tab" tabindex="0">3. La Luna y Fases</li>
-          <li class="menu-item" data-module="meteors" role="tab" tabindex="0">4. Meteoros y Cometas</li>
-          <li class="menu-item" data-module="galaxies" role="tab" tabindex="0">5. Galaxias y Nebulosas</li>
-          <li class="menu-item" data-module="astrophoto" role="tab" tabindex="0">6. Astrofotografía Móvil</li>
-        </ul>
+        <div class="nav-tabs-list" role="tablist">
+          <button class="nav-tab active" data-module="solar" role="tab" tabindex="0">
+            <span class="tab-icon">🪐</span>
+            <span class="tab-label">1. Sistema Solar</span>
+          </button>
+          <button class="nav-tab" data-module="constellations" role="tab" tabindex="0">
+            <span class="tab-icon">✨</span>
+            <span class="tab-label">2. Constelaciones</span>
+          </button>
+          <button class="nav-tab" data-module="moon" role="tab" tabindex="0">
+            <span class="tab-icon">🌙</span>
+            <span class="tab-label">3. La Luna y Fases</span>
+          </button>
+          <button class="nav-tab" data-module="meteors" role="tab" tabindex="0">
+            <span class="tab-icon">☄️</span>
+            <span class="tab-label">4. Meteoros y Cometas</span>
+          </button>
+          <button class="nav-tab" data-module="galaxies" role="tab" tabindex="0">
+            <span class="tab-icon">🌌</span>
+            <span class="tab-label">5. Galaxias y Nebulosas</span>
+          </button>
+          <button class="nav-tab" data-module="astrophoto" role="tab" tabindex="0">
+            <span class="tab-icon">📷</span>
+            <span class="tab-label">6. Astrofotografía</span>
+          </button>
+        </div>
       </div>
 
-      <!-- ZONA 5: MENÚ DE ÍCONOS (ACCESOS RÁPIDOS CON TOOLTIPS) -->
+      <!-- ZONA 5: BARRA DE ATAJOS DE TECLADO RÁPIDOS -->
       <div class="zone zone-5-icon-menu" id="zone5">
-        <div class="icon-toolbar" role="toolbar" aria-label="Accesos directos con íconos">
-          <button class="icon-btn active" data-module="solar" aria-label="Sistema Solar" data-tooltip="Sistema Solar (Alt+1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke-dasharray="2 2"/></svg>
-            <span class="tooltip">Sistema Solar</span>
-          </button>
-          <button class="icon-btn" data-module="constellations" aria-label="Constelaciones" data-tooltip="Constelaciones (Alt+2)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span class="tooltip">Constelaciones</span>
-          </button>
-          <button class="icon-btn" data-module="moon" aria-label="Fases Lunares" data-tooltip="Fases Lunares (Alt+3)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <span class="tooltip">Fases Lunares</span>
-          </button>
-          <button class="icon-btn" data-module="meteors" aria-label="Lluvias de Estrellas" data-tooltip="Lluvias de Estrellas (Alt+4)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.93 4.93l4.24 4.24m0 0l4.24-4.24m-4.24 4.24v12M19.07 4.93l-4.24 4.24"/></svg>
-            <span class="tooltip">Lluvias de Estrellas</span>
-          </button>
-          <button class="icon-btn" data-module="galaxies" aria-label="Galaxias y Nebulosas" data-tooltip="Espacio Profundo (Alt+5)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12a9 9 0 0 1 15-6.7M21 12a9 9 0 0 1-15 6.7"/></svg>
-            <span class="tooltip">Espacio Profundo</span>
-          </button>
-          <button class="icon-btn" data-module="astrophoto" aria-label="Astrofotografía Móvil" data-tooltip="Astrofotografía Móvil (Alt+6)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            <span class="tooltip">Astrofotografía</span>
-          </button>
+        <div class="shortcuts-badge" title="Navega entre módulos presionando Alt + 1 al 6">
+          <span class="badge-label">Atajos:</span>
+          <kbd class="key-pill">Alt+1..6</kbd>
         </div>
       </div>
     </nav>
@@ -189,13 +185,13 @@
 
             <div class="moon-simulator-container">
               <div class="moon-visualizer">
-                <div class="moon-sphere" id="moonSphere">
-                  <div class="moon-shadow" id="moonShadow"></div>
+                <div class="moon-canvas-box">
+                  <canvas id="moonCanvas" width="220" height="220" class="moon-canvas"></canvas>
                 </div>
                 <div class="moon-phase-readout">
-                  <span class="phase-name" id="phaseName">Luna Nueva</span>
-                  <span class="phase-day" id="phaseDay">Día 0.0 de 29.5</span>
-                  <span class="phase-illum" id="phaseIllum">Iluminación: 0%</span>
+                  <span class="phase-name" id="phaseName">Cuarto Creciente</span>
+                  <span class="phase-day" id="phaseDay">Día 7.4 de 29.5 días sinódicos</span>
+                  <span class="phase-illum" id="phaseIllum">Iluminación de disco: 50%</span>
                 </div>
               </div>
 
@@ -368,13 +364,20 @@
         </div>
 
         <div class="sidebar-widget">
-          <h3 class="widget-title">🎯 Mini-Evaluación Cognitiva</h3>
+          <div class="quiz-header-row">
+            <h3 class="widget-title">🎯 Mini-Evaluación Cognitiva</h3>
+            <span class="quiz-counter" id="quizCounter">Pregunta 1 de 3</span>
+          </div>
           <div class="widget-content" id="quizWidget">
             <p id="quizQuestion" class="quiz-q">¿Cuál es el planeta rocoso más grande del Sistema Solar?</p>
             <div id="quizOptions" class="quiz-opts">
               <!-- Botones de opciones -->
             </div>
             <p id="quizFeedback" class="quiz-feedback"></p>
+            <div class="quiz-actions-row">
+              <button id="btnRetryQuiz" class="btn-pill btn-quiz-action hidden">↺ Reintentar pregunta</button>
+              <button id="btnNextQuiz" class="btn-pill btn-quiz-action hidden">Siguiente pregunta ➔</button>
+            </div>
           </div>
         </div>
 

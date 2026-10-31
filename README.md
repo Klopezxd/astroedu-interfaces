@@ -47,9 +47,10 @@ La interfaz se estructura mediante una cuadrícula fluida en **CSS Grid** de dos
 * **Zona 2 (Título):** Tema oficial aprobado del proyecto semestral.
 * **Zona 3 (Banner y Control Afectivo):** Estado astronómico del firmamento y conmutador de **Modo Afectivo Nocturno (Luz Roja Escotópica)**.
 * **Zona 4 (Menú Textual):** Pestañas de acceso a los 6 módulos temáticos.
-* **Zona 5 (Menú de Íconos):** Accesos rápidos con encasillamiento lógico, *tooltips* emergentes y atajos universales de teclado (`Alt+1` a `Alt+6`).
+* **Zona 4 (Menú de Navegación Principal):** Navegación integrada con íconos y rótulos descriptivos para transicionar de forma instantánea entre módulos.
+* **Zona 5 (Barra de Atajos y Utilidades):** Acceso rápido con teclado universal (`Alt+1` a `Alt+6`), control de sonido y conmutación de modo nocturno.
 * **Zona 6 (Área de Contenidos / Trabajo):** Viewport interactivo animado a 60 fps gobernado por JavaScript y Canvas 2D.
-* **Zona 7 (Navegación e Interactividad):** Panel lateral con controles de simulación, evaluación cognitiva formativa y monitor de carga visual.
+* **Zona 7 (Navegación e Interactividad):** Panel lateral con controles de simulación, evaluación formativa multipregunta con soporte de reintentos y monitor de confort visual.
 
 ---
 
@@ -57,19 +58,19 @@ La interfaz se estructura mediante una cuadrícula fluida en **CSS Grid** de dos
 
 1. **El Sistema Solar y los Planetas:** Modelo orbital dinámico con cálculo de traslación elíptica, planetas interiores y gigantes exteriores, selector de velocidad (1x, 2x, 4x) y fichas de exploración astronómica.
 2. **Constelaciones y Reconocimiento Estelar:** Bóveda celeste con más de 200 estrellas de magnitud aparente diferenciada, selector de constelaciones guía (Orión, Osa Mayor, Cruz del Sur) y filtros de líneas de unión y coordenadas.
-3. **La Luna, sus Fases y Eclipses:** Deslizador temporal interactivo de 0 a 29.5 días con renderizado en tiempo real del terminador solar y simulador de eclipses solares y lunares (Luna de Sangre).
+3. **La Luna, sus Fases y Eclipses:** Deslizador temporal interactivo de 0 a 29.5 días con modelado 3D realista sobre Canvas, cálculo exacto del terminador elíptico, relieve de mares/cráteres y simulador de eclipses solares y lunares (Luna de Sangre).
 4. **Lluvias de Estrellas y Cometas:** Simulación cinemática de meteoros y bólidos atmosféricos con síntesis acústica mediante Web Audio API y calendario astronómico anual.
 5. **Galaxias y Nebulosas (Espacio Profundo):** Galería visual con objetos Messier (Andrómeda, Nebulosa de Orión, Pilares de la Creación, Galaxia del Sombrero) capturados por los telescopios Hubble y James Webb, con visor modal de aumento.
 6. **Consejos y Astrofotografía Móvil:** Simulador de cámara profesional con controles manuales calibrados (ISO 100-6400, Exposición 1s-30s y Enfoque), checklist interactivo de campo y clasificador en la Escala de Cielo Oscuro de Bortle.
 
 ---
 
-## 4. Innovación: Interfaz Afectiva de Adaptación Escotópica
+## 4. Innovación: Interfaz Afectiva de Confort y Visión Nocturna
 
-La aplicación integra un **Modo Afectivo Nocturno** especialmente diseñado para la observación astronómica:
-* Conmuta la interfaz a un espectro cromático rojo puro (>650 nm).
-* **Fundamento Biológico:** Los bastones fotorreceptores de la retina ocular acumulan *rodopsina* en la oscuridad. La luz roja no descompone la rodopsina, evitando la ceguera nocturna temporal y la fatiga visual.
-* **Monitor Afectivo:** Registra el tiempo de interacción y aconseja pausas ergonómicas ante sesiones prolongadas.
+La aplicación integra un **Modo Nocturno de Luz Roja** especialmente diseñado para la observación astronómica:
+* Conmuta la interfaz a un espectro rojo suave que evita deslumbrar los ojos del observador bajo el cielo estrellado.
+* **Cuidado Visual:** Permite revisar mapas celestes o ajustar parámetros sin anular la adaptación que la pupila humana desarrolla en la penumbra.
+* **Monitor Afectivo:** Registra el tiempo de interacción y aconseja pausas de descanso visual ante sesiones prolongadas.
 
 ---
 

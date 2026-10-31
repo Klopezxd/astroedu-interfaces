@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     solarSpeed: 1,
     selectedPlanet: null,
     selectedConstellation: 'orion',
-    moonDay: 0,
+    moonDay: 7.4,
+    moonEclipse: null,
+    moduleQuizIndex: { solar: 0, constellations: 0, moon: 0, meteors: 0, galaxies: 0, astrophoto: 0 },
     cameraIso: 1600,
     cameraExp: 15,
     cameraFocus: 100,
@@ -100,8 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 3. CONMUTACIÓN DE MÓDULOS Y RETÍCULA
   // ==========================================================================
-  const menuItems = document.querySelectorAll('.text-menu-list .menu-item');
-  const iconBtns = document.querySelectorAll('.icon-toolbar .icon-btn');
+  const navTabs = document.querySelectorAll('.nav-tabs-list .nav-tab');
   const modulePanels = document.querySelectorAll('.module-panel');
   const breadcrumbCurrent = document.getElementById('breadcrumbCurrent');
 
@@ -114,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     astrophoto: '6. Astrofotografía Móvil y Observación'
   };
 
+  let solarAnimId = null;
+  let meteorAnimId = null;
+
   function switchModule(modId) {
     if (!moduleTitles[modId]) return;
     state.currentModule = modId;
@@ -121,12 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAffectiveMonitor();
     playTone(440, 'triangle', 0.08, 0.05);
 
-    menuItems.forEach(item => {
-      item.classList.toggle('active', item.dataset.module === modId);
-    });
-
-    iconBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.module === modId);
+    navTabs.forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.module === modId);
     });
 
     modulePanels.forEach(panel => {
@@ -137,20 +137,41 @@ document.addEventListener('DOMContentLoaded', () => {
     updateZone7Controls(modId);
     loadModuleQuiz(modId);
 
-    // Redimensionar lienzos al cambiar de pestaña
-    if (modId === 'solar') initSolarCanvas();
-    if (modId === 'constellations') initSkyCanvas();
-    if (modId === 'meteors') initMeteorCanvas();
-    if (modId === 'astrophoto') renderViewfinder();
+    // Cancelar bucles de animación activos para reiniciar limpiamente
+    if (solarAnimId) {
+      cancelAnimationFrame(solarAnimId);
+      solarAnimId = null;
+    }
+    if (meteorAnimId) {
+      cancelAnimationFrame(meteorAnimId);
+      meteorAnimId = null;
+    }
+
+    // Inicializar y reactivar renderizado continuo según el módulo activo
+    if (modId === 'solar') {
+      initSolarCanvas();
+      renderSolarSystem();
+    } else if (modId === 'constellations') {
+      initSkyCanvas();
+      drawSky();
+    } else if (modId === 'moon') {
+      updateMoonPhase(state.moonDay, state.moonEclipse);
+    } else if (modId === 'meteors') {
+      initMeteorCanvas();
+      renderMeteors();
+    } else if (modId === 'astrophoto') {
+      renderViewfinder();
+    }
   }
 
-  menuItems.forEach(item => {
-    item.addEventListener('click', () => switchModule(item.dataset.module));
-    item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') switchModule(item.dataset.module); });
-  });
-
-  iconBtns.forEach(btn => {
-    btn.addEventListener('click', () => switchModule(btn.dataset.module));
+  navTabs.forEach(tab => {
+    tab.addEventListener('click', () => switchModule(tab.dataset.module));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        switchModule(tab.dataset.module);
+      }
+    });
   });
 
   // Atajos de teclado universales (Alt + 1..6)
@@ -168,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================================================
-  // 4. INTERFAZ AFECTIVA: MODO NOCTURNO ESCOTÓPICO (LUZ ROJA)
+  // 4. INTERFAZ AFECTIVA: MODO NOCTURNO (LUZ ROJA SUAVE)
   // ==========================================================================
   const toggleNightBtn = document.getElementById('toggleNightMode');
   const toggleAudioBtn = document.getElementById('toggleAudio');
@@ -182,16 +203,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (state.nightMode) {
       toggleNightBtn.innerHTML = '<span class="btn-icon">⚪</span><span class="btn-label">Modo Normal</span>';
-      bannerEvent.textContent = '🌙 Modo Afectivo Activo: Luz roja activa para proteger la rodopsina ocular.';
+      bannerEvent.textContent = '🌙 Modo Nocturno Activo: Luz roja suave para cuidar tus ojos en la oscuridad sin encandilarte.';
     } else {
       toggleNightBtn.innerHTML = '<span class="btn-icon">🔴</span><span class="btn-label">Modo Rojo Nocturno</span>';
-      bannerEvent.textContent = 'Cielo Nocturno Despejado • Fase: Cuarto Creciente (42%)';
+      bannerEvent.textContent = 'Cielo Nocturno Despejado • Observación Óptima • Fase: Cuarto Creciente (50%)';
     }
 
     // Re-renderizar lienzos con la nueva paleta cromática
-    renderSolarSystem();
-    drawSky();
-    renderViewfinder();
+    if (state.currentModule === 'solar') renderSolarSystem();
+    if (state.currentModule === 'constellations') drawSky();
+    if (state.currentModule === 'moon') updateMoonPhase(state.moonDay, state.moonEclipse);
+    if (state.currentModule === 'astrophoto') renderViewfinder();
   }
 
   function toggleAudio() {
@@ -309,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (state.currentModule === 'solar') {
-      requestAnimationFrame(renderSolarSystem);
+      solarAnimId = requestAnimationFrame(renderSolarSystem);
     }
   }
 
@@ -514,10 +536,11 @@ document.addEventListener('DOMContentLoaded', () => {
   [chkLines, chkNames, chkGrid].forEach(el => el.addEventListener('change', drawSky));
 
   // ==========================================================================
-  // 7. MÓDULO 3: LA LUNA Y SUS FASES INTERACTIVAS
+  // 7. MÓDULO 3: LA LUNA Y SUS FASES INTERACTIVAS (MODELO 3D REAL)
   // ==========================================================================
   const moonSlider = document.getElementById('moonSlider');
-  const moonShadow = document.getElementById('moonShadow');
+  const moonCanvas = document.getElementById('moonCanvas');
+  const moonCtx = moonCanvas ? moonCanvas.getContext('2d') : null;
   const phaseName = document.getElementById('phaseName');
   const phaseDay = document.getElementById('phaseDay');
   const phaseIllum = document.getElementById('phaseIllum');
@@ -526,10 +549,247 @@ document.addEventListener('DOMContentLoaded', () => {
   const eclipseStatus = document.getElementById('eclipseStatus');
   const phaseButtons = document.querySelectorAll('.phase-buttons-row .btn-tag');
 
-  function updateMoonPhase(day) {
+  function renderMoonCanvas(day, eclipseMode = null) {
+    if (!moonCtx) return;
+    const w = moonCanvas.width;
+    const h = moonCanvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const R = 78;
+
+    moonCtx.clearRect(0, 0, w, h);
+
+    // CASO 1: MODO SIMULADOR DE ECLIPSE SOLAR
+    if (eclipseMode === 'solar') {
+      // Espacio profundo
+      moonCtx.fillStyle = '#030712';
+      moonCtx.fillRect(0, 0, w, h);
+
+      // Resplandor de la Corona Solar detrás del disco lunar
+      const corona = moonCtx.createRadialGradient(cx, cy, R - 6, cx, cy, R + 26);
+      corona.addColorStop(0, '#ffffff');
+      corona.addColorStop(0.2, '#fde047');
+      corona.addColorStop(0.55, '#f59e0b');
+      corona.addColorStop(0.85, 'rgba(239, 68, 68, 0.35)');
+      corona.addColorStop(1, 'transparent');
+
+      moonCtx.fillStyle = corona;
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R + 26, 0, Math.PI * 2);
+      moonCtx.fill();
+
+      // Destellos radiales de la atmósfera exterior del Sol
+      for (let i = 0; i < 20; i++) {
+        const ang = (i / 20) * Math.PI * 2;
+        const len = R + 14 + (Math.sin(i * 3.7) * 10);
+        moonCtx.beginPath();
+        moonCtx.moveTo(cx + Math.cos(ang) * (R + 2), cy + Math.sin(ang) * (R + 2));
+        moonCtx.lineTo(cx + Math.cos(ang) * len, cy + Math.sin(ang) * len);
+        moonCtx.strokeStyle = 'rgba(254, 240, 138, 0.45)';
+        moonCtx.lineWidth = 2;
+        moonCtx.stroke();
+      }
+
+      // Disco lunar opaco que eclipsa la fotosfera
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+      moonCtx.fillStyle = '#030712';
+      moonCtx.fill();
+
+      // Efecto "Anillo de Diamante" característico en el limbo
+      const flareX = cx + Math.cos(-Math.PI / 4) * R;
+      const flareY = cy + Math.sin(-Math.PI / 4) * R;
+      const flareGrad = moonCtx.createRadialGradient(flareX, flareY, 1, flareX, flareY, 16);
+      flareGrad.addColorStop(0, '#ffffff');
+      flareGrad.addColorStop(0.3, '#fef08a');
+      flareGrad.addColorStop(1, 'transparent');
+      moonCtx.fillStyle = flareGrad;
+      moonCtx.beginPath();
+      moonCtx.arc(flareX, flareY, 16, 0, Math.PI * 2);
+      moonCtx.fill();
+      return;
+    }
+
+    // CASO 2: MODO SIMULADOR DE ECLIPSE LUNAR (LUNA DE SANGRE)
+    if (eclipseMode === 'lunar') {
+      // Resplandor cobrizo atmosférico refractado
+      const redGlow = moonCtx.createRadialGradient(cx, cy, R, cx, cy, R + 18);
+      redGlow.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
+      redGlow.addColorStop(1, 'transparent');
+      moonCtx.fillStyle = redGlow;
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R + 18, 0, Math.PI * 2);
+      moonCtx.fill();
+
+      // Esfera iluminada por la dispersión atmosférica terrestre
+      const bloodGrad = moonCtx.createRadialGradient(cx - 20, cy - 20, 15, cx, cy, R);
+      bloodGrad.addColorStop(0, '#f87171');
+      bloodGrad.addColorStop(0.35, '#dc2626');
+      bloodGrad.addColorStop(0.7, '#991b1b');
+      bloodGrad.addColorStop(1, '#450a0a');
+
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+      moonCtx.fillStyle = bloodGrad;
+      moonCtx.fill();
+
+      // Relieve de mares lunares visibles bajo la luz roja
+      drawLunarRelief(moonCtx, cx, cy, R, 'rgba(69, 10, 10, 0.55)', 'rgba(254, 202, 202, 0.25)');
+      return;
+    }
+
+    // CASO 3: FASES LUNARES REGULARES (TERMINADOR ELÍPTICO ASTRONÓMICO)
+    const p = (day % 29.53) / 29.53;
+    const phi = p * Math.PI * 2;
+    const cosPhi = Math.cos(phi);
+    const isWaxing = p <= 0.5;
+    const rx = Math.max(0.1, Math.abs(R * cosPhi));
+
+    // Aura exterior muy sutil
+    const outerAura = moonCtx.createRadialGradient(cx, cy, R, cx, cy, R + 12);
+    outerAura.addColorStop(0, state.nightMode ? 'rgba(239, 68, 68, 0.12)' : 'rgba(224, 242, 254, 0.12)');
+    outerAura.addColorStop(1, 'transparent');
+    moonCtx.fillStyle = outerAura;
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R + 12, 0, Math.PI * 2);
+    moonCtx.fill();
+
+    // Disco base en sombra (lado nocturno con suave luz cenicienta)
+    const darkSide = moonCtx.createRadialGradient(cx - 20, cy - 20, 10, cx, cy, R);
+    if (state.nightMode) {
+      darkSide.addColorStop(0, '#2b0707');
+      darkSide.addColorStop(0.65, '#150303');
+      darkSide.addColorStop(1, '#080101');
+    } else {
+      darkSide.addColorStop(0, '#1e293b');
+      darkSide.addColorStop(0.65, '#0f172a');
+      darkSide.addColorStop(1, '#050811');
+    }
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+    moonCtx.fillStyle = darkSide;
+    moonCtx.fill();
+
+    // Relieve tenue en la cara oculta a la luz
+    drawLunarRelief(moonCtx, cx, cy, R, 'rgba(3, 7, 18, 0.5)', 'rgba(255, 255, 255, 0.05)');
+
+    // Región iluminada mediante recorte con terminador elíptico exacto
+    if (day > 0.4 && day < 29.1) {
+      moonCtx.save();
+      moonCtx.beginPath();
+
+      if (isWaxing) {
+        // Creciente: semicírculo derecho
+        moonCtx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);
+        // Terminador de regreso del polo sur al polo norte
+        moonCtx.ellipse(cx, cy, rx, R, 0, Math.PI / 2, -Math.PI / 2, cosPhi >= 0);
+      } else {
+        // Menguante: semicírculo izquierdo
+        moonCtx.arc(cx, cy, R, Math.PI / 2, -Math.PI / 2, false);
+        // Terminador de regreso del polo norte al polo sur
+        moonCtx.ellipse(cx, cy, rx, R, 0, -Math.PI / 2, Math.PI / 2, cosPhi >= 0);
+      }
+
+      moonCtx.closePath();
+      moonCtx.clip();
+
+      // Gradiente de iluminación esférica
+      const litGrad = moonCtx.createRadialGradient(
+        cx + (isWaxing ? 25 : -25),
+        cy - 20,
+        15,
+        cx,
+        cy,
+        R
+      );
+      if (state.nightMode) {
+        litGrad.addColorStop(0, '#fca5a5');
+        litGrad.addColorStop(0.4, '#ef4444');
+        litGrad.addColorStop(0.8, '#b91c1c');
+        litGrad.addColorStop(1, '#7f1d1d');
+      } else {
+        litGrad.addColorStop(0, '#ffffff');
+        litGrad.addColorStop(0.35, '#f8fafc');
+        litGrad.addColorStop(0.7, '#cbd5e1');
+        litGrad.addColorStop(1, '#94a3b8');
+      }
+      moonCtx.fillStyle = litGrad;
+      moonCtx.fill();
+
+      // Mares y cráteres detallados en la región iluminada
+      drawLunarRelief(moonCtx, cx, cy, R, state.nightMode ? 'rgba(127, 29, 29, 0.6)' : 'rgba(71, 85, 105, 0.45)', 'rgba(255, 255, 255, 0.45)');
+
+      moonCtx.restore();
+
+      // Penumbra sutil a lo largo del terminador
+      moonCtx.save();
+      moonCtx.beginPath();
+      if (isWaxing) {
+        moonCtx.ellipse(cx, cy, rx, R, 0, Math.PI / 2, -Math.PI / 2, cosPhi >= 0);
+      } else {
+        moonCtx.ellipse(cx, cy, rx, R, 0, -Math.PI / 2, Math.PI / 2, cosPhi >= 0);
+      }
+      moonCtx.strokeStyle = 'rgba(0, 0, 0, 0.25)';
+      moonCtx.lineWidth = 3;
+      moonCtx.stroke();
+      moonCtx.restore();
+    }
+
+    // Borde perimetral tenue
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+    moonCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255, 255, 255, 0.15)';
+    moonCtx.lineWidth = 1;
+    moonCtx.stroke();
+  }
+
+  function drawLunarRelief(ctx, cx, cy, R, darkColor, lightColor) {
+    // Parches de mares lunares (Oceanus Procellarum, Mare Imbrium, Tranquillitatis, etc.)
+    const maria = [
+      { x: cx - 28, y: cy - 6, rx: 22, ry: 28, rot: 0.1 },
+      { x: cx - 12, y: cy - 32, rx: 18, ry: 16, rot: -0.1 },
+      { x: cx + 18, y: cy - 25, rx: 14, ry: 13, rot: 0.2 },
+      { x: cx + 28, y: cy - 8, rx: 16, ry: 15, rot: 0.0 },
+      { x: cx + 46, y: cy - 12, rx: 10, ry: 8, rot: 0.1 },
+      { x: cx - 6, y: cy + 18, rx: 15, ry: 12, rot: 0.3 }
+    ];
+
+    ctx.fillStyle = darkColor;
+    maria.forEach(m => {
+      ctx.beginPath();
+      ctx.ellipse(m.x, m.y, m.rx, m.ry, m.rot, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Cráter Tycho con sus rayos brillantes radiales en el polo sur
+    const tychoX = cx - 4;
+    const tychoY = cy + 44;
+    ctx.strokeStyle = lightColor;
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 7; i++) {
+      const rayAng = (i / 7) * Math.PI + Math.PI;
+      ctx.beginPath();
+      ctx.moveTo(tychoX, tychoY);
+      ctx.lineTo(tychoX + Math.cos(rayAng) * 34, tychoY + Math.sin(rayAng) * 34);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(tychoX, tychoY, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = lightColor;
+    ctx.fill();
+
+    // Cráter Copérnico
+    ctx.beginPath();
+    ctx.arc(cx - 16, cy - 4, 3, 0, Math.PI * 2);
+    ctx.fillStyle = lightColor;
+    ctx.fill();
+  }
+
+  function updateMoonPhase(day, eclipseMode = null) {
     state.moonDay = parseFloat(day);
+    state.moonEclipse = eclipseMode;
     moonSlider.value = state.moonDay;
-    const progress = state.moonDay / 29.53; // 0 a 1
+    const progress = state.moonDay / 29.53;
     const angle = progress * Math.PI * 2;
     const illum = Math.round(((1 - Math.cos(angle)) / 2) * 100);
 
@@ -546,40 +806,40 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (state.moonDay < 23.5) name = 'Cuarto Menguante';
     else name = 'Luna Menguante Cóncava';
 
-    phaseName.textContent = name;
-
-    // Renderizado visual de la sombra
-    const offsetPercent = (Math.cos(angle) * 50) + 50; // 0 a 100
-    if (progress <= 0.5) {
-      moonShadow.style.background = `linear-gradient(90deg, rgba(7,11,25,0.95) ${offsetPercent}%, transparent ${offsetPercent}%)`;
-    } else {
-      moonShadow.style.background = `linear-gradient(90deg, transparent ${100 - offsetPercent}%, rgba(7,11,25,0.95) ${100 - offsetPercent}%)`;
+    if (eclipseMode === 'solar') {
+      name = 'Eclipse Solar Total (Alineación Umbral)';
+    } else if (eclipseMode === 'lunar') {
+      name = 'Eclipse Lunar Total (Luna de Sangre)';
     }
+
+    phaseName.textContent = name;
+    renderMoonCanvas(state.moonDay, eclipseMode);
   }
 
   moonSlider.addEventListener('input', (e) => {
-    updateMoonPhase(e.target.value);
+    eclipseStatus.textContent = 'Mueve el deslizador o pulsa una fase cardinal para simular el ciclo sinódico.';
+    updateMoonPhase(e.target.value, null);
     playTone(200 + parseFloat(e.target.value) * 15, 'sine', 0.05, 0.02);
   });
 
   phaseButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const d = parseFloat(btn.dataset.day);
-      updateMoonPhase(d);
+      eclipseStatus.textContent = 'Mueve el deslizador o pulsa una fase cardinal para simular el ciclo sinódico.';
+      updateMoonPhase(d, null);
       playTone(550, 'sine', 0.1, 0.06);
     });
   });
 
   btnEclipseSolar.addEventListener('click', () => {
-    updateMoonPhase(0);
-    eclipseStatus.innerHTML = '🌑 <strong>Eclipse Solar Total:</strong> La Luna se interpone exactamente entre el Sol y la Tierra. Su cono de umbra proyecta una franja de oscuridad total.';
+    updateMoonPhase(0, 'solar');
+    eclipseStatus.innerHTML = '🌑 <strong>Eclipse Solar Total:</strong> La Luna se interpone exactamente entre el Sol y la Tierra. Su disco bloquea la fotosfera solar revelando la corona y el anillo de diamante.';
     playChime();
   });
 
   btnEclipseLunar.addEventListener('click', () => {
-    updateMoonPhase(14.8);
-    moonShadow.style.background = 'radial-gradient(circle, rgba(185, 28, 28, 0.8) 0%, rgba(127, 29, 29, 0.95) 100%)';
-    eclipseStatus.innerHTML = '🔴 <strong>Eclipse Lunar (Luna de Sangre):</strong> La Tierra bloquea los rayos directos del Sol. La atmósfera refracta longitudes de onda rojas hacia el disco lunar.';
+    updateMoonPhase(14.8, 'lunar');
+    eclipseStatus.innerHTML = '🔴 <strong>Eclipse Lunar (Luna de Sangre):</strong> La Tierra bloquea la luz solar directa. La atmósfera terrestre dispersa longitudes azules y refracta tonalidades cobrizas hacia el disco lunar.';
     playChime();
   });
 
@@ -668,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (state.currentModule === 'meteors') {
-      requestAnimationFrame(renderMeteors);
+      meteorAnimId = requestAnimationFrame(renderMeteors);
     }
   }
 
@@ -922,52 +1182,139 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================================================
-  // 11. ZONA 7: CONTROLES CONTEXTUALES Y QUIZ COGNITIVO
+  // 11. ZONA 7: CONTROLES CONTEXTUALES Y QUIZ COGNITIVO MULTIPREGUNTA
   // ==========================================================================
   const moduleQuickControls = document.getElementById('moduleQuickControls');
+  const quizCounter = document.getElementById('quizCounter');
   const quizQuestion = document.getElementById('quizQuestion');
   const quizOptions = document.getElementById('quizOptions');
   const quizFeedback = document.getElementById('quizFeedback');
+  const btnRetryQuiz = document.getElementById('btnRetryQuiz');
+  const btnNextQuiz = document.getElementById('btnNextQuiz');
   const meterFill = document.getElementById('meterFill');
   const meterText = document.getElementById('meterText');
 
   const quizzesData = {
-    solar: {
-      q: '¿Qué planeta tiene el período de rotación más largo y gira en sentido retrógrado?',
-      opts: ['Mercurio', 'Venus', 'Marte', 'Júpiter'],
-      ans: 1,
-      why: 'Venus rota sobre su eje en 243 días terrestres (más largo que su año de 225 días) y lo hace en sentido retrógrado (de este a oeste).'
-    },
-    constellations: {
-      q: '¿Cuál es la estrella guía supergigante roja del hombro derecho de Orión?',
-      opts: ['Rigel', 'Sirio', 'Betelgeuse', 'Aldebarán'],
-      ans: 2,
-      why: 'Betelgeuse es una supergigante roja semirregular; su diámetro es unas 700 veces mayor que el Sol.'
-    },
-    moon: {
-      q: '¿Cuánto dura exactamente el ciclo sinódico (de Luna Nueva a Luna Nueva)?',
-      opts: ['27.3 días', '28.0 días', '29.5 días', '31.0 días'],
-      ans: 2,
-      why: 'El mes sinódico dura 29.53 días, a diferencia del mes sideral (27.3 días) debido a la traslación conjunta con la Tierra.'
-    },
-    meteors: {
-      q: '¿Qué cuerpo progenitor da origen a las famosas Perseidas de agosto?',
-      opts: ['Cometa 1P/Halley', 'Cometa Swift-Tuttle', 'Asteroide Faetón', 'Cometa Encke'],
-      ans: 1,
-      why: 'El cometa periódico 109P/Swift-Tuttle deja un anillo de escombros por el que la Tierra pasa cada agosto.'
-    },
-    galaxies: {
-      q: '¿A qué distancia se encuentra la Galaxia de Andrómeda de nosotros?',
-      opts: ['100.000 años luz', '1.344 años luz', '2.5 millones de años luz', '14 millones de años luz'],
-      ans: 2,
-      why: 'Andrómeda (M31) dista 2.537 millones de años luz, siendo la espiral más próxima del Grupo Local.'
-    },
-    astrophoto: {
-      q: '¿Por qué se utiliza luz roja en astronomía de campo nocturno?',
-      opts: ['Porque alumbra a mayor distancia', 'Porque no descompone la rodopsina retiniana', 'Para calentar el lente', 'Para ahuyentar insectos'],
-      ans: 1,
-      why: 'La rodopsina de los bastones oculares es insensible a longitudes de onda rojas (>650 nm), preservando la adaptación a la oscuridad.'
-    }
+    solar: [
+      {
+        q: '¿Cuál es el planeta rocoso más grande y con mayor densidad del Sistema Solar?',
+        opts: ['Mercurio', 'Venus', 'La Tierra', 'Marte'],
+        ans: 2,
+        why: 'La Tierra es el planeta rocoso de mayor diámetro (12.742 km) y mayor densidad media del Sistema Solar.'
+      },
+      {
+        q: '¿Qué planeta tiene el período de rotación más lento y gira en sentido retrógrado?',
+        opts: ['Mercurio', 'Venus', 'Marte', 'Júpiter'],
+        ans: 1,
+        why: 'Venus tarda 243 días terrestres en dar un giro sobre su propio eje y lo hace en sentido horario (de este a oeste).'
+      },
+      {
+        q: '¿Cuál es el planeta gigante gaseoso con mayor masa del Sistema Solar?',
+        opts: ['Saturno', 'Júpiter', 'Urano', 'Neptuno'],
+        ans: 1,
+        why: 'Júpiter posee más del doble de la masa combinada de todos los demás planetas de nuestro sistema juntos.'
+      }
+    ],
+    constellations: [
+      {
+        q: '¿Cuál es la estrella guía supergigante roja del hombro derecho de la constelación de Orión?',
+        opts: ['Rigel', 'Sirio', 'Betelgeuse', 'Aldebarán'],
+        ans: 2,
+        why: 'Betelgeuse es una supergigante roja inconfundible por su tonalidad cálida anaranjada en el vértice superior de Orión.'
+      },
+      {
+        q: '¿Cuál es la estrella más brillante de todo el firmamento nocturno vista desde la Tierra?',
+        opts: ['Polaris (Estrella Polar)', 'Sirio (Can Mayor)', 'Vega (Lira)', 'Rigel (Orión)'],
+        ans: 1,
+        why: 'Sirio, situada en la constelación del Can Mayor, ostenta una magnitud aparente de -1.46, la mayor del cielo visible.'
+      },
+      {
+        q: '¿Qué constelación es la referencia principal de orientación astronómica en el Hemisferio Sur?',
+        opts: ['Osa Mayor', 'Cruz del Sur (Crux)', 'Casiopea', 'Cisne'],
+        ans: 1,
+        why: 'La Cruz del Sur permite ubicar el polo sur celeste prolongando 4.5 veces la longitud de su brazo vertical principal.'
+      }
+    ],
+    moon: [
+      {
+        q: '¿Cuánto dura exactamente el ciclo sinódico completo (de Luna Nueva a Luna Nueva)?',
+        opts: ['27.3 días', '28.0 días', '29.5 días', '31.0 días'],
+        ans: 2,
+        why: 'El ciclo sinódico o lunación dura 29.53 días debido al avance combinado de la Tierra y la Luna alrededor del Sol.'
+      },
+      {
+        q: '¿Qué alineación orbital provoca un eclipse solar total?',
+        opts: ['La Tierra entre el Sol y la Luna', 'La Luna situada exactamente entre el Sol y la Tierra', 'El Sol entre la Tierra y la Luna', 'Marte alineado con la Luna'],
+        ans: 1,
+        why: 'En un eclipse solar, la Luna en fase de novilunio se interpone entre el Sol y la Tierra proyectando su sombra umbral sobre nosotros.'
+      },
+      {
+        q: '¿Por qué la Luna adquiere un tono cobrizo ("Luna de Sangre") durante un eclipse lunar total?',
+        opts: ['Por calentamiento extremo en su corteza', 'La atmósfera de la Tierra dispersa la luz azul y refracta los tonos rojos del crepúsculo global hacia la Luna', 'La sombra de la Tierra es roja', 'Reflejo de la luz de Marte'],
+        ans: 1,
+        why: 'La atmósfera terrestre actúa como prisma óptico, dispersando las longitudes de onda cortas y desviando la luz roja hacia el disco lunar.'
+      }
+    ],
+    meteors: [
+      {
+        q: '¿Qué cuerpo progenitor da origen a la lluvia de meteoros Perseidas de agosto?',
+        opts: ['Cometa 1P/Halley', 'Cometa Swift-Tuttle', 'Asteroide Faetón', 'Cometa Encke'],
+        ans: 1,
+        why: 'El cometa periódico 109P/Swift-Tuttle deposita un anillo de escombros y polvo por el cual la Tierra transita cada mes de agosto.'
+      },
+      {
+        q: '¿Qué causa el brillo visible de una estrella fugaz al cruzar el cielo?',
+        opts: ['Combustión nuclear del núcleo', 'Fricción e ionización del aire comprimido a gran velocidad en la alta atmósfera', 'Reflejo solar en trozos de hielo', 'Rayos eléctricos entre nubes'],
+        ans: 1,
+        why: 'Al ingresar a velocidades de 20 a 70 km/s, el fragmento comprime el aire de la mesosfera haciéndolo brillar incandescentemente.'
+      },
+      {
+        q: '¿Cómo se clasifica a un meteoro sumamente brillante que sobrepasa el brillo de Venus?',
+        opts: ['Micrometeorito', 'Bólido o bola de fuego', 'Cometa enano', 'Púlsar'],
+        ans: 1,
+        why: 'Los bólidos son masas rocosas más densas que pueden generar explosiones sónicas y dejar estelas visibles durante varios segundos.'
+      }
+    ],
+    galaxies: [
+      {
+        q: '¿A qué distancia aproximada se encuentra la Galaxia de Andrómeda de la Vía Láctea?',
+        opts: ['100.000 años luz', '1.344 años luz', '2.5 millones de años luz', '14 millones de años luz'],
+        ans: 2,
+        why: 'Andrómeda (M31) dista 2.5 millones de años luz y es el objeto astronómico más distante que podemos apreciar a simple vista.'
+      },
+      {
+        q: '¿Qué estructura morfológica posee nuestra galaxia, la Vía Láctea?',
+        opts: ['Galaxia Espiral barrada', 'Galaxia Elíptica gigante', 'Galaxia Irregular enana', 'Cúmulo globular'],
+        ans: 0,
+        why: 'La Vía Láctea posee una barra central de estrellas y brazos espirales cargados de polvo, gas y guarderías de estrellas nuevas.'
+      },
+      {
+        q: '¿Qué representa la Gran Nebulosa de Orión (M42) en astrofísica?',
+        opts: ['Un remanente frío de supernova', 'Una guardería estelar activa donde nacen nuevas estrellas', 'Un cúmulo globular extinto', 'Un agujero negro supermasivo'],
+        ans: 1,
+        why: 'M42 es una nube de hidrógeno ionizado e incubadora de estrellas jóvenes iluminada por las cuatro estrellas del Trapecio.'
+      }
+    ],
+    astrophoto: [
+      {
+        q: '¿Por qué los astrónomos emplean linternas con luz roja durante la noche de campo?',
+        opts: ['Porque la luz roja alumbra a mayor distancia', 'Porque no deslumbra ni anula la adaptación natural del ojo a la oscuridad', 'Para evitar que se empañen las ópticas', 'Para ahuyentar animales nocturnos'],
+        ans: 1,
+        why: 'La luz roja permite consultar mapas estelares o afinar telescopios sin perder la sensibilidad visual que los ojos tardan 30 minutos en desarrollar.'
+      },
+      {
+        q: 'Al capturar el cielo nocturno con un smartphone, ¿cuál es el soporte fundamental indispensable?',
+        opts: ['El flash a máxima potencia', 'Un trípode o base firme para eliminar cualquier trepidación', 'Un zoom digital 30x', 'Un filtro polarizador diurno'],
+        ans: 1,
+        why: 'En exposiciones largas de 10 a 30 segundos, el más mínimo movimiento de la mano desenfocaría las estrellas por completo.'
+      },
+      {
+        q: 'En la escala Bortle de contaminación lumínica, ¿qué caracteriza a una zona Clase 1 o 2?',
+        opts: ['Centro urbano muy iluminado', 'Cielo rural completamente oscuro donde la Vía Láctea se ve con gran nitidez', 'Zona con niebla diurna', 'Cielo nublado sin visibilidad'],
+        ans: 1,
+        why: 'Las clases 1 y 2 representan sitios de cielo oscuro prístino donde las estructuras de polvo de la Vía Láctea proyectan sombras difusas.'
+      }
+    ]
   };
 
   function updateZone7Controls(modId) {
@@ -988,7 +1335,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else if (modId === 'meteors') {
       moduleQuickControls.innerHTML = `
-        <button class="btn-pill" onclick="document.getElementById('btnSpawnBolide').click()">✨ Bólido Rápido</button>
+        <button class="btn-pill" onclick="document.getElementById('btnSpawnBolide').click()">✨ Lanzar Bólido</button>
       `;
     } else if (modId === 'galaxies') {
       moduleQuickControls.innerHTML = `
@@ -1002,35 +1349,77 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadModuleQuiz(modId) {
-    const qData = quizzesData[modId];
-    if (!qData) return;
+    const qList = quizzesData[modId];
+    if (!qList || qList.length === 0) return;
+
+    if (state.moduleQuizIndex[modId] === undefined) {
+      state.moduleQuizIndex[modId] = 0;
+    }
+    const idx = state.moduleQuizIndex[modId];
+    const qData = qList[idx];
+
+    if (quizCounter) quizCounter.textContent = `Pregunta ${idx + 1} de ${qList.length}`;
     quizQuestion.textContent = qData.q;
     quizFeedback.textContent = '';
     quizOptions.innerHTML = '';
 
-    qData.opts.forEach((optText, idx) => {
+    if (btnRetryQuiz) btnRetryQuiz.classList.add('hidden');
+    if (btnNextQuiz) btnNextQuiz.classList.add('hidden');
+
+    qData.opts.forEach((optText, optIdx) => {
       const b = document.createElement('button');
       b.className = 'btn-quiz';
-      b.textContent = `${['A', 'B', 'C', 'D'][idx]}) ${optText}`;
+      b.textContent = `${['A', 'B', 'C', 'D'][optIdx]}) ${optText}`;
       b.addEventListener('click', () => {
-        const isCorrect = (idx === qData.ans);
+        const isCorrect = (optIdx === qData.ans);
         Array.from(quizOptions.children).forEach((child, cIdx) => {
           child.disabled = true;
           if (cIdx === qData.ans) child.classList.add('correct');
-          else if (cIdx === idx) child.classList.add('wrong');
+          else if (cIdx === optIdx) child.classList.add('wrong');
         });
 
         if (isCorrect) {
           quizFeedback.textContent = `¡Correcto! ${qData.why}`;
           quizFeedback.style.color = '#10b981';
           playChime();
+          if (btnRetryQuiz) btnRetryQuiz.classList.add('hidden');
+
+          if (btnNextQuiz) {
+            btnNextQuiz.textContent = (idx < qList.length - 1) ? 'Siguiente pregunta ➔' : '↺ Reiniciar cuestionario';
+            btnNextQuiz.classList.remove('hidden');
+          }
         } else {
-          quizFeedback.textContent = `Incorrecto. ${qData.why}`;
+          quizFeedback.textContent = `Respuesta incorrecta. ${qData.why}`;
           quizFeedback.style.color = '#ef4444';
           playTone(240, 'sawtooth', 0.25, 0.08);
+
+          // Permitir reintentar de inmediato
+          if (btnRetryQuiz) btnRetryQuiz.classList.remove('hidden');
+
+          if (btnNextQuiz && idx < qList.length - 1) {
+            btnNextQuiz.textContent = 'Saltar a la siguiente ➔';
+            btnNextQuiz.classList.remove('hidden');
+          }
         }
       });
       quizOptions.appendChild(b);
+    });
+  }
+
+  if (btnRetryQuiz) {
+    btnRetryQuiz.addEventListener('click', () => {
+      loadModuleQuiz(state.currentModule);
+      playTone(480, 'sine', 0.1, 0.05);
+    });
+  }
+
+  if (btnNextQuiz) {
+    btnNextQuiz.addEventListener('click', () => {
+      const qList = quizzesData[state.currentModule];
+      if (!qList) return;
+      state.moduleQuizIndex[state.currentModule] = (state.moduleQuizIndex[state.currentModule] + 1) % qList.length;
+      loadModuleQuiz(state.currentModule);
+      playTone(550, 'sine', 0.1, 0.06);
     });
   }
 
@@ -1054,22 +1443,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 12. INICIALIZACIÓN GENERAL AL CARGAR EL DOM
   // ==========================================================================
-  initSolarCanvas();
-  renderSolarSystem();
   populatePlanetCards();
-
   populateConstellationUI();
   populateMeteorTable();
   populateGallery();
 
-  updateMoonPhase(7.4);
-  renderViewfinder();
   switchModule('solar');
+  updateMoonPhase(7.4);
 
   window.addEventListener('resize', () => {
-    initSolarCanvas();
-    initSkyCanvas();
-    initMeteorCanvas();
-    renderViewfinder();
+    if (state.currentModule === 'solar') initSolarCanvas();
+    if (state.currentModule === 'constellations') { initSkyCanvas(); drawSky(); }
+    if (state.currentModule === 'meteors') initMeteorCanvas();
+    if (state.currentModule === 'astrophoto') renderViewfinder();
   });
 });
