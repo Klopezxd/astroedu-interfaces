@@ -19,10 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
     audioEnabled: true,
     solarPaused: false,
     solarSpeed: 1,
-    selectedPlanet: null,
+    showPlanetLabels: true,
+    selectedPlanet: 'earth',
     selectedConstellation: 'orion',
+    constellationViewMode: 'chart',
     moonDay: 7.4,
     moonEclipse: null,
+    eclipseType: 'solar',
     moduleQuizIndex: { solar: 0, constellations: 0, moon: 0, meteors: 0, galaxies: 0, astrophoto: 0 },
     cameraIso: 1600,
     cameraExp: 15,
@@ -122,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!moduleTitles[modId]) return;
     state.currentModule = modId;
     state.interactionCount++;
-    updateAffectiveMonitor();
     playTone(440, 'triangle', 0.08, 0.05);
 
     navTabs.forEach(tab => {
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     breadcrumbCurrent.textContent = moduleTitles[modId];
-    updateZone7Controls(modId);
+    updateAstroDataCard(modId);
     loadModuleQuiz(modId);
 
     // Cancelar bucles de animación activos para reiniciar limpiamente
@@ -156,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
       drawSky();
     } else if (modId === 'moon') {
       updateMoonPhase(state.moonDay, state.moonEclipse);
+      renderEclipseGeometryCanvas(state.eclipseType);
     } else if (modId === 'meteors') {
       initMeteorCanvas();
       renderMeteors();
@@ -233,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const planetCardsGrid = document.getElementById('planetCardsGrid');
   const btnPlaySolar = document.getElementById('btnPlaySolar');
   const btnSpeedSolar = document.getElementById('btnSpeedSolar');
-  const btnResetSolar = document.getElementById('btnResetSolar');
+  const btnTogglePlanetLabels = document.getElementById('btnTogglePlanetLabels');
 
   const planetsData = [
     { id: 'mercury', name: 'Mercurio', type: 'Rocoso Interior', r: 4, dist: 40, speed: 0.040, color: '#94a3b8', desc: 'El más cercano al Sol, sin atmósfera significativa y temperaturas extremas (-180°C a 430°C).' },
@@ -322,6 +325,16 @@ document.addEventListener('DOMContentLoaded', () => {
         sCtx.lineWidth = 2;
         sCtx.stroke();
       }
+
+      // Rótulos con nombres de planetas
+      if (state.showPlanetLabels) {
+        sCtx.font = '10px Outfit, sans-serif';
+        const txtWidth = sCtx.measureText(p.name).width;
+        sCtx.fillStyle = state.nightMode ? 'rgba(43, 7, 7, 0.85)' : 'rgba(15, 23, 42, 0.8)';
+        sCtx.fillRect(px + p.r + 4, py - 9, txtWidth + 6, 15);
+        sCtx.fillStyle = state.nightMode ? '#fca5a5' : '#f8fafc';
+        sCtx.fillText(p.name, px + p.r + 7, py + 2);
+      }
     });
 
     if (!state.solarPaused) {
@@ -350,8 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('click', () => {
         state.selectedPlanet = p.id;
         populatePlanetCards();
+        updateAstroDataCard('solar');
         playTone(520, 'sine', 0.12, 0.08);
-        document.getElementById('zone7').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
       planetCardsGrid.appendChild(card);
     });
@@ -369,14 +382,14 @@ document.addEventListener('DOMContentLoaded', () => {
     playTone(600, 'sine', 0.1, 0.05);
   });
 
-  btnResetSolar.addEventListener('click', () => {
-    state.selectedPlanet = null;
-    populatePlanetCards();
-    playTone(350, 'sine', 0.1, 0.05);
+  btnTogglePlanetLabels.addEventListener('click', () => {
+    state.showPlanetLabels = !state.showPlanetLabels;
+    btnTogglePlanetLabels.textContent = state.showPlanetLabels ? '🏷️ Ocultar Nombres' : '🏷️ Mostrar Nombres';
+    playTone(520, 'sine', 0.1, 0.05);
   });
 
   // ==========================================================================
-  // 6. MÓDULO 2: CONSTELACIONES Y CÚPULA CELESTE
+  // 6. MÓDULO 2: CONSTELACIONES Y RECURSOS MULTIMEDIA
   // ==========================================================================
   const skyCanvas = document.getElementById('skyCanvas');
   const skCtx = skyCanvas.getContext('2d');
@@ -386,46 +399,74 @@ document.addEventListener('DOMContentLoaded', () => {
   const constellationList = document.getElementById('constellationList');
   const constellationInfo = document.getElementById('constellationInfo');
 
+  const btnViewSkyMap = document.getElementById('btnViewSkyMap');
+  const btnViewAstroPhoto = document.getElementById('btnViewAstroPhoto');
+  const constellationPhotoCard = document.getElementById('constellationPhotoCard');
+  const constellationPhotoImg = document.getElementById('constellationPhotoImg');
+  const constellationPhotoTitle = document.getElementById('constellationPhotoTitle');
+  const constellationPhotoCredit = document.getElementById('constellationPhotoCredit');
+  const constellationStellariumLink = document.getElementById('constellationStellariumLink');
+  const constellationCanvasControls = document.getElementById('constellationCanvasControls');
+
   const constellationsData = {
     orion: {
       name: 'Orión (El Cazador)',
       stars: [
-        { name: 'Betelgeuse', x: 260, y: 140, mag: 0.5, color: '#f97316' },
-        { name: 'Bellatrix', x: 380, y: 155, mag: 1.6, color: '#38bdf8' },
-        { name: 'Alnitak', x: 295, y: 220, mag: 1.7, color: '#93c5fd' },
-        { name: 'Alnilam', x: 320, y: 225, mag: 1.6, color: '#93c5fd' },
-        { name: 'Mintaka', x: 345, y: 230, mag: 2.2, color: '#93c5fd' },
-        { name: 'Saiph', x: 275, y: 310, mag: 2.0, color: '#38bdf8' },
-        { name: 'Rigel', x: 395, y: 295, mag: 0.1, color: '#60a5fa' }
+        { name: 'Betelgeuse', x: 250, y: 140, mag: 0.5, color: '#f97316', tox: -82, toy: -4 },
+        { name: 'Bellatrix', x: 450, y: 150, mag: 1.6, color: '#38bdf8', tox: 10, toy: -4 },
+        { name: 'Alnitak', x: 310, y: 235, mag: 1.7, color: '#93c5fd', tox: -52, toy: 16 },
+        { name: 'Alnilam', x: 350, y: 230, mag: 1.6, color: '#93c5fd', tox: -22, toy: -14 },
+        { name: 'Mintaka', x: 390, y: 225, mag: 2.2, color: '#93c5fd', tox: 10, toy: -10 },
+        { name: 'Saiph', x: 270, y: 335, mag: 2.0, color: '#38bdf8', tox: -46, toy: 16 },
+        { name: 'Rigel', x: 440, y: 325, mag: 0.1, color: '#60a5fa', tox: 12, toy: 14 },
+        { name: 'Meissa', x: 350, y: 95, mag: 3.4, color: '#e2e8f0', tox: -20, toy: -12 }
       ],
-      lines: [[0, 1], [0, 2], [1, 4], [2, 3], [3, 4], [2, 5], [4, 6]],
-      info: 'Orión es la constelación más prominente del ecuador celeste. Betelgeuse (supergigante roja) y Rigel (supergigante azul) forman sus vértices opuestos, con las tres estrellas del "Cinturón de Orión" como guía universal.'
+      lines: [
+        [7, 0], [7, 1],
+        [0, 2], [1, 4],
+        [2, 3], [3, 4],
+        [2, 5], [4, 6],
+        [5, 6]
+      ],
+      photoUrl: 'https://images-assets.nasa.gov/image/PIA13083/PIA13083~medium.jpg',
+      photoTitle: 'Complejo de Orión: Betelgeuse, Rigel y Nebulosa M42 (NASA/JPL)',
+      credit: 'Telescopio Espacial Infrarrojo WISE • NASA / JPL-Caltech / UCLA',
+      stellariumUrl: 'https://stellarium-web.org/',
+      info: 'Orión es la constelación más prominente del ecuador celeste. Betelgeuse (supergigante roja) y Rigel (supergigante azul) forman sus vértices opuestos, con las tres estrellas del "Cinturón de Orión" como guía universal hacia Sirio y las Pléyades.'
     },
     ursaMajor: {
       name: 'Osa Mayor (El Carro)',
       stars: [
-        { name: 'Dubhe', x: 220, y: 160, mag: 1.8, color: '#fde047' },
-        { name: 'Merak', x: 230, y: 230, mag: 2.3, color: '#93c5fd' },
-        { name: 'Phecda', x: 320, y: 220, mag: 2.4, color: '#93c5fd' },
-        { name: 'Megrez', x: 310, y: 170, mag: 3.3, color: '#93c5fd' },
-        { name: 'Alioth', x: 380, y: 150, mag: 1.7, color: '#93c5fd' },
-        { name: 'Mizar', x: 440, y: 130, mag: 2.2, color: '#93c5fd' },
-        { name: 'Alkaid', x: 500, y: 140, mag: 1.8, color: '#60a5fa' }
+        { name: 'Dubhe', x: 230, y: 150, mag: 1.8, color: '#fde047', tox: -55, toy: -8 },
+        { name: 'Merak', x: 240, y: 235, mag: 2.3, color: '#93c5fd', tox: -52, toy: 16 },
+        { name: 'Phecda', x: 335, y: 225, mag: 2.4, color: '#93c5fd', tox: -15, toy: 20 },
+        { name: 'Megrez', x: 325, y: 165, mag: 3.3, color: '#93c5fd', tox: -48, toy: -10 },
+        { name: 'Alioth', x: 410, y: 145, mag: 1.7, color: '#93c5fd', tox: -18, toy: -14 },
+        { name: 'Mizar', x: 485, y: 130, mag: 2.2, color: '#93c5fd', tox: -15, toy: -14 },
+        { name: 'Alkaid', x: 565, y: 145, mag: 1.8, color: '#60a5fa', tox: 12, toy: 4 }
       ],
       lines: [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 6]],
-      info: 'El asterismo del Carro permite trazar una línea recta desde Merak hacia Dubhe y prolongarla cinco veces para localizar con precisión matemática a la Estrella Polar (Polaris).'
+      photoUrl: 'https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001427/GSFC_20171208_Archive_e001427~medium.jpg',
+      photoTitle: 'Gran Bóveda de la Osa Mayor y Galaxias Satélite (NASA)',
+      credit: 'NASA APOD / Digitized Sky Survey • Telescopio Hubble',
+      stellariumUrl: 'https://stellarium-web.org/',
+      info: 'El asterismo del Carro permite trazar una línea recta imaginaria desde Merak hacia Dubhe y prolongarla cinco veces para localizar con precisión matemática a la Estrella Polar (Polaris) en el hemisferio norte.'
     },
     crux: {
       name: 'Cruz del Sur (Crux)',
       stars: [
-        { name: 'Acrux', x: 350, y: 300, mag: 0.7, color: '#60a5fa' },
-        { name: 'Gacrux', x: 350, y: 160, mag: 1.6, color: '#f87171' },
-        { name: 'Mimosa', x: 300, y: 230, mag: 1.2, color: '#93c5fd' },
-        { name: 'Imai', x: 395, y: 220, mag: 2.7, color: '#93c5fd' },
-        { name: 'Ginan', x: 375, y: 260, mag: 3.6, color: '#cbd5e1' }
+        { name: 'Acrux', x: 360, y: 310, mag: 0.7, color: '#60a5fa', tox: -52, toy: 18 },
+        { name: 'Gacrux', x: 360, y: 150, mag: 1.6, color: '#f87171', tox: -54, toy: -12 },
+        { name: 'Mimosa', x: 290, y: 235, mag: 1.2, color: '#93c5fd', tox: -65, toy: 4 },
+        { name: 'Imai', x: 415, y: 220, mag: 2.7, color: '#93c5fd', tox: 12, toy: 4 },
+        { name: 'Ginan', x: 390, y: 265, mag: 3.6, color: '#cbd5e1', tox: 12, toy: 14 }
       ],
       lines: [[0, 1], [2, 3]],
-      info: 'La joya del hemisferio sur. Sirve como brújula natural para marinos y exploradores al prolongar 4.5 veces su brazo mayor para ubicar el Polo Sur Celeste.'
+      photoUrl: 'https://images-assets.nasa.gov/image/PIA14112/PIA14112~medium.jpg',
+      photoTitle: 'La Cruz del Sur y la Nebulosa Oscura Saco de Carbón (NASA/JPL)',
+      credit: 'NASA / JPL-Caltech / Observatorio Europeo Austral (ESO)',
+      stellariumUrl: 'https://stellarium-web.org/',
+      info: 'La joya estelar del hemisferio sur. Sirve como brújula natural para marinos y exploradores al prolongar 4.5 veces su brazo mayor para ubicar el Polo Sur Celeste.'
     }
   };
 
@@ -456,19 +497,49 @@ document.addEventListener('DOMContentLoaded', () => {
     skCtx.fillStyle = state.nightMode ? '#0a0101' : '#040714';
     skCtx.fillRect(0, 0, w, h);
 
-    // Rejilla de coordenadas celestes
-    if (chkGrid.checked) {
-      skCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(56, 189, 248, 0.08)';
+    // Rejilla de coordenadas celestes visible y contrastada
+    if (chkGrid && chkGrid.checked) {
+      skCtx.save();
+      skCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.28)' : 'rgba(56, 189, 248, 0.25)';
       skCtx.lineWidth = 1;
-      for (let x = 0; x < w; x += 60) {
-        skCtx.beginPath(); skCtx.moveTo(x, 0); skCtx.lineTo(x, h); skCtx.stroke();
-      }
-      for (let y = 0; y < h; y += 60) {
-        skCtx.beginPath(); skCtx.moveTo(0, y); skCtx.lineTo(w, y); skCtx.stroke();
-      }
+      skCtx.setLineDash([5, 5]);
+
+      // Paralelos de Declinación
+      const decs = [
+        { y: 80, label: '+30° Dec' },
+        { y: 210, label: '0° (Ecuador Celeste)' },
+        { y: 340, label: '-30° Dec' }
+      ];
+      decs.forEach(d => {
+        skCtx.beginPath();
+        skCtx.moveTo(0, d.y);
+        skCtx.lineTo(w, d.y);
+        skCtx.stroke();
+        skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#38bdf8';
+        skCtx.font = '10px JetBrains Mono, monospace';
+        skCtx.fillText(d.label, 12, d.y - 5);
+      });
+
+      // Meridianos de Ascensión Recta (RA)
+      const ras = [
+        { x: 180, label: 'RA 5h 00m' },
+        { x: 370, label: 'RA 5h 30m' },
+        { x: 560, label: 'RA 6h 00m' }
+      ];
+      ras.forEach(r => {
+        skCtx.beginPath();
+        skCtx.moveTo(r.x, 0);
+        skCtx.lineTo(r.x, h);
+        skCtx.stroke();
+        skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#38bdf8';
+        skCtx.font = '10px JetBrains Mono, monospace';
+        skCtx.fillText(r.label, r.x + 6, 18);
+      });
+
+      skCtx.restore();
     }
 
-    // Estrellas de fondo
+    // Estrellas tenues de fondo
     backgroundStars.forEach(s => {
       skCtx.beginPath();
       skCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -478,10 +549,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cData = constellationsData[state.selectedConstellation];
     if (cData) {
-      // Líneas
-      if (chkLines.checked) {
-        skCtx.strokeStyle = state.nightMode ? '#ef4444' : 'rgba(56, 189, 248, 0.6)';
-        skCtx.lineWidth = 1.8;
+      // Líneas de la constelación
+      if (chkLines && chkLines.checked) {
+        skCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.75)' : 'rgba(56, 189, 248, 0.65)';
+        skCtx.lineWidth = 2;
         cData.lines.forEach(([i1, i2]) => {
           skCtx.beginPath();
           skCtx.moveTo(cData.stars[i1].x, cData.stars[i1].y);
@@ -493,22 +564,58 @@ document.addEventListener('DOMContentLoaded', () => {
       // Estrellas principales
       cData.stars.forEach(st => {
         skCtx.beginPath();
-        const starRad = Math.max(3.5, 6 - st.mag * 0.8);
+        const starRad = Math.max(3.8, 6.5 - st.mag * 0.85);
         skCtx.arc(st.x, st.y, starRad, 0, Math.PI * 2);
         skCtx.fillStyle = state.nightMode ? '#fca5a5' : st.color;
-        skCtx.shadowBlur = 10;
+        skCtx.shadowBlur = 12;
         skCtx.shadowColor = state.nightMode ? '#ef4444' : st.color;
         skCtx.fill();
         skCtx.shadowBlur = 0;
 
-        // Nombres
-        if (chkNames.checked) {
-          skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#e2e8f0';
-          skCtx.font = '11px JetBrains Mono, monospace';
-          skCtx.fillText(st.name, st.x + 8, st.y + 4);
+        // Rótulos con nombres de estrellas (sin solapamiento)
+        if (chkNames && chkNames.checked) {
+          skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#f8fafc';
+          skCtx.font = '11px Outfit, sans-serif';
+          const tox = st.tox !== undefined ? st.tox : 8;
+          const toy = st.toy !== undefined ? st.toy : 4;
+          skCtx.fillText(st.name, st.x + tox, st.y + toy);
         }
       });
     }
+  }
+
+  function updateConstellationViewMode() {
+    const isPhoto = (state.constellationViewMode === 'photo');
+    if (btnViewSkyMap) btnViewSkyMap.classList.toggle('active', !isPhoto);
+    if (btnViewAstroPhoto) btnViewAstroPhoto.classList.toggle('active', isPhoto);
+    if (skyCanvas) skyCanvas.classList.toggle('hidden', isPhoto);
+    if (constellationCanvasControls) constellationCanvasControls.classList.toggle('hidden', isPhoto);
+    if (constellationPhotoCard) constellationPhotoCard.classList.toggle('hidden', !isPhoto);
+
+    const curr = constellationsData[state.selectedConstellation];
+    if (curr && isPhoto) {
+      if (constellationPhotoImg) constellationPhotoImg.src = curr.photoUrl;
+      if (constellationPhotoTitle) constellationPhotoTitle.textContent = curr.photoTitle;
+      if (constellationPhotoCredit) constellationPhotoCredit.textContent = curr.credit;
+      if (constellationStellariumLink) constellationStellariumLink.href = curr.stellariumUrl;
+    }
+  }
+
+  if (btnViewSkyMap) {
+    btnViewSkyMap.addEventListener('click', () => {
+      state.constellationViewMode = 'chart';
+      updateConstellationViewMode();
+      drawSky();
+      playTone(520, 'sine', 0.1, 0.05);
+    });
+  }
+
+  if (btnViewAstroPhoto) {
+    btnViewAstroPhoto.addEventListener('click', () => {
+      state.constellationViewMode = 'photo';
+      updateConstellationViewMode();
+      playTone(600, 'sine', 0.1, 0.05);
+    });
   }
 
   function populateConstellationUI() {
@@ -521,7 +628,12 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         state.selectedConstellation = key;
         populateConstellationUI();
-        drawSky();
+        if (state.constellationViewMode === 'photo') {
+          updateConstellationViewMode();
+        } else {
+          drawSky();
+        }
+        updateAstroDataCard('constellations');
         playTone(600, 'sine', 0.15, 0.08);
       });
       constellationList.appendChild(btn);
@@ -531,9 +643,12 @@ document.addEventListener('DOMContentLoaded', () => {
     constellationInfo.innerHTML = `
       <strong>${curr.name}:</strong> ${curr.info}
     `;
+    updateConstellationViewMode();
   }
 
-  [chkLines, chkNames, chkGrid].forEach(el => el.addEventListener('change', drawSky));
+  if (chkLines) chkLines.addEventListener('change', drawSky);
+  if (chkNames) chkNames.addEventListener('change', drawSky);
+  if (chkGrid) chkGrid.addEventListener('change', drawSky);
 
   // ==========================================================================
   // 7. MÓDULO 3: LA LUNA Y SUS FASES INTERACTIVAS (MODELO 3D REAL)
@@ -654,16 +769,16 @@ document.addEventListener('DOMContentLoaded', () => {
     moonCtx.arc(cx, cy, R + 12, 0, Math.PI * 2);
     moonCtx.fill();
 
-    // Disco base en sombra (lado nocturno con suave luz cenicienta)
+    // Disco base en sombra (lado nocturno con suave luz cenicienta esférica)
     const darkSide = moonCtx.createRadialGradient(cx - 20, cy - 20, 10, cx, cy, R);
     if (state.nightMode) {
-      darkSide.addColorStop(0, '#2b0707');
-      darkSide.addColorStop(0.65, '#150303');
-      darkSide.addColorStop(1, '#080101');
+      darkSide.addColorStop(0, 'rgba(69, 10, 10, 0.6)');
+      darkSide.addColorStop(0.65, 'rgba(28, 4, 4, 0.8)');
+      darkSide.addColorStop(1, 'rgba(10, 1, 1, 0.95)');
     } else {
-      darkSide.addColorStop(0, '#1e293b');
-      darkSide.addColorStop(0.65, '#0f172a');
-      darkSide.addColorStop(1, '#050811');
+      darkSide.addColorStop(0, 'rgba(30, 41, 59, 0.5)');
+      darkSide.addColorStop(0.65, 'rgba(15, 23, 42, 0.75)');
+      darkSide.addColorStop(1, 'rgba(2, 6, 23, 0.92)');
     }
     moonCtx.beginPath();
     moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
@@ -831,17 +946,241 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  btnEclipseSolar.addEventListener('click', () => {
-    updateMoonPhase(0, 'solar');
-    eclipseStatus.innerHTML = '🌑 <strong>Eclipse Solar Total:</strong> La Luna se interpone exactamente entre el Sol y la Tierra. Su disco bloquea la fotosfera solar revelando la corona y el anillo de diamante.';
-    playChime();
-  });
+  const eclipseGeometryCanvas = document.getElementById('eclipseGeometryCanvas');
+  const egCtx = eclipseGeometryCanvas ? eclipseGeometryCanvas.getContext('2d') : null;
+  const eclipseGeometryTitle = document.getElementById('eclipseGeometryTitle');
+  const eclipseGeometryDesc = document.getElementById('eclipseGeometryDesc');
+  const eclipseVideoFrame = document.getElementById('eclipseVideoFrame');
+  const videoTitleLabel = document.getElementById('videoTitleLabel');
+  const eclipseRealPhotoImg = document.getElementById('eclipseRealPhotoImg');
+  const photoTitleLabel = document.getElementById('photoTitleLabel');
+  const eclipsePhotoCaption = document.getElementById('eclipsePhotoCaption');
 
-  btnEclipseLunar.addEventListener('click', () => {
-    updateMoonPhase(14.8, 'lunar');
-    eclipseStatus.innerHTML = '🔴 <strong>Eclipse Lunar (Luna de Sangre):</strong> La Tierra bloquea la luz solar directa. La atmósfera terrestre dispersa longitudes azules y refracta tonalidades cobrizas hacia el disco lunar.';
+  function renderEclipseGeometryCanvas(type = 'solar') {
+    if (!egCtx) return;
+    const w = eclipseGeometryCanvas.width;
+    const h = eclipseGeometryCanvas.height;
+    const cy = h / 2;
+
+    egCtx.clearRect(0, 0, w, h);
+    egCtx.fillStyle = '#020617';
+    egCtx.fillRect(0, 0, w, h);
+
+    if (type === 'solar') {
+      // 1. Sol a la izquierda
+      const sunX = 85;
+      const sunR = 36;
+      const sunGrad = egCtx.createRadialGradient(sunX, cy, 6, sunX, cy, sunR);
+      sunGrad.addColorStop(0, '#fffbeb');
+      sunGrad.addColorStop(0.4, '#fde047');
+      sunGrad.addColorStop(1, '#f59e0b');
+      egCtx.beginPath();
+      egCtx.arc(sunX, cy, sunR, 0, Math.PI * 2);
+      egCtx.fillStyle = sunGrad;
+      egCtx.fill();
+
+      // 2. Luna en medio (bloqueando el Sol)
+      const moonX = 350;
+      const moonR = 12;
+
+      // 3. Tierra a la derecha
+      const earthX = 600;
+      const earthR = 28;
+
+      // Cono de Penumbra
+      egCtx.beginPath();
+      egCtx.moveTo(sunX, cy - sunR);
+      egCtx.lineTo(moonX, cy + moonR);
+      egCtx.lineTo(earthX, cy + earthR + 25);
+      egCtx.lineTo(earthX, cy - earthR - 25);
+      egCtx.lineTo(moonX, cy - moonR);
+      egCtx.closePath();
+      egCtx.fillStyle = 'rgba(148, 163, 184, 0.12)';
+      egCtx.fill();
+
+      // Cono de Umbra (sombra total que toca la Tierra)
+      egCtx.beginPath();
+      egCtx.moveTo(sunX, cy - sunR);
+      egCtx.lineTo(moonX, cy - moonR);
+      egCtx.lineTo(earthX - earthR + 4, cy);
+      egCtx.lineTo(moonX, cy + moonR);
+      egCtx.lineTo(sunX, cy + sunR);
+      egCtx.closePath();
+      egCtx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      egCtx.fill();
+
+      // Líneas de rayos luminosos tangentes
+      egCtx.strokeStyle = 'rgba(253, 224, 71, 0.35)';
+      egCtx.lineWidth = 1;
+      egCtx.beginPath();
+      egCtx.moveTo(sunX, cy - sunR); egCtx.lineTo(moonX, cy - moonR); egCtx.lineTo(earthX - earthR + 4, cy);
+      egCtx.moveTo(sunX, cy + sunR); egCtx.lineTo(moonX, cy + moonR); egCtx.lineTo(earthX - earthR + 4, cy);
+      egCtx.moveTo(sunX, cy - sunR); egCtx.lineTo(moonX, cy + moonR); egCtx.lineTo(earthX, cy + earthR + 25);
+      egCtx.moveTo(sunX, cy + sunR); egCtx.lineTo(moonX, cy - moonR); egCtx.lineTo(earthX, cy - earthR - 25);
+      egCtx.stroke();
+
+      // Dibujar Luna
+      egCtx.beginPath();
+      egCtx.arc(moonX, cy, moonR, 0, Math.PI * 2);
+      egCtx.fillStyle = '#0f172a';
+      egCtx.strokeStyle = '#64748b';
+      egCtx.lineWidth = 1.5;
+      egCtx.fill();
+      egCtx.stroke();
+
+      // Dibujar Tierra
+      const earthGrad = egCtx.createRadialGradient(earthX - 8, cy - 8, 4, earthX, cy, earthR);
+      earthGrad.addColorStop(0, '#38bdf8');
+      earthGrad.addColorStop(0.6, '#0284c7');
+      earthGrad.addColorStop(1, '#075985');
+      egCtx.beginPath();
+      egCtx.arc(earthX, cy, earthR, 0, Math.PI * 2);
+      egCtx.fillStyle = earthGrad;
+      egCtx.fill();
+
+      // Mancha de totalidad umbral
+      egCtx.beginPath();
+      egCtx.arc(earthX - earthR + 3, cy, 3.5, 0, Math.PI * 2);
+      egCtx.fillStyle = '#000000';
+      egCtx.fill();
+
+      // Rótulos explicativos
+      egCtx.fillStyle = '#f8fafc';
+      egCtx.font = '11px Outfit, sans-serif';
+      egCtx.fillText('Sol', sunX - 10, cy + sunR + 18);
+      egCtx.fillText('Luna (Novilunio)', moonX - 35, cy + moonR + 20);
+      egCtx.fillText('Tierra', earthX - 14, cy + earthR + 20);
+
+      egCtx.fillStyle = '#ef4444';
+      egCtx.fillText('● Franja de Totalidad (Umbra)', earthX - 170, cy - 10);
+      egCtx.fillStyle = '#94a3b8';
+      egCtx.fillText('Zona de Penumbra (Eclipse Parcial)', earthX - 190, cy + 50);
+
+    } else {
+      // ECLIPSE LUNAR (TIERRA EN EL CENTRO)
+      const sunX = 85;
+      const sunR = 36;
+      const sunGrad = egCtx.createRadialGradient(sunX, cy, 6, sunX, cy, sunR);
+      sunGrad.addColorStop(0, '#fffbeb');
+      sunGrad.addColorStop(0.4, '#fde047');
+      sunGrad.addColorStop(1, '#f59e0b');
+      egCtx.beginPath();
+      egCtx.arc(sunX, cy, sunR, 0, Math.PI * 2);
+      egCtx.fillStyle = sunGrad;
+      egCtx.fill();
+
+      // Tierra en medio
+      const earthX = 350;
+      const earthR = 30;
+
+      // Luna a la derecha
+      const moonX = 620;
+      const moonR = 14;
+
+      // Cono de Umbra de la Tierra
+      egCtx.beginPath();
+      egCtx.moveTo(sunX, cy - sunR);
+      egCtx.lineTo(earthX, cy - earthR);
+      egCtx.lineTo(w, cy - 10);
+      egCtx.lineTo(w, cy + 10);
+      egCtx.lineTo(earthX, cy + earthR);
+      egCtx.lineTo(sunX, cy + sunR);
+      egCtx.closePath();
+      egCtx.fillStyle = 'rgba(69, 10, 10, 0.45)';
+      egCtx.fill();
+
+      // Cono de Penumbra
+      egCtx.beginPath();
+      egCtx.moveTo(sunX, cy - sunR);
+      egCtx.lineTo(earthX, cy + earthR);
+      egCtx.lineTo(w, cy + 70);
+      egCtx.lineTo(w, cy - 70);
+      egCtx.lineTo(earthX, cy - earthR);
+      egCtx.closePath();
+      egCtx.fillStyle = 'rgba(148, 163, 184, 0.1)';
+      egCtx.fill();
+
+      // Rayos luminosos
+      egCtx.strokeStyle = 'rgba(239, 68, 68, 0.35)';
+      egCtx.lineWidth = 1;
+      egCtx.beginPath();
+      egCtx.moveTo(sunX, cy - sunR); egCtx.lineTo(earthX, cy - earthR); egCtx.lineTo(w, cy - 10);
+      egCtx.moveTo(sunX, cy + sunR); egCtx.lineTo(earthX, cy + earthR); egCtx.lineTo(w, cy + 10);
+      egCtx.stroke();
+
+      // Dibujar Tierra
+      const earthGrad = egCtx.createRadialGradient(earthX - 8, cy - 8, 4, earthX, cy, earthR);
+      earthGrad.addColorStop(0, '#38bdf8');
+      earthGrad.addColorStop(0.6, '#0284c7');
+      earthGrad.addColorStop(1, '#075985');
+      egCtx.beginPath();
+      egCtx.arc(earthX, cy, earthR, 0, Math.PI * 2);
+      egCtx.fillStyle = earthGrad;
+      egCtx.fill();
+
+      // Atmósfera refractante
+      egCtx.beginPath();
+      egCtx.arc(earthX, cy, earthR + 3, 0, Math.PI * 2);
+      egCtx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+      egCtx.lineWidth = 2;
+      egCtx.stroke();
+
+      // Dibujar Luna de Sangre
+      const bloodGrad = egCtx.createRadialGradient(moonX - 4, cy - 4, 2, moonX, cy, moonR);
+      bloodGrad.addColorStop(0, '#f87171');
+      bloodGrad.addColorStop(0.5, '#dc2626');
+      bloodGrad.addColorStop(1, '#7f1d1d');
+      egCtx.beginPath();
+      egCtx.arc(moonX, cy, moonR, 0, Math.PI * 2);
+      egCtx.fillStyle = bloodGrad;
+      egCtx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+      egCtx.lineWidth = 1.5;
+      egCtx.fill();
+      egCtx.stroke();
+
+      // Textos
+      egCtx.fillStyle = '#f8fafc';
+      egCtx.font = '11px Outfit, sans-serif';
+      egCtx.fillText('Sol', sunX - 10, cy + sunR + 18);
+      egCtx.fillText('Tierra (Bloqueo Directo)', earthX - 55, cy + earthR + 20);
+      egCtx.fillStyle = '#ef4444';
+      egCtx.fillText('Luna Llena en Umbra (Luna de Sangre)', moonX - 95, cy + moonR + 20);
+      egCtx.fillStyle = '#fca5a5';
+      egCtx.fillText('Luz roja refractada por la atmósfera', earthX + 45, cy - 20);
+    }
+  }
+
+  function selectEclipse(type) {
+    state.eclipseType = type;
+    btnEclipseSolar.classList.toggle('active', type === 'solar');
+    btnEclipseLunar.classList.toggle('active', type === 'lunar');
+
+    if (type === 'solar') {
+      updateMoonPhase(0, 'solar');
+      if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Solar: La Luna entre el Sol y la Tierra (Conos de Umbra y Penumbra)';
+      if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Luna se interpone en la línea de visión Sol-Tierra. Su sombra proyecta una estrecha franja de totalidad (umbra, ~150 km) donde la fotosfera queda oculta y se observa la corona solar, y una penumbra más ancha de eclipse parcial.';
+      if (eclipseVideoFrame) eclipseVideoFrame.src = 'https://www.youtube-nocookie.com/embed/cxrLRbkOwKs?rel=0';
+      if (videoTitleLabel) videoTitleLabel.textContent = 'Totalidad del Eclipse Solar • NASA SVS';
+      if (eclipseRealPhotoImg) eclipseRealPhotoImg.src = 'https://images-assets.nasa.gov/image/PIA13083/PIA13083~medium.jpg';
+      if (photoTitleLabel) photoTitleLabel.textContent = 'Corona Solar y Anillo de Diamante';
+      if (eclipsePhotoCaption) eclipsePhotoCaption.textContent = 'Estructura magnética de la corona solar visible exclusivamente durante los minutos de totalidad umbral.';
+    } else {
+      updateMoonPhase(14.8, 'lunar');
+      if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Lunar: La Tierra entre el Sol y la Luna Llena (Refracción Atmosférica)';
+      if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Tierra bloquea la radiación directa del Sol. Los rayos solares atraviesan el borde atmosférico terrestre, el cual dispersa las longitudes azules (filtro Rayleigh) y desvía la luz roja hacia la Luna, otorgándole su característico tono cobrizo.';
+      if (eclipseVideoFrame) eclipseVideoFrame.src = 'https://www.youtube-nocookie.com/embed/wuhNZejHeBg?rel=0';
+      if (videoTitleLabel) videoTitleLabel.textContent = 'Dispersión Atmosférica y Luna de Sangre • NASA SVS';
+      if (eclipseRealPhotoImg) eclipseRealPhotoImg.src = 'https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001427/GSFC_20171208_Archive_e001427~medium.jpg';
+      if (photoTitleLabel) photoTitleLabel.textContent = 'Secuencia Fotográfica de Luna de Sangre';
+      if (eclipsePhotoCaption) eclipsePhotoCaption.textContent = 'Entrada del disco lunar en el cono de umbra de la Tierra durante la totalidad.';
+    }
+    renderEclipseGeometryCanvas(type);
+    updateAstroDataCard('moon');
     playChime();
-  });
+  }
+
+  btnEclipseSolar.addEventListener('click', () => selectEclipse('solar'));
+  btnEclipseLunar.addEventListener('click', () => selectEclipse('lunar'));
 
   // ==========================================================================
   // 8. MÓDULO 4: LLUVIAS DE METEOROS Y COMETAS
@@ -850,10 +1189,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const mCtx = meteorCanvas.getContext('2d');
   const btnSpawnBolide = document.getElementById('btnSpawnBolide');
   const btnShowerStorm = document.getElementById('btnShowerStorm');
+  const meteorStatusBadge = document.getElementById('meteorStatusBadge');
   const meteorTableBody = document.getElementById('meteorTableBody');
 
   let activeMeteors = [];
+  let meteorParticles = [];
+  let meteorBgStars = [];
   let stormActive = false;
+  let flashAlpha = 0;
 
   const meteorShowersData = [
     { name: 'Cuadrántidas', date: '3-4 Enero', thz: '110', parent: 'Asteroide 2003 EH1', vis: 'Excelente en hemisferio norte' },
@@ -864,17 +1207,46 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   function initMeteorCanvas() {
-    meteorCanvas.width = meteorCanvas.parentElement.clientWidth || 760;
+    const parentW = meteorCanvas.parentElement ? meteorCanvas.parentElement.clientWidth : 0;
+    meteorCanvas.width = parentW > 100 ? parentW : 760;
     meteorCanvas.height = 380;
+
+    // Generar 120 estrellas de fondo fijas con titileo
+    meteorBgStars = [];
+    for (let i = 0; i < 120; i++) {
+      meteorBgStars.push({
+        x: Math.random() * meteorCanvas.width,
+        y: Math.random() * (meteorCanvas.height - 50),
+        r: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.7 + 0.3,
+        twinkleSpeed: Math.random() * 0.04 + 0.01,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    // Inicializar con algunos meteoros activos de inmediato
+    activeMeteors = [];
+    for (let i = 0; i < 4; i++) {
+      createMeteor(false);
+    }
   }
 
   function createMeteor(isBolide = false) {
     const w = meteorCanvas.width;
-    const startX = Math.random() * w;
-    const startY = Math.random() * 80;
-    const speed = isBolide ? 12 : Math.random() * 8 + 8;
-    const len = isBolide ? 140 : Math.random() * 60 + 40;
-    const angle = Math.PI / 4 + (Math.random() * 0.2 - 0.1);
+    const h = meteorCanvas.height;
+    // El radiante de las Perseidas se ubica en el cuadrante superior izquierdo (Perseo)
+    const radX = w * 0.22;
+    const radY = h * 0.20;
+
+    const startX = isBolide ? radX + (Math.random() * 40 - 20) : radX + (Math.random() * 160 - 80);
+    const startY = isBolide ? radY + (Math.random() * 30 - 15) : radY + (Math.random() * 80 - 40);
+
+    const baseAngle = Math.PI / 4; // Dirección 45 grados (abajo a la derecha)
+    const angleSpread = (Math.random() - 0.5) * 0.35;
+    const angle = baseAngle + angleSpread;
+
+    const speed = isBolide ? 13 : Math.random() * 8 + 8;
+    const len = isBolide ? 160 : Math.random() * 70 + 40;
 
     activeMeteors.push({
       x: startX,
@@ -883,49 +1255,198 @@ document.addEventListener('DOMContentLoaded', () => {
       vy: Math.sin(angle) * speed,
       len: len,
       life: 1.0,
-      decay: isBolide ? 0.015 : Math.random() * 0.03 + 0.02,
-      isBolide: isBolide
+      decay: isBolide ? 0.016 : Math.random() * 0.03 + 0.02,
+      isBolide: isBolide,
+      sparkTimer: 0
     });
+
+    if (isBolide) {
+      flashAlpha = 0.45; // Destello momentáneo en el firmamento
+    }
+  }
+
+  function drawMeteorHorizon(w, h) {
+    // Silueta de cordillera montañosa en el horizonte con cúpula de observatorio
+    mCtx.save();
+    mCtx.beginPath();
+    mCtx.moveTo(0, h);
+    mCtx.lineTo(0, h - 35);
+    mCtx.lineTo(w * 0.15, h - 55);
+    mCtx.lineTo(w * 0.32, h - 30);
+    mCtx.lineTo(w * 0.50, h - 65);
+    mCtx.lineTo(w * 0.68, h - 40);
+
+    // Cúpula del observatorio astronómico
+    const obsX = w * 0.82;
+    const obsY = h - 38;
+    mCtx.lineTo(obsX - 22, h - 32);
+    mCtx.lineTo(obsX - 16, obsY);
+    mCtx.arc(obsX, obsY, 14, Math.PI, 0, false);
+    mCtx.lineTo(obsX + 16, obsY);
+    mCtx.lineTo(obsX + 22, h - 32);
+
+    mCtx.lineTo(w, h - 45);
+    mCtx.lineTo(w, h);
+    mCtx.closePath();
+
+    mCtx.fillStyle = state.nightMode ? '#150202' : '#040714';
+    mCtx.fill();
+
+    // Línea de horizonte tenue
+    mCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.25)' : 'rgba(56, 189, 248, 0.2)';
+    mCtx.lineWidth = 1;
+    mCtx.stroke();
+
+    // Luz guía tenue del telescopio (faro de observación)
+    mCtx.beginPath();
+    mCtx.arc(obsX, obsY - 14, 2, 0, Math.PI * 2);
+    mCtx.fillStyle = state.nightMode ? '#ef4444' : '#38bdf8';
+    mCtx.fill();
+
+    mCtx.restore();
   }
 
   function renderMeteors() {
     const w = meteorCanvas.width;
     const h = meteorCanvas.height;
 
-    mCtx.fillStyle = state.nightMode ? 'rgba(10, 1, 1, 0.25)' : 'rgba(3, 6, 17, 0.25)';
+    // 1. Cielo nocturno con gradiente de profundidad
+    const skyGrad = mCtx.createLinearGradient(0, 0, 0, h);
+    if (state.nightMode) {
+      skyGrad.addColorStop(0, '#0a0101');
+      skyGrad.addColorStop(1, '#1c0404');
+    } else {
+      skyGrad.addColorStop(0, '#02040a');
+      skyGrad.addColorStop(0.65, '#050b1d');
+      skyGrad.addColorStop(1, '#0c152e');
+    }
+    mCtx.fillStyle = skyGrad;
     mCtx.fillRect(0, 0, w, h);
 
-    // Generar meteoros de fondo
-    if (Math.random() < (stormActive ? 0.45 : 0.04)) {
+    // 2. Destello de bólido en atmósfera
+    if (flashAlpha > 0.01) {
+      mCtx.fillStyle = state.nightMode ? `rgba(254, 202, 202, ${flashAlpha})` : `rgba(224, 242, 254, ${flashAlpha})`;
+      mCtx.fillRect(0, 0, w, h);
+      flashAlpha *= 0.88;
+    }
+
+    // 3. Estrellas de fondo fijas y titilantes
+    meteorBgStars.forEach(st => {
+      st.phase += st.twinkleSpeed;
+      const curAlpha = Math.max(0.2, Math.min(1.0, st.alpha + Math.sin(st.phase) * 0.3));
+      mCtx.beginPath();
+      mCtx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+      mCtx.fillStyle = state.nightMode ? `rgba(254, 202, 202, ${curAlpha})` : `rgba(255, 255, 255, ${curAlpha})`;
+      mCtx.fill();
+    });
+
+    // 4. Marcador visual del Radiante de Perseidas
+    const radX = w * 0.22;
+    const radY = h * 0.20;
+    const pulse = (Math.sin(Date.now() * 0.003) + 1) / 2;
+
+    mCtx.beginPath();
+    mCtx.arc(radX, radY, 9 + pulse * 4, 0, Math.PI * 2);
+    mCtx.strokeStyle = state.nightMode ? `rgba(239, 68, 68, ${0.3 + pulse * 0.4})` : `rgba(56, 189, 248, ${0.3 + pulse * 0.4})`;
+    mCtx.lineWidth = 1.2;
+    mCtx.stroke();
+
+    mCtx.beginPath();
+    mCtx.arc(radX, radY, 2.5, 0, Math.PI * 2);
+    mCtx.fillStyle = state.nightMode ? '#ef4444' : '#38bdf8';
+    mCtx.fill();
+
+    mCtx.font = '10px Outfit, sans-serif';
+    mCtx.fillStyle = state.nightMode ? '#fca5a5' : '#93c5fd';
+    mCtx.fillText('★ Radiante Perseidas', radX + 14, radY + 3);
+
+    // 5. Tasa de generación de meteoros
+    const spawnRate = stormActive ? 0.38 : 0.045;
+    if (Math.random() < spawnRate) {
       createMeteor(false);
     }
 
+    // 6. Actualización y dibujo de meteoros
     for (let i = activeMeteors.length - 1; i >= 0; i--) {
       const m = activeMeteors[i];
       m.x += m.vx;
       m.y += m.vy;
       m.life -= m.decay;
 
-      const grad = mCtx.createLinearGradient(m.x, m.y, m.x - m.vx * (m.len / 10), m.y - m.vy * (m.len / 10));
+      // Generación de chispas secundarias en bólidos
+      if (m.isBolide) {
+        m.sparkTimer++;
+        if (m.sparkTimer % 2 === 0) {
+          meteorParticles.push({
+            x: m.x,
+            y: m.y,
+            vx: (Math.random() - 0.5) * 2 - m.vx * 0.15,
+            vy: (Math.random() - 0.5) * 2 - m.vy * 0.15,
+            life: 1.0,
+            decay: Math.random() * 0.06 + 0.04,
+            size: Math.random() * 2.5 + 1.2
+          });
+        }
+      }
+
+      const tailX = m.x - m.vx * (m.len / 10);
+      const tailY = m.y - m.vy * (m.len / 10);
+
+      const grad = mCtx.createLinearGradient(m.x, m.y, tailX, tailY);
       if (state.nightMode) {
-        grad.addColorStop(0, `rgba(254, 202, 202, ${m.life})`);
+        grad.addColorStop(0, `rgba(254, 226, 226, ${m.life})`);
+        grad.addColorStop(0.3, `rgba(239, 68, 68, ${m.life * 0.8})`);
         grad.addColorStop(1, 'rgba(239, 68, 68, 0)');
       } else {
-        grad.addColorStop(0, m.isBolide ? `rgba(254, 240, 138, ${m.life})` : `rgba(224, 242, 254, ${m.life})`);
-        grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        if (m.isBolide) {
+          grad.addColorStop(0, `rgba(255, 255, 255, ${m.life})`);
+          grad.addColorStop(0.25, `rgba(253, 224, 71, ${m.life})`);
+          grad.addColorStop(0.65, `rgba(249, 115, 22, ${m.life * 0.8})`);
+          grad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        } else {
+          grad.addColorStop(0, `rgba(255, 255, 255, ${m.life})`);
+          grad.addColorStop(0.3, `rgba(56, 189, 248, ${m.life * 0.8})`);
+          grad.addColorStop(1, 'rgba(14, 165, 233, 0)');
+        }
       }
 
       mCtx.beginPath();
       mCtx.moveTo(m.x, m.y);
-      mCtx.lineTo(m.x - m.vx * (m.len / 10), m.y - m.vy * (m.len / 10));
+      mCtx.lineTo(tailX, tailY);
       mCtx.strokeStyle = grad;
-      mCtx.lineWidth = m.isBolide ? 4.5 : 1.8;
+      mCtx.lineWidth = m.isBolide ? 5 : 1.8;
       mCtx.stroke();
+
+      // Cabeza brillante de ionización
+      mCtx.beginPath();
+      mCtx.arc(m.x, m.y, m.isBolide ? 3.5 : 1.4, 0, Math.PI * 2);
+      mCtx.fillStyle = '#ffffff';
+      mCtx.fill();
 
       if (m.life <= 0 || m.x > w || m.y > h) {
         activeMeteors.splice(i, 1);
       }
     }
+
+    // 7. Partículas de chispas incandescentes
+    for (let pIdx = meteorParticles.length - 1; pIdx >= 0; pIdx--) {
+      const p = meteorParticles[pIdx];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+
+      mCtx.beginPath();
+      mCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      mCtx.fillStyle = state.nightMode ? `rgba(254, 202, 202, ${p.life})` : `rgba(253, 224, 71, ${p.life})`;
+      mCtx.fill();
+
+      if (p.life <= 0) {
+        meteorParticles.splice(pIdx, 1);
+      }
+    }
+
+    // 8. Silueta del horizonte con observatorio
+    drawMeteorHorizon(w, h);
 
     if (state.currentModule === 'meteors') {
       meteorAnimId = requestAnimationFrame(renderMeteors);
@@ -955,6 +1476,10 @@ document.addEventListener('DOMContentLoaded', () => {
   btnShowerStorm.addEventListener('click', () => {
     stormActive = !stormActive;
     btnShowerStorm.textContent = stormActive ? '🛑 Detener Tormenta' : '☄️ Activar Tormenta de Meteoros';
+    if (meteorStatusBadge) {
+      meteorStatusBadge.textContent = stormActive ? '⚡ Tormenta Activa: Tasa THZ > 150 met/h (Intensa)' : 'Radiante Activo: Perseidas (100 met/h)';
+      meteorStatusBadge.style.color = stormActive ? '#facc15' : '#38bdf8';
+    }
     playTone(500, 'triangle', 0.2, 0.08);
   });
 
@@ -1182,168 +1707,111 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================================================
-  // 11. ZONA 7: CONTROLES CONTEXTUALES Y QUIZ COGNITIVO MULTIPREGUNTA
+  // 11. ZONA 7: FICHA CIENTÍFICA DEL OBJETO Y QUIZ FORMATIVO MULTIPREGUNTA
   // ==========================================================================
-  const moduleQuickControls = document.getElementById('moduleQuickControls');
+  const astroDataCard = document.getElementById('astroDataCard');
   const quizCounter = document.getElementById('quizCounter');
   const quizQuestion = document.getElementById('quizQuestion');
   const quizOptions = document.getElementById('quizOptions');
   const quizFeedback = document.getElementById('quizFeedback');
   const btnRetryQuiz = document.getElementById('btnRetryQuiz');
   const btnNextQuiz = document.getElementById('btnNextQuiz');
-  const meterFill = document.getElementById('meterFill');
-  const meterText = document.getElementById('meterText');
 
-  const quizzesData = {
-    solar: [
-      {
-        q: '¿Cuál es el planeta rocoso más grande y con mayor densidad del Sistema Solar?',
-        opts: ['Mercurio', 'Venus', 'La Tierra', 'Marte'],
-        ans: 2,
-        why: 'La Tierra es el planeta rocoso de mayor diámetro (12.742 km) y mayor densidad media del Sistema Solar.'
-      },
-      {
-        q: '¿Qué planeta tiene el período de rotación más lento y gira en sentido retrógrado?',
-        opts: ['Mercurio', 'Venus', 'Marte', 'Júpiter'],
-        ans: 1,
-        why: 'Venus tarda 243 días terrestres en dar un giro sobre su propio eje y lo hace en sentido horario (de este a oeste).'
-      },
-      {
-        q: '¿Cuál es el planeta gigante gaseoso con mayor masa del Sistema Solar?',
-        opts: ['Saturno', 'Júpiter', 'Urano', 'Neptuno'],
-        ans: 1,
-        why: 'Júpiter posee más del doble de la masa combinada de todos los demás planetas de nuestro sistema juntos.'
-      }
-    ],
-    constellations: [
-      {
-        q: '¿Cuál es la estrella guía supergigante roja del hombro derecho de la constelación de Orión?',
-        opts: ['Rigel', 'Sirio', 'Betelgeuse', 'Aldebarán'],
-        ans: 2,
-        why: 'Betelgeuse es una supergigante roja inconfundible por su tonalidad cálida anaranjada en el vértice superior de Orión.'
-      },
-      {
-        q: '¿Cuál es la estrella más brillante de todo el firmamento nocturno vista desde la Tierra?',
-        opts: ['Polaris (Estrella Polar)', 'Sirio (Can Mayor)', 'Vega (Lira)', 'Rigel (Orión)'],
-        ans: 1,
-        why: 'Sirio, situada en la constelación del Can Mayor, ostenta una magnitud aparente de -1.46, la mayor del cielo visible.'
-      },
-      {
-        q: '¿Qué constelación es la referencia principal de orientación astronómica en el Hemisferio Sur?',
-        opts: ['Osa Mayor', 'Cruz del Sur (Crux)', 'Casiopea', 'Cisne'],
-        ans: 1,
-        why: 'La Cruz del Sur permite ubicar el polo sur celeste prolongando 4.5 veces la longitud de su brazo vertical principal.'
-      }
-    ],
-    moon: [
-      {
-        q: '¿Cuánto dura exactamente el ciclo sinódico completo (de Luna Nueva a Luna Nueva)?',
-        opts: ['27.3 días', '28.0 días', '29.5 días', '31.0 días'],
-        ans: 2,
-        why: 'El ciclo sinódico o lunación dura 29.53 días debido al avance combinado de la Tierra y la Luna alrededor del Sol.'
-      },
-      {
-        q: '¿Qué alineación orbital provoca un eclipse solar total?',
-        opts: ['La Tierra entre el Sol y la Luna', 'La Luna situada exactamente entre el Sol y la Tierra', 'El Sol entre la Tierra y la Luna', 'Marte alineado con la Luna'],
-        ans: 1,
-        why: 'En un eclipse solar, la Luna en fase de novilunio se interpone entre el Sol y la Tierra proyectando su sombra umbral sobre nosotros.'
-      },
-      {
-        q: '¿Por qué la Luna adquiere un tono cobrizo ("Luna de Sangre") durante un eclipse lunar total?',
-        opts: ['Por calentamiento extremo en su corteza', 'La atmósfera de la Tierra dispersa la luz azul y refracta los tonos rojos del crepúsculo global hacia la Luna', 'La sombra de la Tierra es roja', 'Reflejo de la luz de Marte'],
-        ans: 1,
-        why: 'La atmósfera terrestre actúa como prisma óptico, dispersando las longitudes de onda cortas y desviando la luz roja hacia el disco lunar.'
-      }
-    ],
-    meteors: [
-      {
-        q: '¿Qué cuerpo progenitor da origen a la lluvia de meteoros Perseidas de agosto?',
-        opts: ['Cometa 1P/Halley', 'Cometa Swift-Tuttle', 'Asteroide Faetón', 'Cometa Encke'],
-        ans: 1,
-        why: 'El cometa periódico 109P/Swift-Tuttle deposita un anillo de escombros y polvo por el cual la Tierra transita cada mes de agosto.'
-      },
-      {
-        q: '¿Qué causa el brillo visible de una estrella fugaz al cruzar el cielo?',
-        opts: ['Combustión nuclear del núcleo', 'Fricción e ionización del aire comprimido a gran velocidad en la alta atmósfera', 'Reflejo solar en trozos de hielo', 'Rayos eléctricos entre nubes'],
-        ans: 1,
-        why: 'Al ingresar a velocidades de 20 a 70 km/s, el fragmento comprime el aire de la mesosfera haciéndolo brillar incandescentemente.'
-      },
-      {
-        q: '¿Cómo se clasifica a un meteoro sumamente brillante que sobrepasa el brillo de Venus?',
-        opts: ['Micrometeorito', 'Bólido o bola de fuego', 'Cometa enano', 'Púlsar'],
-        ans: 1,
-        why: 'Los bólidos son masas rocosas más densas que pueden generar explosiones sónicas y dejar estelas visibles durante varios segundos.'
-      }
-    ],
-    galaxies: [
-      {
-        q: '¿A qué distancia aproximada se encuentra la Galaxia de Andrómeda de la Vía Láctea?',
-        opts: ['100.000 años luz', '1.344 años luz', '2.5 millones de años luz', '14 millones de años luz'],
-        ans: 2,
-        why: 'Andrómeda (M31) dista 2.5 millones de años luz y es el objeto astronómico más distante que podemos apreciar a simple vista.'
-      },
-      {
-        q: '¿Qué estructura morfológica posee nuestra galaxia, la Vía Láctea?',
-        opts: ['Galaxia Espiral barrada', 'Galaxia Elíptica gigante', 'Galaxia Irregular enana', 'Cúmulo globular'],
-        ans: 0,
-        why: 'La Vía Láctea posee una barra central de estrellas y brazos espirales cargados de polvo, gas y guarderías de estrellas nuevas.'
-      },
-      {
-        q: '¿Qué representa la Gran Nebulosa de Orión (M42) en astrofísica?',
-        opts: ['Un remanente frío de supernova', 'Una guardería estelar activa donde nacen nuevas estrellas', 'Un cúmulo globular extinto', 'Un agujero negro supermasivo'],
-        ans: 1,
-        why: 'M42 es una nube de hidrógeno ionizado e incubadora de estrellas jóvenes iluminada por las cuatro estrellas del Trapecio.'
-      }
-    ],
-    astrophoto: [
-      {
-        q: '¿Por qué los astrónomos emplean linternas con luz roja durante la noche de campo?',
-        opts: ['Porque la luz roja alumbra a mayor distancia', 'Porque no deslumbra ni anula la adaptación natural del ojo a la oscuridad', 'Para evitar que se empañen las ópticas', 'Para ahuyentar animales nocturnos'],
-        ans: 1,
-        why: 'La luz roja permite consultar mapas estelares o afinar telescopios sin perder la sensibilidad visual que los ojos tardan 30 minutos en desarrollar.'
-      },
-      {
-        q: 'Al capturar el cielo nocturno con un smartphone, ¿cuál es el soporte fundamental indispensable?',
-        opts: ['El flash a máxima potencia', 'Un trípode o base firme para eliminar cualquier trepidación', 'Un zoom digital 30x', 'Un filtro polarizador diurno'],
-        ans: 1,
-        why: 'En exposiciones largas de 10 a 30 segundos, el más mínimo movimiento de la mano desenfocaría las estrellas por completo.'
-      },
-      {
-        q: 'En la escala Bortle de contaminación lumínica, ¿qué caracteriza a una zona Clase 1 o 2?',
-        opts: ['Centro urbano muy iluminado', 'Cielo rural completamente oscuro donde la Vía Láctea se ve con gran nitidez', 'Zona con niebla diurna', 'Cielo nublado sin visibilidad'],
-        ans: 1,
-        why: 'Las clases 1 y 2 representan sitios de cielo oscuro prístino donde las estructuras de polvo de la Vía Láctea proyectan sombras difusas.'
-      }
-    ]
+  const scientificCatalog = {
+    planets: {
+      mercury: { name: 'Mercurio', dSun: '57.9 M km (0.39 UA)', diam: '4.879 km', mass: '3.30 × 10²³ kg', period: '88 días terrestres', rot: '58.6 días', temp: '-180 °C a 430 °C', moons: '0', comp: 'Núcleo de hierro metálico (70%) y corteza de silicatos' },
+      venus: { name: 'Venus', dSun: '108.2 M km (0.72 UA)', diam: '12.104 km', mass: '4.87 × 10²⁴ kg', period: '224.7 días', rot: '-243 días (retrógrado)', temp: '465 °C constante', moons: '0', comp: 'Atmósfera supercrítica (96.5% CO₂) con nubes de ácido sulfúrico' },
+      earth: { name: 'Tierra', dSun: '149.6 M km (1.00 UA)', diam: '12.742 km', mass: '5.97 × 10²⁴ kg', period: '365.25 días', rot: '23h 56m 04s', temp: '15 °C promedio', moons: '1 (Luna)', comp: 'Corteza granítica/basáltica, manto peridotítico y núcleo Fe-Ni' },
+      mars: { name: 'Marte', dSun: '227.9 M km (1.52 UA)', diam: '6.779 km', mass: '6.42 × 10²³ kg', period: '687 días', rot: '24h 37m 22s', temp: '-63 °C promedio', moons: '2 (Fobos, Deimos)', comp: 'Regolito basáltico rico en óxidos de hierro (III) y casquetes polares' },
+      jupiter: { name: 'Júpiter', dSun: '778.5 M km (5.20 UA)', diam: '139.820 km', mass: '1.90 × 10²⁷ kg (318 Tierras)', period: '11.86 años', rot: '9h 55m (diferencial)', temp: '-110 °C en nubes', moons: '95 confirmadas', comp: '90% Hidrógeno molecular, 10% Helio y núcleo rocoso difuso' },
+      saturn: { name: 'Saturno', dSun: '1.433 M km (9.58 UA)', diam: '116.460 km', mass: '5.68 × 10²⁶ kg (95 Tierras)', period: '29.45 años', rot: '10h 33m', temp: '-140 °C', moons: '146 confirmadas', comp: 'Envoltura gaseosa de H y He, sistema anular de partículas de hielo' },
+      uranus: { name: 'Urano', dSun: '2.871 M km (19.2 UA)', diam: '50.724 km', mass: '8.68 × 10²⁵ kg (14.5 Tierras)', period: '84.02 años', rot: '-17h 14m (inclinación 97.8°)', temp: '-195 °C', moons: '28 confirmadas', comp: 'Manto de hielos volátiles (agua, metano, amoníaco) sobre núcleo rocoso' },
+      neptune: { name: 'Neptuno', dSun: '4.495 M km (30.1 UA)', diam: '49.244 km', mass: '1.02 × 10²⁶ kg (17.1 Tierras)', period: '164.8 años', rot: '16h 06m', temp: '-201 °C (vientos 2.100 km/h)', moons: '16 confirmadas', comp: 'Atmósfera rica en metano con manto superiónico conductor' }
+    },
+    constellations: {
+      orion: { name: 'Orión (El Cazador)', area: '594 grados cuadrados', quadrant: 'Ecuador Celeste (Visibilidad global)', brightest: 'Rigel (β Orionis, supergigante azul)', redSuper: 'Betelgeuse (α Orionis, supergigante roja)', guide: 'Cinturón de 3 estrellas (Alnitak, Alnilam, Mintaka)', bestSeason: 'Diciembre a Marzo' },
+      ursa_major: { name: 'Osa Mayor (El Carro)', area: '1.280 grados cuadrados (Puesto 3)', quadrant: 'Hemisferio Norte (Circumpolar)', brightest: 'Alioth (ε UMa, magnitud 1.77)', redSuper: 'Mizar y Alcor (par binario observable)', guide: 'Punteros Merak y Dubhe (apuntan a Polaris)', bestSeason: 'Abril a Junio' },
+      crux: { name: 'Cruz del Sur (Crux)', area: '68 grados cuadrados (La menor del cielo)', quadrant: 'Hemisferio Sur (Guía polar austral)', brightest: 'Ácrux (α Crucis, magnitud 0.77)', redSuper: 'Gacrux (γ Crucis, gigante roja cálida)', guide: 'Eje vertical extendido 4.5 veces señala el Polo Sur', bestSeason: 'Mayo a Julio' }
+    }
   };
 
-  function updateZone7Controls(modId) {
+  function updateAstroDataCard(modId) {
+    if (!astroDataCard) return;
+
     if (modId === 'solar') {
-      moduleQuickControls.innerHTML = `
-        <button class="btn-pill" onclick="document.getElementById('btnPlaySolar').click()">⏯ Alternar Pausa</button>
-        <button class="btn-pill" onclick="document.getElementById('btnSpeedSolar').click()">⚡ Alternar Velocidad</button>
+      const p = scientificCatalog.planets[state.selectedPlanet] || scientificCatalog.planets.earth;
+      astroDataCard.innerHTML = `
+        <table class="astro-data-table">
+          <tr><th>Cuerpo</th><td><strong>${p.name}</strong></td></tr>
+          <tr><th>Distancia al Sol</th><td>${p.dSun}</td></tr>
+          <tr><th>Diámetro</th><td>${p.diam}</td></tr>
+          <tr><th>Masa</th><td>${p.mass}</td></tr>
+          <tr><th>Órbita (Período)</th><td>${p.period}</td></tr>
+          <tr><th>Rotación</th><td>${p.rot}</td></tr>
+          <tr><th>Temperatura</th><td>${p.temp}</td></tr>
+          <tr><th>Satélites</th><td>${p.moons}</td></tr>
+          <tr><th>Composición</th><td>${p.comp}</td></tr>
+        </table>
       `;
     } else if (modId === 'constellations') {
-      moduleQuickControls.innerHTML = `
-        <button class="btn-pill" onclick="document.getElementById('chkLines').click()">📐 Alternar Líneas</button>
-        <button class="btn-pill" onclick="document.getElementById('chkNames').click()">🏷 Alternar Nombres</button>
+      const c = scientificCatalog.constellations[state.selectedConstellation] || scientificCatalog.constellations.orion;
+      astroDataCard.innerHTML = `
+        <table class="astro-data-table">
+          <tr><th>Constelación</th><td><strong>${c.name}</strong></td></tr>
+          <tr><th>Extensión</th><td>${c.area}</td></tr>
+          <tr><th>Cuadrante</th><td>${c.quadrant}</td></tr>
+          <tr><th>Estrella Principal</th><td>${c.brightest}</td></tr>
+          <tr><th>Vértice Característico</th><td>${c.redSuper}</td></tr>
+          <tr><th>Guía de Orientación</th><td>${c.guide}</td></tr>
+          <tr><th>Mejor Época</th><td>${c.bestSeason}</td></tr>
+        </table>
       `;
     } else if (modId === 'moon') {
-      moduleQuickControls.innerHTML = `
-        <button class="btn-pill" onclick="document.getElementById('btnEclipseSolar').click()">🌑 Eclipse Solar</button>
-        <button class="btn-pill" onclick="document.getElementById('btnEclipseLunar').click()">🔴 Eclipse Lunar</button>
+      const isEclipse = state.eclipseType;
+      astroDataCard.innerHTML = `
+        <table class="astro-data-table">
+          <tr><th>Cuerpo</th><td><strong>Luna (Satélite Natural)</strong></td></tr>
+          <tr><th>Día del Ciclo</th><td>${state.moonDay.toFixed(1)} / 29.53 días sinódicos</td></tr>
+          <tr><th>Distancia Media</th><td>384.400 km (Perigeo 363k / Apogeo 405k)</td></tr>
+          <tr><th>Diámetro Ecuatorial</th><td>3.474 km (27% del terrestre)</td></tr>
+          <tr><th>Gravedad Superficial</th><td>1.62 m/s² (0.166 g)</td></tr>
+          <tr><th>Estado Orbital</th><td>${state.moonEclipse === 'solar' ? 'Eclipse Solar Total (Alineación Fotosférica)' : state.moonEclipse === 'lunar' ? 'Eclipse Lunar Total (Refracción Rayleigh Cobriza)' : 'Fase Lunar Estándar'}</td></tr>
+          <tr><th>Geometría de Sombra</th><td>${state.moonEclipse ? 'Sicigia perfecta Sol-Tierra-Luna' : 'Inclinación orbital de 5.14° respecto a la eclíptica'}</td></tr>
+        </table>
       `;
     } else if (modId === 'meteors') {
-      moduleQuickControls.innerHTML = `
-        <button class="btn-pill" onclick="document.getElementById('btnSpawnBolide').click()">✨ Lanzar Bólido</button>
+      astroDataCard.innerHTML = `
+        <table class="astro-data-table">
+          <tr><th>Fenómeno</th><td><strong>Lluvia de Meteoros (Perseidas)</strong></td></tr>
+          <tr><th>Cuerpo Progenitor</th><td>Cometa periódico 109P/Swift-Tuttle</td></tr>
+          <tr><th>Velocidad de Ingreso</th><td>59 km/s (aprox. 212.000 km/h)</td></tr>
+          <tr><th>Zona de Ionización</th><td>Mesosfera terrestre (85 a 100 km)</td></tr>
+          <tr><th>Naturaleza del Grano</th><td>Partículas micrométricas de polvo y hielo</td></tr>
+          <tr><th>Bólidos (Fireballs)</th><td>Meteoroides >1 cm con estela persistente</td></tr>
+          <tr><th>Régimen Actual</th><td>${stormActive ? 'Tormenta Activa (>150 met/h)' : 'Flujo Estándar (100 met/h)'}</td></tr>
+        </table>
       `;
     } else if (modId === 'galaxies') {
-      moduleQuickControls.innerHTML = `
-        <p style="font-size:0.8rem;color:var(--text-muted)">Haz clic en cualquier tarjeta de la galería para abrir la ficha técnica ampliada.</p>
+      astroDataCard.innerHTML = `
+        <table class="astro-data-table">
+          <tr><th>Catálogo</th><td><strong>Espacio Profundo (Messier / NGC)</strong></td></tr>
+          <tr><th>Objetos Clave</th><td>Andrómeda (M31), Nebulosa de Orión (M42)</td></tr>
+          <tr><th>Rango de Distancias</th><td>1.344 a 2.500.000 años luz</td></tr>
+          <tr><th>Morfología Galáctica</th><td>Espirales, elípticas e irregulares</td></tr>
+          <tr><th>Instrumentos Ópticos</th><td>Hubble (Visible/UV) y James Webb (Infrarrojo)</td></tr>
+          <tr><th>Física de Guarderías</th><td>Gas molecular frío y colapso protoestelar</td></tr>
+        </table>
       `;
     } else if (modId === 'astrophoto') {
-      moduleQuickControls.innerHTML = `
-        <button class="btn-pill" onclick="document.getElementById('sliderIso').value=3200;document.getElementById('sliderIso').dispatchEvent(new Event('input'))">⚡ ISO 3200 Rápido</button>
+      astroDataCard.innerHTML = `
+        <table class="astro-data-table">
+          <tr><th>Técnica</th><td><strong>Astrofotografía de Gran Campo</strong></td></tr>
+          <tr><th>Regla de los 500</th><td>T_max = 500 / Focal (evita trazas estelares)</td></tr>
+          <tr><th>Ejemplo Focal 24mm</th><td>500 / 24 ≈ 20.8 segundos de exposición máx.</td></tr>
+          <tr><th>Sensibilidad ISO</th><td>ISO 1600 - 3200 (balance ruido/captación)</td></tr>
+          <tr><th>Enfoque Óptimo</th><td>Modo manual fijado exactamente en Infinito (∞)</td></tr>
+          <tr><th>Modo Nocturno</th><td>Luz roja suave para no alterar la pupila humana</td></tr>
+        </table>
       `;
     }
   }
@@ -1421,23 +1889,6 @@ document.addEventListener('DOMContentLoaded', () => {
       loadModuleQuiz(state.currentModule);
       playTone(550, 'sine', 0.1, 0.06);
     });
-  }
-
-  function updateAffectiveMonitor() {
-    const elapsedMinutes = (Date.now() - state.sessionStartTime) / 60000;
-    const loadPercent = Math.min(100, Math.round(20 + elapsedMinutes * 4 + state.interactionCount * 1.5));
-    meterFill.style.width = `${loadPercent}%`;
-
-    if (loadPercent < 45) {
-      meterText.textContent = 'Estado: Confortable y Relajado';
-      meterFill.style.background = 'linear-gradient(90deg, #10b981, #38bdf8)';
-    } else if (loadPercent < 75) {
-      meterText.textContent = 'Estado: Carga Óptima de Aprendizaje';
-      meterFill.style.background = 'linear-gradient(90deg, #38bdf8, #f59e0b)';
-    } else {
-      meterText.textContent = 'Atención: Sugerida Pausa Visual o Modo Rojo';
-      meterFill.style.background = 'linear-gradient(90deg, #f59e0b, #ef4444)';
-    }
   }
 
   // ==========================================================================

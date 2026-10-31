@@ -532,7 +532,62 @@ body.affective-night-mode .nav-tab.active {
   margin-top: 4px;
 }
 
-/* MÓDULO 2: CONSTELACIONES */
+/* MÓDULO 2: CONSTELACIONES Y RECURSOS MULTIMEDIA */
+.sub-nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.constellation-photo-card {
+  width: 100%;
+  height: 420px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  background: #000;
+  border: 1px solid var(--border-color);
+}
+
+.constellation-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-info-dock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, transparent, rgba(3, 6, 17, 0.95));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-info-dock h4 {
+  font-size: 1rem;
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.photo-info-dock p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.btn-external {
+  font-size: 0.75rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
 .constellation-selector-bar {
   display: flex;
   gap: 8px;
@@ -641,7 +696,7 @@ body.affective-night-mode .nav-tab.active {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .btn-tag {
@@ -660,23 +715,238 @@ body.affective-night-mode .nav-tab.active {
   color: var(--bg-deep);
 }
 
-.eclipse-simulator {
-  border-top: 1px solid var(--border-color);
-  padding-top: 14px;
+.phase-quick-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* CENTRO CIENTÍFICO Y MULTIMEDIA DE ECLIPSES */
+.eclipse-multimedia-section {
+  margin-top: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.section-title-row h3 {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+}
+
+.eclipse-geometry-box {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.eclipse-simulator h3 {
-  font-size: 0.95rem;
-  color: var(--text-main);
+.geometry-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
 }
 
-.status-msg {
-  font-size: 0.82rem;
+.geometry-title {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.geometry-canvas {
+  width: 100%;
+  height: 200px;
+  background: #020617;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+.geometry-caption {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.eclipse-multimedia-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .eclipse-multimedia-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.multimedia-media-card {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.media-card-header {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.78rem;
+}
+
+.media-badge {
   color: var(--color-secondary);
-  font-style: italic;
+  font-weight: 600;
+}
+
+.media-label {
+  color: var(--text-muted);
+}
+
+.video-embed-container {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: #000;
+}
+
+.video-embed-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.photo-view-box {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  background: #000;
+}
+
+.eclipse-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 12px;
+  background: rgba(3, 6, 17, 0.85);
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+
+/* MÓDULO 4: ANATOMÍA DE COMETAS */
+.comet-anatomy-box {
+  margin-top: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+}
+
+.anatomy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.anatomy-header h3 {
+  font-size: 1rem;
+  color: var(--color-primary);
+}
+
+.comet-intro {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.comet-anatomy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.comet-part-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.comet-part-card h4 {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.comet-part-card p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.status-badge-inline {
+  font-size: 0.75rem;
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  background: rgba(56, 189, 248, 0.1);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+/* ZONA 7: TABLA DE DATOS CIENTÍFICOS */
+.astro-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.astro-data-table tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.astro-data-table th {
+  text-align: left;
+  color: var(--text-muted);
+  padding: 6px 4px;
+  font-weight: 500;
+  width: 48%;
+}
+
+.astro-data-table td {
+  text-align: right;
+  color: var(--color-secondary);
+  padding: 6px 4px;
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 /* TABLA ESTILIZADA (MÓDULO 4) */

@@ -139,7 +139,7 @@
               <div class="canvas-overlay-controls">
                 <button id="btnPlaySolar" class="btn-pill">⏸ Pausar Órbitas</button>
                 <button id="btnSpeedSolar" class="btn-pill">⚡ Velocidad: 1x</button>
-                <button id="btnResetSolar" class="btn-pill">↺ Centrar Sol</button>
+                <button id="btnTogglePlanetLabels" class="btn-pill">🏷️ Mostrar Nombres</button>
               </div>
             </div>
 
@@ -154,15 +154,32 @@
           <article class="module-panel" id="panel-constellations">
             <div class="module-header">
               <h2>2. Constelaciones y Reconocimiento Estelar</h2>
-              <p>Cúpula celeste interactiva. Aprende a orientarte en el cielo nocturno reconociendo constelaciones guía como Orión, la Osa Mayor y la Cruz del Sur.</p>
+              <p>Cúpula celeste interactiva y astrofotografía real. Aprende a orientarte en el firmamento reconociendo asterismos y constelaciones guía con coordenadas celestes exactas.</p>
             </div>
 
-            <div class="interactive-viewport">
+            <div class="sub-nav-tabs">
+              <button id="btnViewSkyMap" class="btn-pill active">🌌 Bóveda Celeste Geométrica</button>
+              <button id="btnViewAstroPhoto" class="btn-pill">📷 Astrofotografía Real (NASA / ESA)</button>
+            </div>
+
+            <div class="interactive-viewport" id="constellationViewport">
               <canvas id="skyCanvas" width="760" height="420" class="canvas-screen"></canvas>
-              <div class="canvas-overlay-controls">
+              
+              <!-- Vista de Astrofotografía Real -->
+              <div id="constellationPhotoCard" class="constellation-photo-card hidden">
+                <img id="constellationPhotoImg" src="" alt="Fotografía Real de Constelación" class="constellation-real-img">
+                <div class="photo-info-dock">
+                  <h4 id="constellationPhotoTitle">Orión el Cazador</h4>
+                  <p id="constellationPhotoCredit">Fotografía capturada por observatorios de amplio campo (NASA APOD / ESO)</p>
+                  <a id="constellationStellariumLink" href="https://stellarium-web.org/" target="_blank" rel="noopener" class="btn-pill btn-external">🌐 Explorar en vivo en Stellarium Web ↗</a>
+                </div>
+              </div>
+
+              <!-- Controles Directos sobre el Mapa -->
+              <div class="canvas-overlay-controls" id="constellationCanvasControls">
                 <label class="toggle-control"><input type="checkbox" id="chkLines" checked> Trazar Líneas</label>
                 <label class="toggle-control"><input type="checkbox" id="chkNames" checked> Mostrar Nombres</label>
-                <label class="toggle-control"><input type="checkbox" id="chkGrid" checked> Coordenadas Celestes</label>
+                <label class="toggle-control"><input type="checkbox" id="chkGrid" checked> Coordenadas Celestes (RA / Dec)</label>
               </div>
             </div>
 
@@ -180,7 +197,7 @@
           <article class="module-panel" id="panel-moon">
             <div class="module-header">
               <h2>3. La Luna, sus Fases y Eclipses</h2>
-              <p>Comprende la geometría orbital Sol-Tierra-Luna. Mueve el deslizador temporal interactivo para simular el ciclo sinódico de 29.5 días y reproduce eclipses solares y lunares.</p>
+              <p>Comprende la geometría orbital Sol-Tierra-Luna. Mueve el deslizador temporal interactivo para simular el ciclo sinódico de 29.5 días y explora el Centro de Eclipses con simulaciones orbitales y video documental de la NASA.</p>
             </div>
 
             <div class="moon-simulator-container">
@@ -197,22 +214,69 @@
 
               <div class="moon-controls-box">
                 <label for="moonSlider" class="slider-label">Desplazamiento del Ciclo Lunar:</label>
-                <input type="range" id="moonSlider" min="0" max="29.5" step="0.2" value="0" class="styled-slider">
+                <input type="range" id="moonSlider" min="0" max="29.5" step="0.2" value="7.4" class="styled-slider">
                 <div class="phase-buttons-row">
                   <button class="btn-tag" data-day="0">Nueva (0d)</button>
                   <button class="btn-tag" data-day="7.4">Creciente (7.4d)</button>
                   <button class="btn-tag" data-day="14.8">Llena (14.8d)</button>
                   <button class="btn-tag" data-day="22.1">Menguante (22.1d)</button>
                 </div>
+                <p class="phase-quick-desc">Arrastra el deslizador para apreciar la curvatura del terminador elíptico y el relieve de mares y cráteres.</p>
+              </div>
+            </div>
 
-                <div class="eclipse-simulator">
-                  <h3>Simulador de Eclipses:</h3>
-                  <div class="btn-group">
-                    <button id="btnEclipseSolar" class="btn-pill">🌑 Simular Eclipse Solar</button>
-                    <button id="btnEclipseLunar" class="btn-pill">🔴 Simular Eclipse Lunar (Luna de Sangre)</button>
-                  </div>
-                  <p id="eclipseStatus" class="status-msg">Selecciona un eclipse para visualizar la alineación de umbra y penumbra.</p>
+            <!-- ============================================= -->
+            <!-- CENTRO MULTIMEDIA CIENTÍFICO DE ECLIPSES      -->
+            <!-- ============================================= -->
+            <div class="eclipse-multimedia-section">
+              <div class="section-title-row">
+                <h3>🌑 Centro Científico y Multimedia de Eclipses</h3>
+                <div class="btn-group">
+                  <button id="btnEclipseSolar" class="btn-pill active">🌑 Eclipse Solar (Totalidad)</button>
+                  <button id="btnEclipseLunar" class="btn-pill">🔴 Eclipse Lunar (Luna de Sangre)</button>
                 </div>
+              </div>
+
+              <!-- Lienzo de Geometría Orbital Sol-Tierra-Luna (Ray Tracing) -->
+              <div class="eclipse-geometry-box">
+                <div class="geometry-header">
+                  <span class="badge">Alineación Orbital en el Espacio:</span>
+                  <span id="eclipseGeometryTitle" class="geometry-title">Eclipse Solar: Luna entre el Sol y la Tierra (Conos de Umbra y Penumbra)</span>
+                </div>
+                <canvas id="eclipseGeometryCanvas" width="760" height="200" class="canvas-screen geometry-canvas"></canvas>
+                <div class="geometry-caption" id="eclipseGeometryDesc">
+                  El Sol emite luz cónica. La Luna proyecta una sombra estrecha (umbra) sobre una franja de la Tierra produciendo oscuridad total, y una penumbra más ancha de eclipse parcial.
+                </div>
+              </div>
+
+              <!-- Tarjetas Multimedia con Video Real de la NASA y Fotografía Científica -->
+              <div class="eclipse-multimedia-grid">
+                
+                <!-- Video / Visualización Científica Real de la NASA -->
+                <div class="multimedia-media-card">
+                  <div class="media-card-header">
+                    <span class="media-badge">🎥 Video Científico • NASA Scientific Visualization Studio</span>
+                    <span id="videoTitleLabel" class="media-label">Totalidad del Eclipse Solar</span>
+                  </div>
+                  <div class="video-embed-container" id="eclipseVideoContainer">
+                    <iframe id="eclipseVideoFrame" width="100%" height="240" src="https://www.youtube-nocookie.com/embed/cxrLRbkOwKs?rel=0" title="NASA Eclipse Visualization" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  </div>
+                </div>
+
+                <!-- Fotografía Científica de Alta Resolución de la NASA -->
+                <div class="multimedia-media-card">
+                  <div class="media-card-header">
+                    <span class="media-badge">📷 Fotografía Telescópica • NASA APOD</span>
+                    <span id="photoTitleLabel" class="media-label">Corona Solar y Anillo de Diamante</span>
+                  </div>
+                  <div class="photo-view-box">
+                    <img id="eclipseRealPhotoImg" src="https://images-assets.nasa.gov/image/PIA13083/PIA13083~medium.jpg" alt="Fotografía Real Eclipse NASA" class="eclipse-photo-img">
+                    <div class="photo-caption" id="eclipsePhotoCaption">
+                      Estructura magnética de la corona solar visible exclusivamente durante los minutos de totalidad umbral.
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </article>
@@ -223,7 +287,7 @@
           <article class="module-panel" id="panel-meteors">
             <div class="module-header">
               <h2>4. Lluvias de Estrellas y Cometas</h2>
-              <p>Simulador cinemático de meteoroides ingresando a la atmósfera. Conoce el origen de los restos cometarios y consulta el calendario astronómico anual para tus observaciones.</p>
+              <p>Simulador cinemático de meteoroides ingresando a la atmósfera. Observa el radiante celeste, activa tormentas estelares en tiempo real y comprende la anatomía cometaria.</p>
             </div>
 
             <div class="interactive-viewport">
@@ -231,6 +295,34 @@
               <div class="canvas-overlay-controls">
                 <button id="btnSpawnBolide" class="btn-pill">✨ Lanzar Bólido Brillante</button>
                 <button id="btnShowerStorm" class="btn-pill">☄️ Activar Tormenta de Meteoros</button>
+                <span id="meteorStatusBadge" class="status-badge-inline">Radiante Activo: Perseidas (100 met/h)</span>
+              </div>
+            </div>
+
+            <!-- Sección Multimedia: Anatomía de un Cometa -->
+            <div class="comet-anatomy-box">
+              <div class="anatomy-header">
+                <h3>☄️ Anatomía de un Cometa y Origen de los Meteoros</h3>
+                <span class="badge">Astrofísica Cometaria</span>
+              </div>
+              <p class="comet-intro">Los cometas son "bolas de nieve sucia" de hielo, metano y roca provenientes de la Nube de Oort o el Cinturón de Kuiper. Al acercarse al calor del Sol, sus hielos se subliman formando estructuras características:</p>
+              <div class="comet-anatomy-grid">
+                <div class="comet-part-card">
+                  <h4>1. Núcleo Congelado</h4>
+                  <p>Cuerpo sólido de 1 a 20 km de roca porosa y hielos volátiles. Prácticamente negro debido a hidrocarburos complejos.</p>
+                </div>
+                <div class="comet-part-card">
+                  <h4>2. Coma o Cabellera</h4>
+                  <p>Atmósfera esférica difusa de vapor y polvo que envuelve al núcleo, expandiéndose cientos de miles de kilómetros en el vacío.</p>
+                </div>
+                <div class="comet-part-card">
+                  <h4>3. Cola de Iones (Gas Azul)</h4>
+                  <p>Monóxido de carbono fluorescente impulsado a cientos de km/s por el viento solar. Es rectilínea y apunta en dirección opuesta al Sol.</p>
+                </div>
+                <div class="comet-part-card">
+                  <h4>4. Cola de Polvo (Curvada)</h4>
+                  <p>Partículas micrométricas de silicato desprendidas por la coma, curvadas a lo largo de la trayectoria orbital por la presión de radiación solar.</p>
+                </div>
               </div>
             </div>
 
@@ -357,13 +449,6 @@
       <!-- ZONA 7: ÁREA DE NAVEGACIÓN E INTERACTIVIDAD / PANEL DE CONTROL -->
       <aside class="zone zone-7-interactivity" id="zone7">
         <div class="sidebar-widget">
-          <h3 class="widget-title">⚙️ Controles del Módulo</h3>
-          <div id="moduleQuickControls" class="widget-content">
-            <!-- Controles específicos del módulo activo -->
-          </div>
-        </div>
-
-        <div class="sidebar-widget">
           <div class="quiz-header-row">
             <h3 class="widget-title">🎯 Mini-Evaluación Cognitiva</h3>
             <span class="quiz-counter" id="quizCounter">Pregunta 1 de 3</span>
@@ -381,15 +466,10 @@
           </div>
         </div>
 
-        <div class="sidebar-widget affective-widget">
-          <h3 class="widget-title">🧠 Monitor Afectivo y Confort</h3>
-          <div class="widget-content">
-            <div class="affective-meter">
-              <span>Carga Visual:</span>
-              <div class="meter-bar"><div class="meter-fill" id="meterFill" style="width: 25%;"></div></div>
-              <span id="meterText">Confortable</span>
-            </div>
-            <p class="affective-tip" id="affectiveTip">Consejo: Si observas estrellas en campo real, activa el <strong>Modo Rojo Nocturno</strong> para no deslumbrar tus pupilas.</p>
+        <div class="sidebar-widget">
+          <h3 class="widget-title">🔭 Ficha Científica del Objeto</h3>
+          <div class="widget-content" id="astroDataCard">
+            <!-- Datos científicos dinámicos según el módulo y objeto activo -->
           </div>
         </div>
       </aside>
