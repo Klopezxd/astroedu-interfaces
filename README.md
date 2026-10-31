@@ -60,8 +60,8 @@ La interfaz se estructura mediante una cuadrícula fluida en **CSS Grid** de dos
 2. **Constelaciones y Reconocimiento Estelar:** Bóveda celeste con más de 200 estrellas de magnitud aparente diferenciada, selector de constelaciones guía (Orión, Osa Mayor, Cruz del Sur) y filtros de líneas de unión y coordenadas.
 3. **La Luna, sus Fases y Eclipses:** Deslizador temporal interactivo de 0 a 29.5 días con modelado 3D realista sobre Canvas, cálculo exacto del terminador elíptico, relieve de mares/cráteres y simulador de eclipses solares y lunares (Luna de Sangre).
 4. **Lluvias de Estrellas y Cometas:** Simulación cinemática de meteoros y bólidos atmosféricos con síntesis acústica mediante Web Audio API y calendario astronómico anual.
-5. **Galaxias y Nebulosas (Espacio Profundo):** Galería visual con objetos Messier (Andrómeda, Nebulosa de Orión, Pilares de la Creación, Galaxia del Sombrero) capturados por los telescopios Hubble y James Webb, con visor modal de aumento.
-6. **Consejos y Astrofotografía Móvil:** Simulador de cámara profesional con controles manuales calibrados (ISO 100-6400, Exposición 1s-30s y Enfoque), checklist interactivo de campo y clasificador en la Escala de Cielo Oscuro de Bortle.
+5. **Galaxias y Nebulosas (Espacio Profundo):** Galería visual con objetos astronómicos emblemáticos (Galaxia de Andrómeda M31, Gran Nebulosa de Orión M42, Pilares de la Creación M16 y Galaxia del Sombrero M104) con fotografías reales de alta resolución capturadas por los telescopios Hubble y James Webb (JWST), complementadas con visor modal flotante interactivo de alta definición y archivo científico.
+6. **Consejos y Astrofotografía Móvil:** Simulador de cámara profesional con controles manuales calibrados (ISO 100-6400, Exposición 1s-30s y Enfoque), checklist interactivo de campo, cálculo de la Regla de los 500 y clasificador en la Escala de Cielo Oscuro de Bortle.
 
 ---
 
@@ -70,7 +70,7 @@ La interfaz se estructura mediante una cuadrícula fluida en **CSS Grid** de dos
 La aplicación integra un **Modo Nocturno de Luz Roja** especialmente diseñado para la observación astronómica:
 * Conmuta la interfaz a un espectro rojo suave que evita deslumbrar los ojos del observador bajo el cielo estrellado.
 * **Cuidado Visual:** Permite revisar mapas celestes o ajustar parámetros sin anular la adaptación que la pupila humana desarrolla en la penumbra.
-* **Monitor Afectivo:** Registra el tiempo de interacción y aconseja pausas de descanso visual ante sesiones prolongadas.
+* **Ficha Científica Dinámica:** Despliega en la Zona 7 los parámetros astrofísicos verificados del cuerpo celeste activo (diámetro, masa, período, rotación, temperatura y composición).
 
 ---
 
