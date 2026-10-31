@@ -1492,6 +1492,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalTitle = document.getElementById('modalTitle');
   const modalDesc = document.getElementById('modalDesc');
   const modalSpecs = document.getElementById('modalSpecs');
+  const modalImg = document.getElementById('modalImg');
 
   const deepSkyObjects = [
     {
@@ -1500,71 +1501,39 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'Galaxia Espiral Gigante',
       dist: '2.5 millones de años luz',
       telescope: 'Hubble Space Telescope',
-      desc: 'El objeto más lejano visible a simple vista bajo cielos oscuros. Contiene aproximadamente un billón de estrellas y colisionará con la Vía Láctea dentro de 4.500 millones de años.',
-      draw: (ctx, w, h) => {
-        const cx = w / 2, cy = h / 2;
-        const grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, 70);
-        grad.addColorStop(0, '#fef08a');
-        grad.addColorStop(0.3, '#38bdf8');
-        grad.addColorStop(1, 'transparent');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.ellipse(cx, cy, 80, 30, Math.PI / 6, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      telescopeShort: 'Hubble / Spitzer',
+      imgUrl: 'img/andromeda.jpg',
+      desc: 'El objeto astronómico más distante visible a simple vista bajo cielos oscuros. Alberga aproximadamente un billón de estrellas y una densa población de cúmulos globulares; se aproxima a la Vía Láctea a 110 km/s hacia una colisión dentro de 4.500 millones de años.'
     },
     {
       id: 'orion_nebula',
       name: 'Gran Nebulosa de Orión (M42)',
       type: 'Nebulosa Difusa de Emisión y Reflexión',
       dist: '1.344 años luz',
-      telescope: 'James Webb Space Telescope (JWST)',
-      desc: 'Una de las guarderías estelares más activas y cercanas a la Tierra. En su corazón se halla el Cúmulo del Trapecio iluminando gas de hidrógeno ionizado.',
-      draw: (ctx, w, h) => {
-        const cx = w / 2, cy = h / 2;
-        const grad = ctx.createRadialGradient(cx, cy, 8, cx, cy, 60);
-        grad.addColorStop(0, '#f43f5e');
-        grad.addColorStop(0.5, '#a855f7');
-        grad.addColorStop(1, 'transparent');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 65, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      telescope: 'James Webb Space Telescope (JWST) / Hubble',
+      telescopeShort: 'JWST / Hubble',
+      imgUrl: 'img/orion_nebula.jpg',
+      desc: 'Una de las incubadoras estelares más activas y cercanas a nuestro sistema solar. En su centro reside el Cúmulo del Trapecio, cuyas jóvenes estrellas masivas ionizan el gas de hidrógeno y oxígeno circundante haciéndolo brillar intensamente.'
     },
     {
       id: 'pillars',
       name: 'Pilares de la Creación (M16)',
-      type: 'Columnas de Polvo y Gas Interestelar',
+      type: 'Columnas Moleculares de Polvo y Gas Frío',
       dist: '7.000 años luz',
-      telescope: 'James Webb (Infrarrojo Cercano)',
-      desc: 'Enormes chimeneas moleculares de gas frío en la Nebulosa del Águila, donde nuevas protoestrellas se condensan por colapso gravitatorio.',
-      draw: (ctx, w, h) => {
-        const grad = ctx.createLinearGradient(w / 3, h, w / 2, 20);
-        grad.addColorStop(0, '#78350f');
-        grad.addColorStop(0.6, '#38bdf8');
-        grad.addColorStop(1, 'transparent');
-        ctx.fillStyle = grad;
-        ctx.fillRect(w / 2 - 25, 30, 20, 110);
-        ctx.fillRect(w / 2, 50, 18, 90);
-      }
+      telescope: 'James Webb Space Telescope (Cámara Infrarroja NIRCam)',
+      telescopeShort: 'James Webb (JWST)',
+      imgUrl: 'img/pillars.jpg',
+      desc: 'Monumentales torres de gas y polvo interestelar situadas en el corazón de la Nebulosa del Águila. La radiación ultravioleta de estrellas jóvenes esculpe las columnas donde nuevas protoestrellas continúan condensándose por colapso gravitatorio.'
     },
     {
       id: 'sombrero',
       name: 'Galaxia del Sombrero (M104)',
-      type: 'Galaxia Espiral no Barrada',
+      type: 'Galaxia Espiral no Barrada (SAa)',
       dist: '29.3 millones de años luz',
-      telescope: 'Hubble Space Telescope',
-      desc: 'Destaca por su brillante núcleo bulboso y un disco de polvo oscuro prominente que simula el ala de un sombrero tradicional mexicano.',
-      draw: (ctx, w, h) => {
-        const cx = w / 2, cy = h / 2;
-        ctx.fillStyle = '#fef3c7';
-        ctx.beginPath();
-        ctx.arc(cx, cy, 22, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(cx - 70, cy - 2, 140, 4);
-      }
+      telescope: 'Hubble Space Telescope (ACS / WFPC2)',
+      telescopeShort: 'Hubble Heritage',
+      imgUrl: 'img/sombrero.jpg',
+      desc: 'Famosa por su brillante bulbo central sobredimensionado y un prominente anillo de polvo oscuro interestelar que cruza su disco, otorgándole la silueta inconfundible de un sombrero de ala ancha. En su núcleo alberga un agujero negro supermasivo de mil millones de masas solares.'
     }
   ];
 
@@ -1575,7 +1544,8 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'gallery-card';
       card.innerHTML = `
         <div class="gallery-img-thumb">
-          <canvas width="220" height="140" id="thumb-${obj.id}"></canvas>
+          <img src="${obj.imgUrl}" alt="${obj.name}" class="gallery-thumb-img" loading="lazy">
+          <span class="gallery-telescope-tag">${obj.telescopeShort}</span>
         </div>
         <div class="gallery-info">
           <h4 class="gallery-title">${obj.name}</h4>
@@ -1583,31 +1553,42 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       card.addEventListener('click', () => {
+        if (modalImg) {
+          modalImg.src = obj.imgUrl;
+          modalImg.alt = obj.name;
+        }
         modalTitle.textContent = obj.name;
         modalDesc.textContent = obj.desc;
         modalSpecs.innerHTML = `
           <li><strong>Tipo de Objeto:</strong> ${obj.type}</li>
           <li><strong>Distancia Estimada:</strong> ${obj.dist}</li>
           <li><strong>Instrumento Principal:</strong> ${obj.telescope}</li>
+          <li><strong>Archivo Científico:</strong> NASA / ESA / STScI / JPL</li>
         `;
         viewerModal.classList.remove('hidden');
         playTone(620, 'sine', 0.15, 0.08);
       });
       deepSkyGallery.appendChild(card);
-
-      setTimeout(() => {
-        const c = document.getElementById(`thumb-${obj.id}`);
-        if (c) {
-          const tCtx = c.getContext('2d');
-          tCtx.fillStyle = '#050816';
-          tCtx.fillRect(0, 0, c.width, c.height);
-          obj.draw(tCtx, c.width, c.height);
-        }
-      }, 50);
     });
   }
 
-  modalClose.addEventListener('click', () => viewerModal.classList.add('hidden'));
+  if (modalClose) {
+    modalClose.addEventListener('click', () => viewerModal.classList.add('hidden'));
+  }
+
+  if (viewerModal) {
+    viewerModal.addEventListener('click', (e) => {
+      if (e.target === viewerModal) {
+        viewerModal.classList.add('hidden');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && viewerModal && !viewerModal.classList.contains('hidden')) {
+      viewerModal.classList.add('hidden');
+    }
+  });
 
   // ==========================================================================
   // 10. MÓDULO 6: ASTROFOTOGRAFÍA MÓVIL Y SIMULADOR MANUAL
