@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroEdu - Aplicación Multimedia de Astronomía Básica</title>
+  <meta name="description" content="Aplicación multimedia educativa para el aprendizaje interactivo de la astronomía básica y la observación del cielo nocturno. Cátedra de Interfaces y Multimedia - ESPE.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="theme-space" id="appBody">
+
+  <!-- ========================================================= -->
+  <!-- RETÍCULA MAESTRA DE 7 ZONAS (ESTÁNDAR DE CÁTEDRA)         -->
+  <!-- ========================================================= -->
+  <div class="grid-app-container">
+
+    <!-- ========================================== -->
+    <!-- CABECERA: ZONA 1, ZONA 2 Y ZONA 3          -->
+    <!-- ========================================== -->
+    <header class="app-header">
+      
+      <!-- ZONA 1: LOGOTIPO -->
+      <div class="zone zone-1-logo" id="zone1">
+        <div class="logo-wrapper">
+          <svg class="logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>
+            <circle cx="24" cy="24" r="14" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 36L36 12M36 12H24M36 12V24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="36" cy="12" r="3" fill="#ffd166"/>
+          </svg>
+          <div class="logo-text">
+            <span class="logo-brand">AstroEdu</span>
+            <span class="logo-badge">ESPE • IT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONA 2: TEMA / TÍTULO DEL PROYECTO -->
+      <div class="zone zone-2-title" id="zone2">
+        <h1 class="project-title">Astronomía Básica y Observación del Cielo Nocturno</h1>
+        <p class="project-subtitle">Aplicación Multimedia Educativa • Interfaces y Multimedia (NRC 36733) • Estudiante: Klever López</p>
+      </div>
+
+      <!-- ZONA 3: BANNER / EFEMÉRIDES / CONTROL AFECTIVO -->
+      <div class="zone zone-3-banner" id="zone3">
+        <div class="banner-card">
+          <div class="banner-status">
+            <span class="pulse-indicator"></span>
+            <span id="bannerEvent">Cielo Nocturno Despejado • Fase: Cuarto Creciente (42%)</span>
+          </div>
+          <div class="banner-actions">
+            <!-- CONMUTADOR AFECTIVO: MODO VISIÓN ESCOTÓPICA (LUZ ROJA) -->
+            <button id="toggleNightMode" class="btn-affective" title="Activar/Desactivar Modo Afectivo Nocturno (Luz roja para proteger la visión en la oscuridad)">
+              <span class="btn-icon">🔴</span>
+              <span class="btn-label">Modo Rojo Nocturno</span>
+            </button>
+            <button id="toggleAudio" class="btn-audio" title="Activar/Desactivar Sonido Cósmico">
+              <span id="audioIcon">🔊</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- BARRAS DE CONTROL: ZONA 4 Y ZONA 5         -->
+    <!-- ========================================== -->
+    <nav class="app-navigation">
+      
+      <!-- ZONA 4: MENÚ TEXTUAL (OPCIONES PRINCIPALES) -->
+      <div class="zone zone-4-text-menu" id="zone4">
+        <ul class="text-menu-list" role="tablist">
+          <li class="menu-item active" data-module="solar" role="tab" tabindex="0">1. Sistema Solar</li>
+          <li class="menu-item" data-module="constellations" role="tab" tabindex="0">2. Constelaciones</li>
+          <li class="menu-item" data-module="moon" role="tab" tabindex="0">3. La Luna y Fases</li>
+          <li class="menu-item" data-module="meteors" role="tab" tabindex="0">4. Meteoros y Cometas</li>
+          <li class="menu-item" data-module="galaxies" role="tab" tabindex="0">5. Galaxias y Nebulosas</li>
+          <li class="menu-item" data-module="astrophoto" role="tab" tabindex="0">6. Astrofotografía Móvil</li>
+        </ul>
+      </div>
+
+      <!-- ZONA 5: MENÚ DE ÍCONOS (ACCESOS RÁPIDOS CON TOOLTIPS) -->
+      <div class="zone zone-5-icon-menu" id="zone5">
+        <div class="icon-toolbar" role="toolbar" aria-label="Accesos directos con íconos">
+          <button class="icon-btn active" data-module="solar" aria-label="Sistema Solar" data-tooltip="Sistema Solar (Alt+1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke-dasharray="2 2"/></svg>
+            <span class="tooltip">Sistema Solar</span>
+          </button>
+          <button class="icon-btn" data-module="constellations" aria-label="Constelaciones" data-tooltip="Constelaciones (Alt+2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span class="tooltip">Constelaciones</span>
+          </button>
+          <button class="icon-btn" data-module="moon" aria-label="Fases Lunares" data-tooltip="Fases Lunares (Alt+3)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span class="tooltip">Fases Lunares</span>
+          </button>
+          <button class="icon-btn" data-module="meteors" aria-label="Lluvias de Estrellas" data-tooltip="Lluvias de Estrellas (Alt+4)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.93 4.93l4.24 4.24m0 0l4.24-4.24m-4.24 4.24v12M19.07 4.93l-4.24 4.24"/></svg>
+            <span class="tooltip">Lluvias de Estrellas</span>
+          </button>
+          <button class="icon-btn" data-module="galaxies" aria-label="Galaxias y Nebulosas" data-tooltip="Espacio Profundo (Alt+5)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12a9 9 0 0 1 15-6.7M21 12a9 9 0 0 1-15 6.7"/></svg>
+            <span class="tooltip">Espacio Profundo</span>
+          </button>
+          <button class="icon-btn" data-module="astrophoto" aria-label="Astrofotografía Móvil" data-tooltip="Astrofotografía Móvil (Alt+6)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span class="tooltip">Astrofotografía</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- CUERPO PRINCIPAL: ZONA 6 Y ZONA 7          -->
+    <!-- ========================================== -->
+    <main class="app-main">
+
+      <!-- ZONA 6: ÁREA DE DESPLIEGUE DE CONTENIDOS / TRABAJO -->
+      <section class="zone zone-6-workarea" id="zone6">
+        
+        <!-- BREADCRUMB / MIGAS DE PAN (HEURÍSTICA Y VISIBILIDAD DE ESTADO) -->
+        <nav class="breadcrumbs" aria-label="Ruta de navegación">
+          <span>Inicio</span> &gt; <span id="breadcrumbCurrent">1. Sistema Solar y Planetas</span>
+        </nav>
+
+        <!-- CONTENEDOR DINÁMICO DE MÓDULOS -->
+        <div class="module-stage" id="moduleStage">
+          
+          <!-- ================================================= -->
+          <!-- MÓDULO 1: SISTEMA SOLAR Y PLANETAS                -->
+          <!-- ================================================= -->
+          <article class="module-panel active" id="panel-solar">
+            <div class="module-header">
+              <h2>1. El Sistema Solar y los Planetas</h2>
+              <p>Explora la estructura del sistema solar, la diferencia fundamental entre planetas rocosos interiores y gigantes gaseosos exteriores, y visualiza sus órbitas en tiempo real.</p>
+            </div>
+            
+            <div class="interactive-viewport">
+              <canvas id="solarCanvas" width="760" height="420" class="canvas-screen"></canvas>
+              <div class="canvas-overlay-controls">
+                <button id="btnPlaySolar" class="btn-pill">⏸ Pausar Órbitas</button>
+                <button id="btnSpeedSolar" class="btn-pill">⚡ Velocidad: 1x</button>
+                <button id="btnResetSolar" class="btn-pill">↺ Centrar Sol</button>
+              </div>
+            </div>
+
+            <div class="planet-cards-grid" id="planetCardsGrid">
+              <!-- Renderizado dinámico desde app.js -->
+            </div>
+          </article>
+
+          <!-- ================================================= -->
+          <!-- MÓDULO 2: CONSTELACIONES Y RECONOCIMIENTO         -->
+          <!-- ================================================= -->
+          <article class="module-panel" id="panel-constellations">
+            <div class="module-header">
+              <h2>2. Constelaciones y Reconocimiento Estelar</h2>
+              <p>Cúpula celeste interactiva. Aprende a orientarte en el cielo nocturno reconociendo constelaciones guía como Orión, la Osa Mayor y la Cruz del Sur.</p>
+            </div>
+
+            <div class="interactive-viewport">
+              <canvas id="skyCanvas" width="760" height="420" class="canvas-screen"></canvas>
+              <div class="canvas-overlay-controls">
+                <label class="toggle-control"><input type="checkbox" id="chkLines" checked> Trazar Líneas</label>
+                <label class="toggle-control"><input type="checkbox" id="chkNames" checked> Mostrar Nombres</label>
+                <label class="toggle-control"><input type="checkbox" id="chkGrid" checked> Coordenadas Celestes</label>
+              </div>
+            </div>
+
+            <div class="constellation-selector-bar" id="constellationList">
+              <!-- Botones de constelaciones -->
+            </div>
+            <div class="info-card-box" id="constellationInfo">
+              <!-- Información de la constelación seleccionada -->
+            </div>
+          </article>
+
+          <!-- ================================================= -->
+          <!-- MÓDULO 3: LA LUNA Y SUS FASES                     -->
+          <!-- ================================================= -->
+          <article class="module-panel" id="panel-moon">
+            <div class="module-header">
+              <h2>3. La Luna, sus Fases y Eclipses</h2>
+              <p>Comprende la geometría orbital Sol-Tierra-Luna. Mueve el deslizador temporal interactivo para simular el ciclo sinódico de 29.5 días y reproduce eclipses solares y lunares.</p>
+            </div>
+
+            <div class="moon-simulator-container">
+              <div class="moon-visualizer">
+                <div class="moon-sphere" id="moonSphere">
+                  <div class="moon-shadow" id="moonShadow"></div>
+                </div>
+                <div class="moon-phase-readout">
+                  <span class="phase-name" id="phaseName">Luna Nueva</span>
+                  <span class="phase-day" id="phaseDay">Día 0.0 de 29.5</span>
+                  <span class="phase-illum" id="phaseIllum">Iluminación: 0%</span>
+                </div>
+              </div>
+
+              <div class="moon-controls-box">
+                <label for="moonSlider" class="slider-label">Desplazamiento del Ciclo Lunar:</label>
+                <input type="range" id="moonSlider" min="0" max="29.5" step="0.2" value="0" class="styled-slider">
+                <div class="phase-buttons-row">
+                  <button class="btn-tag" data-day="0">Nueva (0d)</button>
+                  <button class="btn-tag" data-day="7.4">Creciente (7.4d)</button>
+                  <button class="btn-tag" data-day="14.8">Llena (14.8d)</button>
+                  <button class="btn-tag" data-day="22.1">Menguante (22.1d)</button>
+                </div>
+
+                <div class="eclipse-simulator">
+                  <h3>Simulador de Eclipses:</h3>
+                  <div class="btn-group">
+                    <button id="btnEclipseSolar" class="btn-pill">🌑 Simular Eclipse Solar</button>
+                    <button id="btnEclipseLunar" class="btn-pill">🔴 Simular Eclipse Lunar (Luna de Sangre)</button>
+                  </div>
+                  <p id="eclipseStatus" class="status-msg">Selecciona un eclipse para visualizar la alineación de umbra y penumbra.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ================================================= -->
+          <!-- MÓDULO 4: LLUVIAS DE ESTRELLAS Y COMETAS          -->
+          <!-- ================================================= -->
+          <article class="module-panel" id="panel-meteors">
+            <div class="module-header">
+              <h2>4. Lluvias de Estrellas y Cometas</h2>
+              <p>Simulador cinemático de meteoroides ingresando a la atmósfera. Conoce el origen de los restos cometarios y consulta el calendario astronómico anual para tus observaciones.</p>
+            </div>
+
+            <div class="interactive-viewport">
+              <canvas id="meteorCanvas" width="760" height="380" class="canvas-screen"></canvas>
+              <div class="canvas-overlay-controls">
+                <button id="btnSpawnBolide" class="btn-pill">✨ Lanzar Bólido Brillante</button>
+                <button id="btnShowerStorm" class="btn-pill">☄️ Activar Tormenta de Meteoros</button>
+              </div>
+            </div>
+
+            <div class="calendar-section">
+              <h3>Calendario de Lluvias de Meteoros Destacadas</h3>
+              <div class="table-responsive">
+                <table class="styled-table">
+                  <thead>
+                    <tr>
+                      <th>Lluvia</th>
+                      <th>Fecha Máxima</th>
+                      <th>Tasa Horaria (THZ)</th>
+                      <th>Cuerpo Progenitor</th>
+                      <th>Visibilidad Recomendada</th>
+                    </tr>
+                  </thead>
+                  <tbody id="meteorTableBody">
+                    <!-- Filas pobladas dinámicamente -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <!-- ================================================= -->
+          <!-- MÓDULO 5: GALAXIAS Y NEBULOSAS (ESPACIO PROFUNDO) -->
+          <!-- ================================================= -->
+          <article class="module-panel" id="panel-galaxies">
+            <div class="module-header">
+              <h2>5. Galaxias y Nebulosas (Espacio Profundo)</h2>
+              <p>Explora imágenes científicas capturadas por los telescopios Hubble y James Webb (JWST). Analiza morfologías galácticas (espirales, elípticas, irregulares) y cunas de formación estelar.</p>
+            </div>
+
+            <div class="deep-sky-gallery" id="deepSkyGallery">
+              <!-- Tarjetas interactivas de objetos celestes -->
+            </div>
+
+            <!-- Modal de visualización detallada -->
+            <div class="viewer-modal hidden" id="viewerModal">
+              <div class="modal-content">
+                <button class="modal-close" id="modalClose">&times;</button>
+                <div class="modal-body">
+                  <div class="modal-img-container">
+                    <img id="modalImg" src="" alt="Objeto Celeste">
+                  </div>
+                  <div class="modal-details">
+                    <h3 id="modalTitle">Título del Objeto</h3>
+                    <p id="modalDesc">Descripción técnica del objeto astronómico...</p>
+                    <ul class="modal-specs" id="modalSpecs"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ================================================= -->
+          <!-- MÓDULO 6: CONSEJOS Y ASTROFOTOGRAFÍA CON CELULAR  -->
+          <!-- ================================================= -->
+          <article class="module-panel" id="panel-astrophoto">
+            <div class="module-header">
+              <h2>6. Consejos de Observación y Astrofotografía Móvil</h2>
+              <p>Domina los parámetros del modo profesional de tu cámara (ISO, tiempo de exposición y enfoque) y prepara tu salida al campo con el checklist interactivo contra la contaminación lumínica.</p>
+            </div>
+
+            <div class="astrophoto-split">
+              <!-- Simulador de cámara manual -->
+              <div class="camera-simulator">
+                <h3>Simulador de Parámetros de Cámara Móvil</h3>
+                <div class="viewfinder-box">
+                  <canvas id="cameraCanvas" width="480" height="300" class="viewfinder-canvas"></canvas>
+                  <div class="viewfinder-hud">
+                    <span id="hudIso">ISO: 1600</span>
+                    <span id="hudExp">EXP: 15s</span>
+                    <span id="hudFocus">FOCUS: ∞</span>
+                  </div>
+                </div>
+
+                <div class="camera-sliders">
+                  <div class="slider-group">
+                    <label>Sensibilidad (ISO): <span id="valIso">1600</span></label>
+                    <input type="range" id="sliderIso" min="100" max="6400" step="100" value="1600">
+                  </div>
+                  <div class="slider-group">
+                    <label>Tiempo de Exposición (s): <span id="valExp">15s</span></label>
+                    <input type="range" id="sliderExp" min="1" max="30" step="1" value="15">
+                  </div>
+                  <div class="slider-group">
+                    <label>Enfoque Manual: <span id="valFocus">Infinito (100%)</span></label>
+                    <input type="range" id="sliderFocus" min="0" max="100" step="5" value="100">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Checklist interactivo y Escala Bortle -->
+              <div class="checklist-container">
+                <h3>Checklist Pre-Observación:</h3>
+                <ul class="checklist-items" id="checklistItems">
+                  <li><label><input type="checkbox"> Linterna con filtro rojo (preserva visión nocturna)</label></li>
+                  <li><label><input type="checkbox"> Trípode o soporte estable para smartphone</label></li>
+                  <li><label><input type="checkbox"> Ropa de abrigo adecuada para la madrugada</label></li>
+                  <li><label><input type="checkbox"> Carta celeste o app en modo nocturno</label></li>
+                  <li><label><input type="checkbox"> Batería portátil (Power Bank)</label></li>
+                  <li><label><input type="checkbox"> Ubicación lejos de focos urbanos (Bortle 1-4)</label></li>
+                </ul>
+
+                <div class="bortle-scale-card">
+                  <h4>Medidor de Contaminación Lumínica (Escala Bortle):</h4>
+                  <select id="bortleSelect" class="styled-select">
+                    <option value="1">Clase 1: Cielo oscuro excelente (Vía Láctea detallada)</option>
+                    <option value="2">Clase 2: Sitio verdaderamente oscuro</option>
+                    <option value="4" selected>Clase 4: Transición rural / suburbana</option>
+                    <option value="7">Clase 7: Transición suburbana / urbana</option>
+                    <option value="9">Clase 9: Centro de ciudad brillante (solo Luna y planetas)</option>
+                  </select>
+                  <p id="bortleFeedback" class="bortle-desc">Buena visibilidad estelar con telescopio o binoculares sencillos.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ZONA 7: ÁREA DE NAVEGACIÓN E INTERACTIVIDAD / PANEL DE CONTROL -->
+      <aside class="zone zone-7-interactivity" id="zone7">
+        <div class="sidebar-widget">
+          <h3 class="widget-title">⚙️ Controles del Módulo</h3>
+          <div id="moduleQuickControls" class="widget-content">
+            <!-- Controles específicos del módulo activo -->
+          </div>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="widget-title">🎯 Mini-Evaluación Cognitiva</h3>
+          <div class="widget-content" id="quizWidget">
+            <p id="quizQuestion" class="quiz-q">¿Cuál es el planeta rocoso más grande del Sistema Solar?</p>
+            <div id="quizOptions" class="quiz-opts">
+              <!-- Botones de opciones -->
+            </div>
+            <p id="quizFeedback" class="quiz-feedback"></p>
+          </div>
+        </div>
+
+        <div class="sidebar-widget affective-widget">
+          <h3 class="widget-title">🧠 Monitor Afectivo y Confort</h3>
+          <div class="widget-content">
+            <div class="affective-meter">
+              <span>Carga Visual:</span>
+              <div class="meter-bar"><div class="meter-fill" id="meterFill" style="width: 25%;"></div></div>
+              <span id="meterText">Confortable</span>
+            </div>
+            <p class="affective-tip" id="affectiveTip">Consejo: Si observas estrellas en campo real, activa el <strong>Modo Rojo Nocturno</strong> para no deslumbrar tus pupilas.</p>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- PIE DE PÁGINA INSTITUCIONAL -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        Universidad de las Fuerzas Armadas ESPE • Departamento de Ciencias de la Computación • Carrera de Tecnologías de la Información
+      </div>
+      <div class="footer-right">
+        NRC: 36733 • Docente: Ing. Germán Ñacato Caiza • Estudiante: Klever Josué López Quilligana
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

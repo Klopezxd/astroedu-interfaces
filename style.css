@@ -1,0 +1,1090 @@
+/* ==========================================================================
+   ASTROEDU - HOJA DE ESTILOS PRINCIPAL
+   Implementa la Retícula Maestra de 7 Zonas y la Regla de 3 Colores Armónicos
+   Cátedra: Interfaces y Multimedia - ESPE
+   Estudiante: Klever Josué López Quilligana
+   ========================================================================== */
+
+:root {
+  /* =======================================================
+     PALETA ARMÓNICA DE 3 COLORES (REGLA MAESTRA DE CÁTEDRA)
+     1. Azul Noche Espacial (Fondo y Estructura)
+     2. Cian Luminoso Estelar (Acentos Primarios e Interacción)
+     3. Ámbar / Dorado Cósmico (Elementos Destacados y Estrellas)
+     ======================================================= */
+  --bg-deep: #070b19;
+  --bg-darker: #0b1124;
+  --bg-card: #111a33;
+  --bg-surface: #182547;
+  --border-color: rgba(56, 189, 248, 0.2);
+  --border-focus: #38bdf8;
+  
+  --color-primary: #38bdf8;     /* Cian Estelar */
+  --color-secondary: #f59e0b;   /* Ámbar Cósmico */
+  --color-accent: #818cf8;      /* Púrpura Nebular */
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 20px rgba(56, 189, 248, 0.25);
+  
+  --transition-fast: 0.18s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* =======================================================
+   MODO AFECTIVO NOCTURNO (LUZ ROJA ESCOTÓPICA)
+   Protege la adaptación a la oscuridad de los bastones retinianos
+   (Rhodopsin Preservation) según fundamentos de ergonomía visual.
+   ======================================================= */
+body.affective-night-mode {
+  --bg-deep: #0d0202;
+  --bg-darker: #150303;
+  --bg-card: #1f0505;
+  --bg-surface: #2b0808;
+  --border-color: rgba(239, 68, 68, 0.3);
+  --border-focus: #ef4444;
+  
+  --color-primary: #ef4444;     /* Rojo Rubí Astronómico */
+  --color-secondary: #b91c1c;   /* Rojo Intenso */
+  --color-accent: #dc2626;      /* Rojo Carmín */
+  
+  --text-main: #fca5a5;
+  --text-muted: #f87171;
+  --text-dim: #991b1b;
+  
+  --shadow-glow: 0 0 20px rgba(239, 68, 68, 0.35);
+}
+
+/* RESET GENERAL */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* =======================================================
+   MAQUETACIÓN DE LA RETÍCULA (CSS GRID DE 7 ZONAS)
+   ======================================================= */
+.grid-app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 12px 18px;
+  gap: 12px;
+}
+
+/* ==========================================
+   CABECERA: ZONA 1, ZONA 2 Y ZONA 3
+   ========================================== */
+.app-header {
+  display: grid;
+  grid-template-columns: 240px 1fr 340px;
+  gap: 12px;
+  background-color: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  box-shadow: var(--shadow-subtle);
+  align-items: center;
+}
+
+/* ZONA 1: LOGOTIPO */
+.zone-1-logo .logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  color: var(--color-primary);
+  filter: drop-shadow(0 0 8px var(--border-color));
+}
+
+.logo-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--color-primary), var(--text-main));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  line-height: 1.1;
+}
+
+.logo-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-secondary);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* ZONA 2: TEMA / TÍTULO */
+.zone-2-title .project-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.zone-2-title .project-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ZONA 3: BANNER / EFEMÉRIDES / CONTROL AFECTIVO */
+.zone-3-banner .banner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+}
+
+.banner-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseAnim 2s infinite;
+}
+
+body.affective-night-mode .pulse-indicator {
+  background-color: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+@keyframes pulseAnim {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.banner-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-affective {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-affective:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-audio {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: var(--radius-full);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-audio:hover {
+  background: var(--color-primary);
+  color: var(--bg-deep);
+}
+
+/* ==========================================
+   BARRAS DE CONTROL: ZONA 4 Y ZONA 5
+   ========================================== */
+.app-navigation {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  background-color: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 8px 14px;
+  align-items: center;
+}
+
+/* ZONA 4: MENÚ TEXTUAL */
+.text-menu-list {
+  display: flex;
+  list-style: none;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.menu-item {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.menu-item:hover {
+  color: var(--text-main);
+  background-color: var(--bg-surface);
+}
+
+.menu-item.active {
+  color: var(--bg-deep);
+  background-color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 0 12px var(--border-color);
+}
+
+body.affective-night-mode .menu-item.active {
+  color: #110000;
+  background-color: #ef4444;
+}
+
+/* ZONA 5: MENÚ DE ÍCONOS (CON TOOLTIPS Y ENCASILLAMIENTO) */
+.icon-toolbar {
+  display: flex;
+  gap: 6px;
+  background-color: var(--bg-card);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.icon-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-surface);
+  color: var(--color-primary);
+  border-color: var(--border-color);
+}
+
+.icon-btn.active {
+  background-color: var(--color-primary);
+  color: var(--bg-deep);
+  border-color: var(--color-primary);
+}
+
+body.affective-night-mode .icon-btn.active {
+  background-color: #ef4444;
+  color: #110000;
+}
+
+/* TOOLTIP EMERGENTE */
+.icon-btn .tooltip {
+  position: absolute;
+  top: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-subtle);
+  border: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+.icon-btn:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* ==========================================
+   CUERPO PRINCIPAL: ZONA 6 Y ZONA 7
+   ========================================== */
+.app-main {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 12px;
+  flex: 1;
+}
+
+/* ZONA 6: ÁREA DE DESPLIEGUE DE TRABAJO Y CONTENIDO */
+.zone-6-workarea {
+  background-color: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-subtle);
+  overflow: hidden;
+}
+
+.breadcrumbs {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  display: flex;
+  gap: 6px;
+}
+
+.breadcrumbs span:last-child {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.module-panel {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.25s ease;
+}
+
+.module-panel.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.module-header h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.module-header p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* VIEWPORT Y LIENZOS INTERACTIVOS (CANVAS) */
+.interactive-viewport {
+  position: relative;
+  background-color: #030611;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+}
+
+.canvas-screen {
+  width: 100%;
+  height: 420px;
+  display: block;
+  cursor: crosshair;
+}
+
+.canvas-overlay-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: rgba(11, 17, 36, 0.75);
+  backdrop-filter: blur(8px);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.btn-pill {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-pill:hover {
+  background: var(--color-primary);
+  color: var(--bg-deep);
+  border-color: var(--color-primary);
+}
+
+.toggle-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.toggle-control input {
+  accent-color: var(--color-primary);
+}
+
+/* FICHAS DE PLANETAS */
+.planet-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.planet-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.planet-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+}
+
+.planet-card.active {
+  border-color: var(--color-primary);
+  background: var(--bg-surface);
+}
+
+.planet-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.planet-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.planet-type {
+  font-size: 0.68rem;
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.planet-meta {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* MÓDULO 2: CONSTELACIONES */
+.constellation-selector-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-constellation {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-constellation:hover, .btn-constellation.active {
+  background: var(--color-primary);
+  color: var(--bg-deep);
+  font-weight: 600;
+}
+
+.info-card-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.info-card-box strong {
+  color: var(--color-secondary);
+}
+
+/* MÓDULO 3: SIMULADOR LUNAR */
+.moon-simulator-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  align-items: center;
+}
+
+.moon-visualizer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.moon-sphere {
+  width: 170px;
+  height: 170px;
+  background: radial-gradient(circle at 35% 35%, #f1f5f9, #94a3b8 60%, #475569 90%);
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(241, 245, 249, 0.2);
+}
+
+.moon-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(7, 11, 25, 0.95);
+  transition: all 0.1s ease;
+}
+
+.moon-phase-readout {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.phase-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.phase-day, .phase-illum {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.styled-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bg-surface);
+  outline: none;
+  accent-color: var(--color-primary);
+  margin: 12px 0;
+  cursor: pointer;
+}
+
+.phase-buttons-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.btn-tag {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-tag:hover {
+  background: var(--color-primary);
+  color: var(--bg-deep);
+}
+
+.eclipse-simulator {
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eclipse-simulator h3 {
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.status-msg {
+  font-size: 0.82rem;
+  color: var(--color-secondary);
+  font-style: italic;
+}
+
+/* TABLA ESTILIZADA (MÓDULO 4) */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.styled-table th {
+  background-color: var(--bg-surface);
+  color: var(--color-primary);
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+}
+
+.styled-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+}
+
+.styled-table tr:hover td {
+  background-color: rgba(56, 189, 248, 0.05);
+  color: var(--text-main);
+}
+
+/* MÓDULO 5: GALERÍA DE ESPACIO PROFUNDO */
+.deep-sky-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.gallery-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.gallery-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.gallery-img-thumb {
+  width: 100%;
+  height: 140px;
+  background-color: #030611;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-img-thumb canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-info {
+  padding: 10px 12px;
+}
+
+.gallery-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.gallery-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* MÓDULO 6: ASTROFOTOGRAFÍA Y CÁMARA MANUAL */
+.astrophoto-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.camera-simulator, .checklist-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.viewfinder-box {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: #000;
+}
+
+.viewfinder-canvas {
+  width: 100%;
+  height: 200px;
+  display: block;
+}
+
+.viewfinder-hud {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #38bdf8;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.checklist-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.84rem;
+}
+
+.checklist-items label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.checklist-items input:checked + span, .checklist-items label:has(input:checked) {
+  color: var(--text-main);
+  text-decoration: line-through opacity(0.7);
+}
+
+.bortle-scale-card {
+  margin-top: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.styled-select {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.bortle-desc {
+  font-size: 0.78rem;
+  color: var(--color-secondary);
+}
+
+/* ==========================================
+   ZONA 7: ÁREA DE NAVEGACIÓN E INTERACTIVIDAD
+   ========================================== */
+.zone-7-interactivity {
+  background-color: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.sidebar-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.widget-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.quiz-q {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.quiz-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-quiz {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-quiz:hover {
+  background: var(--border-color);
+  color: var(--text-main);
+}
+
+.btn-quiz.correct {
+  background: #059669;
+  border-color: #10b981;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-quiz.wrong {
+  background: #dc2626;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.quiz-feedback {
+  font-size: 0.78rem;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* MONITOR AFECTIVO */
+.affective-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.meter-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-surface);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #f59e0b);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.affective-tip {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin-top: 6px;
+}
+
+/* ==========================================
+   PIE DE PÁGINA INSTITUCIONAL
+   ========================================== */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* =======================================================
+   DISEÑO ADAPTIVO (MEDIA QUERIES - DESKTOP, TABLET, MÓVIL)
+   ======================================================= */
+
+/* TABLET (768px a 1023px) */
+@media (max-width: 1023px) {
+  .app-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .zone-1-logo .logo-wrapper {
+    justify-content: center;
+  }
+  
+  .app-navigation {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+  
+  .astrophoto-split {
+    grid-template-columns: 1fr;
+  }
+  
+  .moon-simulator-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+/* MÓVIL (< 768px) */
+@media (max-width: 767px) {
+  .grid-app-container {
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .project-title {
+    font-size: 1rem;
+  }
+  
+  .text-menu-list {
+    justify-content: center;
+  }
+  
+  .menu-item {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+  
+  .icon-toolbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .canvas-screen {
+    height: 280px;
+  }
+  
+  .app-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
+}
