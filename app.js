@@ -1503,6 +1503,7 @@ document.addEventListener('DOMContentLoaded', () => {
       telescope: 'Hubble Space Telescope',
       telescopeShort: 'Hubble / Spitzer',
       imgUrl: 'img/andromeda.jpg',
+      remoteFallback: 'https://images-assets.nasa.gov/image/PIA04921/PIA04921~medium.jpg',
       desc: 'El objeto astronómico más distante visible a simple vista bajo cielos oscuros. Alberga aproximadamente un billón de estrellas y una densa población de cúmulos globulares; se aproxima a la Vía Láctea a 110 km/s hacia una colisión dentro de 4.500 millones de años.'
     },
     {
@@ -1513,6 +1514,7 @@ document.addEventListener('DOMContentLoaded', () => {
       telescope: 'James Webb Space Telescope (JWST) / Hubble',
       telescopeShort: 'JWST / Hubble',
       imgUrl: 'img/orion_nebula.jpg',
+      remoteFallback: 'https://images-assets.nasa.gov/image/PIA08006/PIA08006~medium.jpg',
       desc: 'Una de las incubadoras estelares más activas y cercanas a nuestro sistema solar. En su centro reside el Cúmulo del Trapecio, cuyas jóvenes estrellas masivas ionizan el gas de hidrógeno y oxígeno circundante haciéndolo brillar intensamente.'
     },
     {
@@ -1523,6 +1525,7 @@ document.addEventListener('DOMContentLoaded', () => {
       telescope: 'James Webb Space Telescope (Cámara Infrarroja NIRCam)',
       telescopeShort: 'James Webb (JWST)',
       imgUrl: 'img/pillars.jpg',
+      remoteFallback: 'https://images-assets.nasa.gov/image/PIA19830/PIA19830~medium.jpg',
       desc: 'Monumentales torres de gas y polvo interestelar situadas en el corazón de la Nebulosa del Águila. La radiación ultravioleta de estrellas jóvenes esculpe las columnas donde nuevas protoestrellas continúan condensándose por colapso gravitatorio.'
     },
     {
@@ -1533,6 +1536,7 @@ document.addEventListener('DOMContentLoaded', () => {
       telescope: 'Hubble Space Telescope (ACS / WFPC2)',
       telescopeShort: 'Hubble Heritage',
       imgUrl: 'img/sombrero.jpg',
+      remoteFallback: 'https://images-assets.nasa.gov/image/PIA01449/PIA01449~medium.jpg',
       desc: 'Famosa por su brillante bulbo central sobredimensionado y un prominente anillo de polvo oscuro interestelar que cruza su disco, otorgándole la silueta inconfundible de un sombrero de ala ancha. En su núcleo alberga un agujero negro supermasivo de mil millones de masas solares.'
     }
   ];
@@ -1544,7 +1548,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'gallery-card';
       card.innerHTML = `
         <div class="gallery-img-thumb">
-          <img src="${obj.imgUrl}" alt="${obj.name}" class="gallery-thumb-img" loading="lazy">
+          <img src="${obj.imgUrl}" alt="${obj.name}" class="gallery-thumb-img" loading="lazy" onerror="this.onerror=null;this.src='${obj.remoteFallback}';">
           <span class="gallery-telescope-tag">${obj.telescopeShort}</span>
         </div>
         <div class="gallery-info">
@@ -1555,6 +1559,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('click', () => {
         if (modalImg) {
           modalImg.src = obj.imgUrl;
+          modalImg.onerror = () => { modalImg.src = obj.remoteFallback; };
           modalImg.alt = obj.name;
         }
         modalTitle.textContent = obj.name;
@@ -1796,6 +1801,129 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
   }
+
+  const quizzesData = {
+    solar: [
+      {
+        q: '¿Cuál es el planeta rocoso más grande y con mayor densidad del Sistema Solar?',
+        opts: ['Mercurio', 'Venus', 'La Tierra', 'Marte'],
+        ans: 2,
+        why: 'La Tierra es el planeta telúrico de mayor diámetro (12.742 km) y mayor densidad media (5.51 g/cm³) del Sistema Solar.'
+      },
+      {
+        q: '¿Qué planeta tiene el período de rotación más lento y gira en sentido retrógrado?',
+        opts: ['Mercurio', 'Venus', 'Marte', 'Júpiter'],
+        ans: 1,
+        why: 'Venus tarda 243 días terrestres en completar un giro sobre su propio eje y lo hace en sentido horario (de este a oeste).'
+      },
+      {
+        q: '¿Cuál es el planeta gigante gaseoso con mayor masa del Sistema Solar?',
+        opts: ['Saturno', 'Júpiter', 'Urano', 'Neptuno'],
+        ans: 1,
+        why: 'Júpiter posee una masa colosal de 1.90 × 10²⁷ kg, equivalente a más de 318 veces la masa de la Tierra.'
+      }
+    ],
+    constellations: [
+      {
+        q: '¿Cuál es la estrella guía supergigante roja del hombro derecho de Orión?',
+        opts: ['Rigel', 'Sirio', 'Betelgeuse', 'Aldebarán'],
+        ans: 2,
+        why: 'Betelgeuse es una supergigante roja inconfundible por su tonalidad cálida anaranjada en el vértice de Orión.'
+      },
+      {
+        q: '¿Cuál es la estrella más brillante de todo el firmamento nocturno vista desde la Tierra?',
+        opts: ['Polaris (Estrella Polar)', 'Sirio (Can Mayor)', 'Vega (Lira)', 'Rigel (Orión)'],
+        ans: 1,
+        why: 'Sirio (α Canis Majoris) ostenta una magnitud aparente de -1.46, la más luminosa del cielo observable.'
+      },
+      {
+        q: '¿Qué constelación es la referencia principal de orientación astronómica en el Hemisferio Sur?',
+        opts: ['Osa Mayor', 'Cruz del Sur (Crux)', 'Casiopea', 'Cisne'],
+        ans: 1,
+        why: 'La Cruz del Sur permite localizar el polo sur celeste prolongando 4.5 veces la longitud de su brazo vertical principal.'
+      }
+    ],
+    moon: [
+      {
+        q: '¿Cuánto dura exactamente el ciclo sinódico lunar completo (de Luna Nueva a Luna Nueva)?',
+        opts: ['27.3 días', '28.0 días', '29.5 días', '31.0 días'],
+        ans: 2,
+        why: 'El ciclo sinódico o lunación dura 29.53 días debido al avance combinado de la Tierra y la Luna alrededor del Sol.'
+      },
+      {
+        q: '¿Qué alineación geométrica orbital produce un eclipse solar total?',
+        opts: ['La Tierra entre el Sol y la Luna', 'La Luna situada exactamente entre el Sol y la Tierra', 'El Sol entre la Tierra y la Luna', 'Marte alineado con la Luna'],
+        ans: 1,
+        why: 'En un eclipse solar, la Luna en fase de novilunio se interpone en la línea visual proyectando su sombra umbral sobre la Tierra.'
+      },
+      {
+        q: '¿Por qué la Luna adquiere una tonalidad cobriza durante un eclipse lunar total?',
+        opts: ['Por calentamiento en su corteza', 'La atmósfera de la Tierra refracta y dispersa longitudes de onda rojas hacia el cono de umbra', 'La sombra de la Tierra es roja', 'Reflejo de la luz solar en Marte'],
+        ans: 1,
+        why: 'La dispersión de Rayleigh en el limbo atmosférico terrestre filtra la luz azul y desvía la luz rojiza crepuscular hacia el disco lunar.'
+      }
+    ],
+    meteors: [
+      {
+        q: '¿Qué cuerpo progenitor da origen a la lluvia de meteoros Perseidas de agosto?',
+        opts: ['Cometa 1P/Halley', 'Cometa 109P/Swift-Tuttle', 'Asteroide Faetón', 'Cometa Encke'],
+        ans: 1,
+        why: 'El cometa periódico 109P/Swift-Tuttle deposita un anillo de escombros micrométricos por el cual la Tierra transita cada agosto.'
+      },
+      {
+        q: '¿En qué capa atmosférica se desintegran e ionizan la mayoría de meteoroides?',
+        opts: ['Troposfera (0-12 km)', 'Estratosfera (12-50 km)', 'Mesosfera (80-100 km)', 'Exosfera (>500 km)'],
+        ans: 2,
+        why: 'Los meteoroides ingresan a 20-70 km/s colisionando con la mesosfera a 85-100 km, donde el aire comprimido se ioniza incandescentemente.'
+      },
+      {
+        q: '¿Cómo se clasifica a un meteoro sumamente brillante con magnitud superior a Venus?',
+        opts: ['Micrometeorito', 'Bólido o bola de fuego', 'Cometa enano', 'Púlsar'],
+        ans: 1,
+        why: 'Los bólidos son masas rocosas más densas que pueden generar explosiones sónicas y dejar estelas persistentes durante varios segundos.'
+      }
+    ],
+    galaxies: [
+      {
+        q: '¿A qué distancia aproximada se encuentra la Galaxia de Andrómeda (M31) de la Vía Láctea?',
+        opts: ['100.000 años luz', '1.344 años luz', '2.5 millones de años luz', '14 millones de años luz'],
+        ans: 2,
+        why: 'Andrómeda dista 2.5 millones de años luz y es el objeto astronómico más distante visible a simple vista bajo cielos oscuros.'
+      },
+      {
+        q: '¿Qué estructura morfológica posee nuestra galaxia, la Vía Láctea?',
+        opts: ['Espiral barrada (SBbc)', 'Elíptica gigante (E0)', 'Irregular enana (Irr)', 'Lenticular (S0)'],
+        ans: 0,
+        why: 'La Vía Láctea presenta una barra estelar central con brazos espirales poblados de polvo, gas molecular y cúmulos estelares.'
+      },
+      {
+        q: '¿Qué representa la Gran Nebulosa de Orión (M42) en astrofísica?',
+        opts: ['Un remanente frío de supernova', 'Una guardería estelar activa de gas ionizado', 'Un cúmulo globular extinto', 'Un agujero negro supermasivo'],
+        ans: 1,
+        why: 'M42 es una nube de hidrógeno ionizado e incubadora de estrellas jóvenes iluminada por el Cúmulo del Trapecio.'
+      }
+    ],
+    astrophoto: [
+      {
+        q: '¿Por qué los observadores astronómicos utilizan linternas con filtro de luz roja en el campo?',
+        opts: ['Porque la luz roja alumbra a mayor distancia', 'Porque no deslumbra ni destruye la adaptación natural del ojo a la oscuridad', 'Para evitar que se empañen las ópticas', 'Para ahuyentar animales nocturnos'],
+        ans: 1,
+        why: 'La luz roja preserva la sensibilidad de los fotorreceptores retinianos, que tardan hasta 30 minutos en adaptarse plenamente a la penumbra.'
+      },
+      {
+        q: 'Al capturar el cielo nocturno con un smartphone, ¿cuál es el soporte fundamental indispensable?',
+        opts: ['El flash a máxima potencia', 'Un trípode o montura firme para eliminar cualquier trepidación', 'Un zoom digital 30x', 'Un filtro polarizador diurno'],
+        ans: 1,
+        why: 'En exposiciones largas de 10 a 30 segundos, el más mínimo movimiento manual genera vibraciones y borronea las estrellas.'
+      },
+      {
+        q: 'En la escala Bortle de contaminación lumínica, ¿qué caracteriza a una zona Clase 1 o 2?',
+        opts: ['Centro urbano muy iluminado', 'Cielo rural completamente oscuro donde la Vía Láctea se aprecia con gran nitidez', 'Zona con niebla diurna', 'Cielo nublado sin visibilidad'],
+        ans: 1,
+        why: 'Las clases 1 y 2 representan sitios de cielo oscuro prístino donde las estructuras de polvo galáctico proyectan sombras sutiles.'
+      }
+    ]
+  };
 
   function loadModuleQuiz(modId) {
     const qList = quizzesData[modId];
