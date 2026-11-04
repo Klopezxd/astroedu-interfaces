@@ -260,6 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderSolarSystem() {
+    if (solarAnimId) {
+      cancelAnimationFrame(solarAnimId);
+      solarAnimId = null;
+    }
+
     const w = solarCanvas.width;
     const h = solarCanvas.height;
     const cx = w / 2;
@@ -1476,6 +1481,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderMeteors() {
+    if (meteorAnimId) {
+      cancelAnimationFrame(meteorAnimId);
+      meteorAnimId = null;
+    }
+
     const w = meteorCanvas.width;
     const h = meteorCanvas.height;
 
