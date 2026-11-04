@@ -739,6 +739,95 @@ body.affective-night-mode .nav-tab.active {
   line-height: 1.4;
 }
 
+/* GUÍA CIENTÍFICA DEL CICLO LUNAR Y SELENOGRAFÍA */
+.moon-phases-guide-section {
+  margin-top: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.moon-guide-intro {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.moon-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+
+.moon-guide-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.moon-guide-card .guide-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.moon-guide-card .guide-badge {
+  font-size: 0.72rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.moon-guide-card h4 {
+  font-size: 0.92rem;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.moon-guide-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.moon-scientific-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .moon-scientific-notes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scientific-note-item {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.scientific-note-item strong {
+  color: var(--text-main);
+}
+
 /* CENTRO CIENTÍFICO Y MULTIMEDIA DE ECLIPSES */
 .eclipse-multimedia-section {
   margin-top: 20px;

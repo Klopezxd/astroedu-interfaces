@@ -149,6 +149,12 @@ document.addEventListener('DOMContentLoaded', () => {
       meteorAnimId = null;
     }
 
+    if (modId !== 'moon') {
+      if (eclipseVideoFrame && eclipseVideoFrame.src && eclipseVideoFrame.src.includes('youtube')) {
+        eclipseVideoFrame.src = 'about:blank';
+      }
+    }
+
     // Inicializar y reactivar renderizado continuo según el módulo activo
     if (modId === 'solar') {
       initSolarCanvas();
@@ -157,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
       displaySelectedConstellation();
     } else if (modId === 'moon') {
       setMoonSimulationMode(state.moonSimMode || 'moon');
-      renderEclipseGeometryCanvas(state.eclipseType || 'solar');
     } else if (modId === 'meteors') {
       initMeteorCanvas();
       renderMeteors();
@@ -478,12 +483,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const phaseIllum = document.getElementById('phaseIllum');
   const btnEclipseSolar = document.getElementById('btnEclipseSolar');
   const btnEclipseLunar = document.getElementById('btnEclipseLunar');
+  const eclipseMultimediaSection = document.getElementById('eclipseMultimediaSection');
+  const moonPhasesGuideSection = document.getElementById('moonPhasesGuideSection');
   const eclipseStatus = document.getElementById('eclipseStatus');
   const btnModeMoonPhases = document.getElementById('btnModeMoonPhases');
   const btnModeSolarEclipse = document.getElementById('btnModeSolarEclipse');
   const btnModeLunarEclipse = document.getElementById('btnModeLunarEclipse');
   const sliderLabel = document.getElementById('sliderLabel');
   const phaseButtonsRow = document.getElementById('phaseButtonsRow');
+  const eclipseGeometryCanvas = document.getElementById('eclipseGeometryCanvas');
+  const egCtx = eclipseGeometryCanvas ? eclipseGeometryCanvas.getContext('2d') : null;
+  const eclipseGeometryTitle = document.getElementById('eclipseGeometryTitle');
+  const eclipseGeometryDesc = document.getElementById('eclipseGeometryDesc');
+  const eclipseVideoFrame = document.getElementById('eclipseVideoFrame');
+  const videoTitleLabel = document.getElementById('videoTitleLabel');
+  const eclipseRealPhotoImg = document.getElementById('eclipseRealPhotoImg');
+  const photoTitleLabel = document.getElementById('photoTitleLabel');
+  const eclipsePhotoCaption = document.getElementById('eclipsePhotoCaption');
+  const btnVideoOption1 = document.getElementById('btnVideoOption1');
+  const btnVideoOption2 = document.getElementById('btnVideoOption2');
+  const btnPhotoOption1 = document.getElementById('btnPhotoOption1');
+  const btnPhotoOption2 = document.getElementById('btnPhotoOption2');
 
   function renderSolarEclipseCanvas(progress) {
     if (!moonCtx) return;
@@ -937,6 +957,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnModeLunarEclipse) btnModeLunarEclipse.classList.toggle('active', mode === 'lunar');
 
     if (mode === 'moon') {
+      if (eclipseMultimediaSection) eclipseMultimediaSection.style.display = 'none';
+      if (moonPhasesGuideSection) moonPhasesGuideSection.style.display = 'flex';
+      if (eclipseVideoFrame && eclipseVideoFrame.src && eclipseVideoFrame.src.includes('youtube')) {
+        eclipseVideoFrame.src = 'about:blank';
+      }
       if (sliderLabel) sliderLabel.textContent = 'Desplazamiento del Ciclo Lunar:';
       moonSlider.min = '0';
       moonSlider.max = '29.5';
@@ -951,7 +976,15 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
       if (eclipseStatus) eclipseStatus.textContent = 'Arrastra el deslizador para apreciar la curvatura del terminador elíptico y el relieve de mares y cráteres.';
       updateMoonPhase(val);
+      updateAstroDataCard('moon');
     } else if (mode === 'solar') {
+      if (eclipseMultimediaSection) eclipseMultimediaSection.style.display = 'flex';
+      if (moonPhasesGuideSection) moonPhasesGuideSection.style.display = 'none';
+      state.eclipseType = 'solar';
+      if (btnEclipseSolar) btnEclipseSolar.classList.add('active');
+      if (btnEclipseLunar) btnEclipseLunar.classList.remove('active');
+      if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Solar: La Luna entre el Sol y la Tierra (Conos de Umbra y Penumbra)';
+      if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Luna se interpone en la línea de visión Sol-Tierra. Su sombra proyecta una estrecha franja de totalidad (umbra, ~150 km) donde la fotosfera queda oculta y se observa la corona solar, y una penumbra más ancha de eclipse parcial.';
       if (sliderLabel) sliderLabel.textContent = 'Progresión del Tránsito Lunar (Eclipse Solar):';
       moonSlider.min = '0';
       moonSlider.max = '100';
@@ -966,7 +999,17 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
       if (eclipseStatus) eclipseStatus.textContent = 'Desplaza la Luna a través del disco solar para experimentar el tránsito, el anillo de diamante y la corona de totalidad.';
       updateSolarEclipseProgress(val);
+      updateEclipseMedia(state.eclipseVideoIndex || 0, state.eclipsePhotoIndex || 0);
+      renderEclipseGeometryCanvas('solar');
+      updateAstroDataCard('moon');
     } else if (mode === 'lunar') {
+      if (eclipseMultimediaSection) eclipseMultimediaSection.style.display = 'flex';
+      if (moonPhasesGuideSection) moonPhasesGuideSection.style.display = 'none';
+      state.eclipseType = 'lunar';
+      if (btnEclipseSolar) btnEclipseSolar.classList.remove('active');
+      if (btnEclipseLunar) btnEclipseLunar.classList.add('active');
+      if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Lunar: La Tierra entre el Sol y la Luna Llena (Refracción Atmosférica)';
+      if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Tierra bloquea la radiación directa del Sol. Los rayos solares atraviesan el borde atmosférico terrestre, el cual dispersa las longitudes azules (filtro Rayleigh) y desvía la luz roja hacia la Luna, otorgándole su característico tono cobrizo.';
       if (sliderLabel) sliderLabel.textContent = 'Progresión del Tránsito en Umbra (Eclipse Lunar):';
       moonSlider.min = '0';
       moonSlider.max = '100';
@@ -981,6 +1024,9 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
       if (eclipseStatus) eclipseStatus.textContent = 'Mueve la Luna a través del cono de sombra de la Tierra para observar la entrada a la penumbra y la dispersión Rayleigh cobriza.';
       updateLunarEclipseProgress(val);
+      updateEclipseMedia(state.eclipseVideoIndex || 0, state.eclipsePhotoIndex || 0);
+      renderEclipseGeometryCanvas('lunar');
+      updateAstroDataCard('moon');
     }
   }
 
@@ -1016,20 +1062,6 @@ document.addEventListener('DOMContentLoaded', () => {
       playTone(550, 'sine', 0.1, 0.05);
     });
   }
-
-  const eclipseGeometryCanvas = document.getElementById('eclipseGeometryCanvas');
-  const egCtx = eclipseGeometryCanvas ? eclipseGeometryCanvas.getContext('2d') : null;
-  const eclipseGeometryTitle = document.getElementById('eclipseGeometryTitle');
-  const eclipseGeometryDesc = document.getElementById('eclipseGeometryDesc');
-  const eclipseVideoFrame = document.getElementById('eclipseVideoFrame');
-  const videoTitleLabel = document.getElementById('videoTitleLabel');
-  const eclipseRealPhotoImg = document.getElementById('eclipseRealPhotoImg');
-  const photoTitleLabel = document.getElementById('photoTitleLabel');
-  const eclipsePhotoCaption = document.getElementById('eclipsePhotoCaption');
-  const btnVideoOption1 = document.getElementById('btnVideoOption1');
-  const btnVideoOption2 = document.getElementById('btnVideoOption2');
-  const btnPhotoOption1 = document.getElementById('btnPhotoOption1');
-  const btnPhotoOption2 = document.getElementById('btnPhotoOption2');
 
   const eclipseMediaData = {
     solar: {
@@ -1334,22 +1366,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function selectEclipse(type) {
-    state.eclipseType = type;
-    btnEclipseSolar.classList.toggle('active', type === 'solar');
-    btnEclipseLunar.classList.toggle('active', type === 'lunar');
-
-    if (type === 'solar') {
-      setMoonSimulationMode('solar', 50);
-      if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Solar: La Luna entre el Sol y la Tierra (Conos de Umbra y Penumbra)';
-      if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Luna se interpone en la línea de visión Sol-Tierra. Su sombra proyecta una estrecha franja de totalidad (umbra, ~150 km) donde la fotosfera queda oculta y se observa la corona solar, y una penumbra más ancha de eclipse parcial.';
-    } else {
-      setMoonSimulationMode('lunar', 50);
-      if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Lunar: La Tierra entre el Sol y la Luna Llena (Refracción Atmosférica)';
-      if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Tierra bloquea la radiación directa del Sol. Los rayos solares atraviesan el borde atmosférico terrestre, el cual dispersa las longitudes azules (filtro Rayleigh) y desvía la luz roja hacia la Luna, otorgándole su característico tono cobrizo.';
-    }
-    updateEclipseMedia(0, 0);
-    renderEclipseGeometryCanvas(type);
-    updateAstroDataCard('moon');
+    setMoonSimulationMode(type, 50);
     playChime();
   }
 
