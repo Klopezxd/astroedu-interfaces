@@ -154,36 +154,22 @@
           <article class="module-panel" id="panel-constellations">
             <div class="module-header">
               <h2>2. Constelaciones y Reconocimiento Estelar</h2>
-              <p>Cúpula celeste interactiva y astrofotografía real. Aprende a orientarte en el firmamento reconociendo asterismos y constelaciones guía con coordenadas celestes exactas.</p>
-            </div>
-
-            <div class="sub-nav-tabs">
-              <button id="btnViewSkyMap" class="btn-pill active">🌌 Bóveda Celeste Geométrica</button>
-              <button id="btnViewAstroPhoto" class="btn-pill">📷 Astrofotografía Real (NASA / ESA)</button>
+              <p>Astrofotografía de gran campo de alta resolución. Aprende a orientarte en el firmamento nocturno reconociendo constelaciones guía y asterismos clave.</p>
             </div>
 
             <div class="interactive-viewport" id="constellationViewport">
-              <canvas id="skyCanvas" width="760" height="420" class="canvas-screen"></canvas>
-              
-              <!-- Vista de Astrofotografía Real -->
-              <div id="constellationPhotoCard" class="constellation-photo-card hidden">
+              <!-- Visor Principal de Astrofotografía Real -->
+              <div id="constellationPhotoCard" class="constellation-photo-card">
                 <div class="constellation-img-box">
-                  <img id="constellationPhotoImg" src="" alt="Fotografía Real de Constelación" class="constellation-real-img">
+                  <img id="constellationPhotoImg" src="img/constelacion_orion.jpg" alt="Fotografía Real de Constelación" class="constellation-real-img">
                 </div>
                 <div class="photo-info-dock">
                   <div class="photo-dock-text">
                     <h4 id="constellationPhotoTitle">Orión el Cazador</h4>
-                    <p id="constellationPhotoCredit">Fotografía capturada por observatorios de amplio campo (NASA APOD / ESO)</p>
+                    <p id="constellationPhotoCredit">Astrofotografía de Gran Campo • Constelación de Orión</p>
                   </div>
                   <a id="constellationStellariumLink" href="https://stellarium-web.org/" target="_blank" rel="noopener" class="btn-pill btn-external">🌐 Explorar en vivo en Stellarium Web ↗</a>
                 </div>
-              </div>
-
-              <!-- Controles Directos sobre el Mapa -->
-              <div class="canvas-overlay-controls" id="constellationCanvasControls">
-                <label class="toggle-control"><input type="checkbox" id="chkLines" checked> Trazar Líneas</label>
-                <label class="toggle-control"><input type="checkbox" id="chkNames" checked> Mostrar Nombres</label>
-                <label class="toggle-control"><input type="checkbox" id="chkGrid" checked> Coordenadas Celestes (RA / Dec)</label>
               </div>
             </div>
 

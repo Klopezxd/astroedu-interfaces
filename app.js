@@ -154,8 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
       initSolarCanvas();
       renderSolarSystem();
     } else if (modId === 'constellations') {
-      initSkyCanvas();
-      drawSky();
+      displaySelectedConstellation();
     } else if (modId === 'moon') {
       setMoonSimulationMode(state.moonSimMode || 'moon');
       renderEclipseGeometryCanvas(state.eclipseType || 'solar');
@@ -214,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Re-renderizar lienzos con la nueva paleta cromática
     if (state.currentModule === 'solar') renderSolarSystem();
-    if (state.currentModule === 'constellations') drawSky();
+    if (state.currentModule === 'constellations') displaySelectedConstellation();
     if (state.currentModule === 'moon') {
       if (state.moonSimMode === 'solar') updateSolarEclipseProgress(state.solarProgress || 50);
       else if (state.moonSimMode === 'lunar') updateLunarEclipseProgress(state.lunarProgress || 50);
@@ -395,44 +394,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 6. MÓDULO 2: CONSTELACIONES Y RECURSOS MULTIMEDIA
   // ==========================================================================
-  const skyCanvas = document.getElementById('skyCanvas');
-  const skCtx = skyCanvas.getContext('2d');
-  const chkLines = document.getElementById('chkLines');
-  const chkNames = document.getElementById('chkNames');
-  const chkGrid = document.getElementById('chkGrid');
   const constellationList = document.getElementById('constellationList');
   const constellationInfo = document.getElementById('constellationInfo');
-
-  const btnViewSkyMap = document.getElementById('btnViewSkyMap');
-  const btnViewAstroPhoto = document.getElementById('btnViewAstroPhoto');
   const constellationPhotoCard = document.getElementById('constellationPhotoCard');
   const constellationPhotoImg = document.getElementById('constellationPhotoImg');
   const constellationPhotoTitle = document.getElementById('constellationPhotoTitle');
   const constellationPhotoCredit = document.getElementById('constellationPhotoCredit');
   const constellationStellariumLink = document.getElementById('constellationStellariumLink');
-  const constellationCanvasControls = document.getElementById('constellationCanvasControls');
 
   const constellationsData = {
     orion: {
       name: 'Orión (El Cazador)',
-      stars: [
-        { name: 'Betelgeuse', x: 240, y: 130, mag: 0.5, color: '#f97316', tox: -82, toy: -4 },
-        { name: 'Bellatrix', x: 480, y: 140, mag: 1.6, color: '#38bdf8', tox: 12, toy: -4 },
-        { name: 'Alnitak', x: 310, y: 235, mag: 1.7, color: '#93c5fd', tox: -52, toy: 16 },
-        { name: 'Alnilam', x: 360, y: 230, mag: 1.6, color: '#93c5fd', tox: -22, toy: -14 },
-        { name: 'Mintaka', x: 410, y: 225, mag: 2.2, color: '#93c5fd', tox: 12, toy: -10 },
-        { name: 'Saiph', x: 260, y: 340, mag: 2.0, color: '#38bdf8', tox: -46, toy: 16 },
-        { name: 'Rigel', x: 470, y: 330, mag: 0.1, color: '#60a5fa', tox: 12, toy: 14 },
-        { name: 'Meissa', x: 360, y: 80, mag: 3.4, color: '#e2e8f0', tox: -20, toy: -12 }
-      ],
-      lines: [
-        [0, 1],
-        [7, 0], [7, 1],
-        [0, 2], [1, 4],
-        [2, 3], [3, 4],
-        [2, 5], [4, 6],
-        [5, 6]
-      ],
       photoUrl: 'img/constelacion_orion.jpg',
       photoTitle: 'Astrofotografía de Orión: Cinturón, Betelgeuse y Rigel',
       credit: 'Astrofotografía de Gran Campo • Constelación de Orión',
@@ -441,19 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     ursaMajor: {
       name: 'Osa Mayor (El Carro)',
-      stars: [
-        { name: 'Dubhe', x: 610, y: 165, mag: 1.8, color: '#fde047', tox: 12, toy: -8 },
-        { name: 'Merak', x: 590, y: 255, mag: 2.3, color: '#93c5fd', tox: 12, toy: 16 },
-        { name: 'Phecda', x: 450, y: 240, mag: 2.4, color: '#93c5fd', tox: -20, toy: 20 },
-        { name: 'Megrez', x: 435, y: 165, mag: 3.3, color: '#93c5fd', tox: -48, toy: -10 },
-        { name: 'Alioth', x: 320, y: 130, mag: 1.7, color: '#93c5fd', tox: -18, toy: -14 },
-        { name: 'Mizar', x: 225, y: 100, mag: 2.2, color: '#93c5fd', tox: -15, toy: -14 },
-        { name: 'Alkaid', x: 125, y: 85, mag: 1.8, color: '#60a5fa', tox: -55, toy: 4 }
-      ],
-      lines: [
-        [3, 0], [0, 1], [1, 2], [2, 3],
-        [3, 4], [4, 5], [5, 6]
-      ],
       photoUrl: 'img/constelacion_osa_mayor.jpg',
       photoTitle: 'Astrofotografía de la Osa Mayor y el Asterismo del Carro',
       credit: 'Astrofotografía de Cielo Nocturno • Las 7 Estrellas del Carro',
@@ -462,14 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     crux: {
       name: 'Cruz del Sur (Crux)',
-      stars: [
-        { name: 'Acrux', x: 405, y: 335, mag: 0.7, color: '#60a5fa', tox: -52, toy: 18 },
-        { name: 'Gacrux', x: 355, y: 95, mag: 1.6, color: '#f87171', tox: -54, toy: -12 },
-        { name: 'Mimosa', x: 270, y: 215, mag: 1.2, color: '#93c5fd', tox: -65, toy: 4 },
-        { name: 'Imai', x: 480, y: 165, mag: 2.7, color: '#93c5fd', tox: 12, toy: 4 },
-        { name: 'Ginan', x: 435, y: 265, mag: 3.6, color: '#cbd5e1', tox: 12, toy: 14 }
-      ],
-      lines: [[0, 1], [2, 3]],
       photoUrl: 'img/constelacion_cruz_sur.jpg',
       photoTitle: 'Astrofotografía de la Cruz del Sur (Crux) y Firmamento Austral',
       credit: 'Astrofotografía Austral • Guía de Orientación Polar Sur',
@@ -478,155 +429,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  let backgroundStars = [];
-  function generateBackgroundStars() {
-    backgroundStars = [];
-    for (let i = 0; i < 160; i++) {
-      backgroundStars.push({
-        x: Math.random() * 760,
-        y: Math.random() * 420,
-        r: Math.random() * 1.5 + 0.5,
-        alpha: Math.random() * 0.7 + 0.3
-      });
-    }
-  }
-
-  function initSkyCanvas() {
-    skyCanvas.width = skyCanvas.parentElement.clientWidth || 760;
-    skyCanvas.height = 420;
-    generateBackgroundStars();
-    drawSky();
-  }
-
-  function drawSky() {
-    const w = skyCanvas.width;
-    const h = skyCanvas.height;
-
-    skCtx.fillStyle = state.nightMode ? '#0a0101' : '#040714';
-    skCtx.fillRect(0, 0, w, h);
-
-    // Rejilla de coordenadas celestes visible y contrastada
-    if (chkGrid && chkGrid.checked) {
-      skCtx.save();
-      skCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.28)' : 'rgba(56, 189, 248, 0.25)';
-      skCtx.lineWidth = 1;
-      skCtx.setLineDash([5, 5]);
-
-      // Paralelos de Declinación
-      const decs = [
-        { y: 80, label: '+30° Dec' },
-        { y: 210, label: '0° (Ecuador Celeste)' },
-        { y: 340, label: '-30° Dec' }
-      ];
-      decs.forEach(d => {
-        skCtx.beginPath();
-        skCtx.moveTo(0, d.y);
-        skCtx.lineTo(w, d.y);
-        skCtx.stroke();
-        skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#38bdf8';
-        skCtx.font = '10px JetBrains Mono, monospace';
-        skCtx.fillText(d.label, 12, d.y - 5);
-      });
-
-      // Meridianos de Ascensión Recta (RA)
-      const ras = [
-        { x: 180, label: 'RA 5h 00m' },
-        { x: 370, label: 'RA 5h 30m' },
-        { x: 560, label: 'RA 6h 00m' }
-      ];
-      ras.forEach(r => {
-        skCtx.beginPath();
-        skCtx.moveTo(r.x, 0);
-        skCtx.lineTo(r.x, h);
-        skCtx.stroke();
-        skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#38bdf8';
-        skCtx.font = '10px JetBrains Mono, monospace';
-        skCtx.fillText(r.label, r.x + 6, 18);
-      });
-
-      skCtx.restore();
-    }
-
-    // Estrellas tenues de fondo
-    backgroundStars.forEach(s => {
-      skCtx.beginPath();
-      skCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      skCtx.fillStyle = state.nightMode ? `rgba(239, 68, 68, ${s.alpha})` : `rgba(255, 255, 255, ${s.alpha})`;
-      skCtx.fill();
-    });
-
-    const cData = constellationsData[state.selectedConstellation];
-    if (cData) {
-      // Líneas de la constelación
-      if (chkLines && chkLines.checked) {
-        skCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.75)' : 'rgba(56, 189, 248, 0.65)';
-        skCtx.lineWidth = 2;
-        cData.lines.forEach(([i1, i2]) => {
-          skCtx.beginPath();
-          skCtx.moveTo(cData.stars[i1].x, cData.stars[i1].y);
-          skCtx.lineTo(cData.stars[i2].x, cData.stars[i2].y);
-          skCtx.stroke();
-        });
-      }
-
-      // Estrellas principales
-      cData.stars.forEach(st => {
-        skCtx.beginPath();
-        const starRad = Math.max(3.8, 6.5 - st.mag * 0.85);
-        skCtx.arc(st.x, st.y, starRad, 0, Math.PI * 2);
-        skCtx.fillStyle = state.nightMode ? '#fca5a5' : st.color;
-        skCtx.shadowBlur = 12;
-        skCtx.shadowColor = state.nightMode ? '#ef4444' : st.color;
-        skCtx.fill();
-        skCtx.shadowBlur = 0;
-
-        // Rótulos con nombres de estrellas (sin solapamiento)
-        if (chkNames && chkNames.checked) {
-          skCtx.fillStyle = state.nightMode ? '#fca5a5' : '#f8fafc';
-          skCtx.font = '11px Outfit, sans-serif';
-          const tox = st.tox !== undefined ? st.tox : 8;
-          const toy = st.toy !== undefined ? st.toy : 4;
-          skCtx.fillText(st.name, st.x + tox, st.y + toy);
-        }
-      });
-    }
-  }
-
-  function updateConstellationViewMode() {
-    const isPhoto = (state.constellationViewMode === 'photo');
-    if (btnViewSkyMap) btnViewSkyMap.classList.toggle('active', !isPhoto);
-    if (btnViewAstroPhoto) btnViewAstroPhoto.classList.toggle('active', isPhoto);
-    if (skyCanvas) skyCanvas.classList.toggle('hidden', isPhoto);
-    if (constellationCanvasControls) constellationCanvasControls.classList.toggle('hidden', isPhoto);
-    if (constellationPhotoCard) constellationPhotoCard.classList.toggle('hidden', !isPhoto);
-
+  function displaySelectedConstellation() {
     const curr = constellationsData[state.selectedConstellation];
-    if (curr && isPhoto) {
-      if (constellationPhotoImg) constellationPhotoImg.src = curr.photoUrl;
-      if (constellationPhotoTitle) constellationPhotoTitle.textContent = curr.photoTitle;
-      if (constellationPhotoCredit) constellationPhotoCredit.textContent = curr.credit;
-      if (constellationStellariumLink) constellationStellariumLink.href = curr.stellariumUrl;
+    if (!curr) return;
+    if (constellationPhotoImg) constellationPhotoImg.src = curr.photoUrl;
+    if (constellationPhotoTitle) constellationPhotoTitle.textContent = curr.photoTitle;
+    if (constellationPhotoCredit) constellationPhotoCredit.textContent = curr.credit;
+    if (constellationStellariumLink) constellationStellariumLink.href = curr.stellariumUrl;
+    if (constellationInfo) {
+      constellationInfo.innerHTML = `<strong>${curr.name}:</strong> ${curr.info}`;
     }
-  }
-
-  if (btnViewSkyMap) {
-    btnViewSkyMap.addEventListener('click', () => {
-      state.constellationViewMode = 'chart';
-      updateConstellationViewMode();
-      drawSky();
-      playTone(520, 'sine', 0.1, 0.05);
-    });
-  }
-
-  if (btnViewAstroPhoto) {
-    btnViewAstroPhoto.addEventListener('click', () => {
-      state.constellationViewMode = 'photo';
-      updateConstellationViewMode();
-      playTone(600, 'sine', 0.1, 0.05);
-    });
   }
 
   function populateConstellationUI() {
+    if (!constellationList) return;
     constellationList.innerHTML = '';
     Object.keys(constellationsData).forEach(key => {
       const c = constellationsData[key];
@@ -636,27 +452,15 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         state.selectedConstellation = key;
         populateConstellationUI();
-        if (state.constellationViewMode === 'photo') {
-          updateConstellationViewMode();
-        } else {
-          drawSky();
-        }
+        displaySelectedConstellation();
         updateAstroDataCard('constellations');
         playTone(600, 'sine', 0.15, 0.08);
       });
       constellationList.appendChild(btn);
     });
 
-    const curr = constellationsData[state.selectedConstellation];
-    constellationInfo.innerHTML = `
-      <strong>${curr.name}:</strong> ${curr.info}
-    `;
-    updateConstellationViewMode();
+    displaySelectedConstellation();
   }
-
-  if (chkLines) chkLines.addEventListener('change', drawSky);
-  if (chkNames) chkNames.addEventListener('change', drawSky);
-  if (chkGrid) chkGrid.addEventListener('change', drawSky);
 
   // ==========================================================================
   // 7. MÓDULO 3: LA LUNA Y SUS FASES INTERACTIVAS (MODELO 3D REAL)
@@ -787,14 +591,17 @@ document.addEventListener('DOMContentLoaded', () => {
     moonCtx.fillRect(0, 0, w, h);
 
     const p = parseFloat(progress);
-    const umbraCoverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2.2)));
+    // Totalidad exacta únicamente cuando la Luna se encuentra 100% inmersa en la umbra
+    const isTotality = (p >= 48.8 && p <= 51.2);
+    const umbraCoverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2.8)));
 
+    // 1. Resplandor exterior: blanco en fase parcial, rojo SOLO en totalidad completa
     const halo = moonCtx.createRadialGradient(cx, cy, R, cx, cy, R + 16);
-    if (umbraCoverage > 70) {
-      halo.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
+    if (isTotality) {
+      halo.addColorStop(0, 'rgba(239, 68, 68, 0.45)');
       halo.addColorStop(1, 'transparent');
     } else {
-      halo.addColorStop(0, 'rgba(224, 242, 254, 0.15)');
+      halo.addColorStop(0, 'rgba(224, 242, 254, 0.12)');
       halo.addColorStop(1, 'transparent');
     }
     moonCtx.fillStyle = halo;
@@ -802,6 +609,32 @@ document.addEventListener('DOMContentLoaded', () => {
     moonCtx.arc(cx, cy, R + 16, 0, Math.PI * 2);
     moonCtx.fill();
 
+    // 2. CASO TOTALIDAD: LA LUNA ESTÁ 100% TAPADA POR LA UMBRA
+    // ÚNICAMENTE EN ESTA FASE SE PONE ROJA (LUNA DE SANGRE POR DISPERSIÓN RAYLEIGH)
+    if (isTotality) {
+      const bloodGrad = moonCtx.createRadialGradient(cx - 20, cy - 20, 15, cx, cy, R);
+      bloodGrad.addColorStop(0, '#f87171');
+      bloodGrad.addColorStop(0.3, '#dc2626');
+      bloodGrad.addColorStop(0.7, '#991b1b');
+      bloodGrad.addColorStop(1, '#450a0a');
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+      moonCtx.fillStyle = bloodGrad;
+      moonCtx.fill();
+
+      // Relieve lunar visible bajo la tenue luz roja refractada
+      drawLunarRelief(moonCtx, cx, cy, R, 'rgba(69, 10, 10, 0.65)', 'rgba(254, 202, 202, 0.35)');
+
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+      moonCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+      moonCtx.lineWidth = 1;
+      moonCtx.stroke();
+      return;
+    }
+
+    // 3. CASO PARCIAL O PENUMBRAL: LA SOMBRA ES OSCURA / NEGRA (SIN LUZ ROJA)
+    // Base de Luna Llena brillante en la porción iluminada directamente por el Sol
     const fullGrad = moonCtx.createRadialGradient(cx - 15, cy - 15, 12, cx, cy, R);
     fullGrad.addColorStop(0, '#ffffff');
     fullGrad.addColorStop(0.4, '#f8fafc');
@@ -814,10 +647,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawLunarRelief(moonCtx, cx, cy, R, 'rgba(71, 85, 105, 0.45)', 'rgba(255, 255, 255, 0.45)');
 
+    // Atenuación penumbral tenue
+    if (p > 15 && p < 85 && umbraCoverage === 0) {
+      moonCtx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+      moonCtx.fill();
+    }
+
+    // Proyección de la umbra terrestre OSCURA (negro y carbón, CERO luz roja)
     if (umbraCoverage > 0) {
-      const shadowOffsetX = ((p - 50) / 50) * (2.4 * R);
+      const shadowOffsetX = ((p - 50) / 50) * (2.2 * R);
       const shadowX = cx + shadowOffsetX;
-      const shadowR = R * 1.5;
+      const shadowR = R * 1.45;
 
       moonCtx.save();
       moonCtx.beginPath();
@@ -825,26 +667,15 @@ document.addEventListener('DOMContentLoaded', () => {
       moonCtx.clip();
 
       const shadowGrad = moonCtx.createRadialGradient(shadowX, cy, 10, shadowX, cy, shadowR);
-      shadowGrad.addColorStop(0, '#3f0c0c');
-      shadowGrad.addColorStop(0.35, '#7f1d1d');
-      shadowGrad.addColorStop(0.65, '#991b1b');
-      shadowGrad.addColorStop(0.88, '#b91c1c');
-      shadowGrad.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+      shadowGrad.addColorStop(0, '#020617');
+      shadowGrad.addColorStop(0.7, '#090d16');
+      shadowGrad.addColorStop(0.9, 'rgba(15, 23, 42, 0.98)');
+      shadowGrad.addColorStop(1, 'rgba(30, 41, 59, 0.4)');
 
       moonCtx.beginPath();
       moonCtx.arc(shadowX, cy, shadowR, 0, Math.PI * 2);
       moonCtx.fillStyle = shadowGrad;
       moonCtx.fill();
-
-      if (umbraCoverage > 55) {
-        const bloodAlpha = ((umbraCoverage - 55) / 45) * 0.85;
-        moonCtx.fillStyle = `rgba(185, 28, 28, ${bloodAlpha})`;
-        moonCtx.beginPath();
-        moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
-        moonCtx.fill();
-
-        drawLunarRelief(moonCtx, cx, cy, R, 'rgba(69, 10, 10, 0.55)', 'rgba(254, 202, 202, 0.25)');
-      }
 
       moonCtx.restore();
     }
@@ -1047,22 +878,27 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateLunarEclipseProgress(val) {
     state.lunarProgress = parseFloat(val);
     const p = state.lunarProgress;
-    const umbraCoverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2.2)));
+    const isTotality = (p >= 48.8 && p <= 51.2);
+    const umbraCoverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2.8)));
 
     let name = '';
-    if (p >= 46 && p <= 54) {
-      name = 'Eclipse Lunar Total (Luna de Sangre Cobriza)';
+    if (isTotality) {
+      name = 'Eclipse Lunar Total: Luna de Sangre (100% Umbra)';
     } else if (umbraCoverage > 0) {
-      name = `Eclipse Lunar: Entrada en Umbra (${umbraCoverage}% sumergida)`;
-    } else if (p > 10 && p < 90) {
-      name = 'Eclipse Lunar Penumbral (Atenuación de Disco)';
+      name = `Eclipse Lunar Parcial (${umbraCoverage}% en Sombra Umbral)`;
+    } else if (p > 15 && p < 85) {
+      name = 'Eclipse Lunar Penumbral (Atenuación Leve)';
     } else {
       name = 'Luna Llena Plena (Fuera de Sombra Terrestre)';
     }
 
     if (phaseName) phaseName.textContent = name;
     if (phaseDay) phaseDay.textContent = `Tránsito Umbral: ${p.toFixed(1)}% del Evento`;
-    if (phaseIllum) phaseIllum.textContent = p >= 46 && p <= 54 ? 'Filtro Rayleigh: 100% Luz Roja Refractada' : `Inmersión en Umbra: ${umbraCoverage}%`;
+    if (phaseIllum) {
+      phaseIllum.textContent = isTotality
+        ? 'Totalidad (100% Cubierta): Dispersión Rayleigh Activa (Luna de Sangre)'
+        : `Sombra Terrestre: ${umbraCoverage}% del disco en oscuridad umbral`;
+    }
 
     renderLunarEclipseCanvas(p);
   }
@@ -2381,7 +2217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', () => {
     if (state.currentModule === 'solar') initSolarCanvas();
-    if (state.currentModule === 'constellations') { initSkyCanvas(); drawSky(); }
+    if (state.currentModule === 'constellations') displaySelectedConstellation();
     if (state.currentModule === 'meteors') initMeteorCanvas();
     if (state.currentModule === 'astrophoto') renderViewfinder();
   });
