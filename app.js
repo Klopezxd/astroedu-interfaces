@@ -157,8 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
       initSkyCanvas();
       drawSky();
     } else if (modId === 'moon') {
-      updateMoonPhase(state.moonDay, state.moonEclipse);
-      renderEclipseGeometryCanvas(state.eclipseType);
+      setMoonSimulationMode(state.moonSimMode || 'moon');
+      renderEclipseGeometryCanvas(state.eclipseType || 'solar');
     } else if (modId === 'meteors') {
       initMeteorCanvas();
       renderMeteors();
@@ -215,7 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Re-renderizar lienzos con la nueva paleta cromática
     if (state.currentModule === 'solar') renderSolarSystem();
     if (state.currentModule === 'constellations') drawSky();
-    if (state.currentModule === 'moon') updateMoonPhase(state.moonDay, state.moonEclipse);
+    if (state.currentModule === 'moon') {
+      if (state.moonSimMode === 'solar') updateSolarEclipseProgress(state.solarProgress || 50);
+      else if (state.moonSimMode === 'lunar') updateLunarEclipseProgress(state.lunarProgress || 50);
+      else updateMoonPhase(state.moonDay || 7.4);
+    }
     if (state.currentModule === 'astrophoto') renderViewfinder();
   }
 
@@ -412,16 +416,17 @@ document.addEventListener('DOMContentLoaded', () => {
     orion: {
       name: 'Orión (El Cazador)',
       stars: [
-        { name: 'Betelgeuse', x: 250, y: 140, mag: 0.5, color: '#f97316', tox: -82, toy: -4 },
-        { name: 'Bellatrix', x: 450, y: 150, mag: 1.6, color: '#38bdf8', tox: 10, toy: -4 },
+        { name: 'Betelgeuse', x: 240, y: 130, mag: 0.5, color: '#f97316', tox: -82, toy: -4 },
+        { name: 'Bellatrix', x: 480, y: 140, mag: 1.6, color: '#38bdf8', tox: 12, toy: -4 },
         { name: 'Alnitak', x: 310, y: 235, mag: 1.7, color: '#93c5fd', tox: -52, toy: 16 },
-        { name: 'Alnilam', x: 350, y: 230, mag: 1.6, color: '#93c5fd', tox: -22, toy: -14 },
-        { name: 'Mintaka', x: 390, y: 225, mag: 2.2, color: '#93c5fd', tox: 10, toy: -10 },
-        { name: 'Saiph', x: 270, y: 335, mag: 2.0, color: '#38bdf8', tox: -46, toy: 16 },
-        { name: 'Rigel', x: 440, y: 325, mag: 0.1, color: '#60a5fa', tox: 12, toy: 14 },
-        { name: 'Meissa', x: 350, y: 95, mag: 3.4, color: '#e2e8f0', tox: -20, toy: -12 }
+        { name: 'Alnilam', x: 360, y: 230, mag: 1.6, color: '#93c5fd', tox: -22, toy: -14 },
+        { name: 'Mintaka', x: 410, y: 225, mag: 2.2, color: '#93c5fd', tox: 12, toy: -10 },
+        { name: 'Saiph', x: 260, y: 340, mag: 2.0, color: '#38bdf8', tox: -46, toy: 16 },
+        { name: 'Rigel', x: 470, y: 330, mag: 0.1, color: '#60a5fa', tox: 12, toy: 14 },
+        { name: 'Meissa', x: 360, y: 80, mag: 3.4, color: '#e2e8f0', tox: -20, toy: -12 }
       ],
       lines: [
+        [0, 1],
         [7, 0], [7, 1],
         [0, 2], [1, 4],
         [2, 3], [3, 4],
@@ -437,15 +442,18 @@ document.addEventListener('DOMContentLoaded', () => {
     ursaMajor: {
       name: 'Osa Mayor (El Carro)',
       stars: [
-        { name: 'Dubhe', x: 230, y: 150, mag: 1.8, color: '#fde047', tox: -55, toy: -8 },
-        { name: 'Merak', x: 240, y: 235, mag: 2.3, color: '#93c5fd', tox: -52, toy: 16 },
-        { name: 'Phecda', x: 335, y: 225, mag: 2.4, color: '#93c5fd', tox: -15, toy: 20 },
-        { name: 'Megrez', x: 325, y: 165, mag: 3.3, color: '#93c5fd', tox: -48, toy: -10 },
-        { name: 'Alioth', x: 410, y: 145, mag: 1.7, color: '#93c5fd', tox: -18, toy: -14 },
-        { name: 'Mizar', x: 485, y: 130, mag: 2.2, color: '#93c5fd', tox: -15, toy: -14 },
-        { name: 'Alkaid', x: 565, y: 145, mag: 1.8, color: '#60a5fa', tox: 12, toy: 4 }
+        { name: 'Dubhe', x: 610, y: 165, mag: 1.8, color: '#fde047', tox: 12, toy: -8 },
+        { name: 'Merak', x: 590, y: 255, mag: 2.3, color: '#93c5fd', tox: 12, toy: 16 },
+        { name: 'Phecda', x: 450, y: 240, mag: 2.4, color: '#93c5fd', tox: -20, toy: 20 },
+        { name: 'Megrez', x: 435, y: 165, mag: 3.3, color: '#93c5fd', tox: -48, toy: -10 },
+        { name: 'Alioth', x: 320, y: 130, mag: 1.7, color: '#93c5fd', tox: -18, toy: -14 },
+        { name: 'Mizar', x: 225, y: 100, mag: 2.2, color: '#93c5fd', tox: -15, toy: -14 },
+        { name: 'Alkaid', x: 125, y: 85, mag: 1.8, color: '#60a5fa', tox: -55, toy: 4 }
       ],
-      lines: [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 6]],
+      lines: [
+        [3, 0], [0, 1], [1, 2], [2, 3],
+        [3, 4], [4, 5], [5, 6]
+      ],
       photoUrl: 'img/constelacion_osa_mayor.jpg',
       photoTitle: 'Astrofotografía de la Osa Mayor y el Asterismo del Carro',
       credit: 'Astrofotografía de Cielo Nocturno • Las 7 Estrellas del Carro',
@@ -455,11 +463,11 @@ document.addEventListener('DOMContentLoaded', () => {
     crux: {
       name: 'Cruz del Sur (Crux)',
       stars: [
-        { name: 'Acrux', x: 360, y: 310, mag: 0.7, color: '#60a5fa', tox: -52, toy: 18 },
-        { name: 'Gacrux', x: 360, y: 150, mag: 1.6, color: '#f87171', tox: -54, toy: -12 },
-        { name: 'Mimosa', x: 290, y: 235, mag: 1.2, color: '#93c5fd', tox: -65, toy: 4 },
-        { name: 'Imai', x: 415, y: 220, mag: 2.7, color: '#93c5fd', tox: 12, toy: 4 },
-        { name: 'Ginan', x: 390, y: 265, mag: 3.6, color: '#cbd5e1', tox: 12, toy: 14 }
+        { name: 'Acrux', x: 405, y: 335, mag: 0.7, color: '#60a5fa', tox: -52, toy: 18 },
+        { name: 'Gacrux', x: 355, y: 95, mag: 1.6, color: '#f87171', tox: -54, toy: -12 },
+        { name: 'Mimosa', x: 270, y: 215, mag: 1.2, color: '#93c5fd', tox: -65, toy: 4 },
+        { name: 'Imai', x: 480, y: 165, mag: 2.7, color: '#93c5fd', tox: 12, toy: 4 },
+        { name: 'Ginan', x: 435, y: 265, mag: 3.6, color: '#cbd5e1', tox: 12, toy: 14 }
       ],
       lines: [[0, 1], [2, 3]],
       photoUrl: 'img/constelacion_cruz_sur.jpg',
@@ -662,9 +670,193 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnEclipseSolar = document.getElementById('btnEclipseSolar');
   const btnEclipseLunar = document.getElementById('btnEclipseLunar');
   const eclipseStatus = document.getElementById('eclipseStatus');
-  const phaseButtons = document.querySelectorAll('.phase-buttons-row .btn-tag');
+  const btnModeMoonPhases = document.getElementById('btnModeMoonPhases');
+  const btnModeSolarEclipse = document.getElementById('btnModeSolarEclipse');
+  const btnModeLunarEclipse = document.getElementById('btnModeLunarEclipse');
+  const sliderLabel = document.getElementById('sliderLabel');
+  const phaseButtonsRow = document.getElementById('phaseButtonsRow');
 
-  function renderMoonCanvas(day, eclipseMode = null) {
+  function renderSolarEclipseCanvas(progress) {
+    if (!moonCtx) return;
+    const w = moonCanvas.width;
+    const h = moonCanvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const R = 72;
+
+    moonCtx.clearRect(0, 0, w, h);
+    moonCtx.fillStyle = '#020617';
+    moonCtx.fillRect(0, 0, w, h);
+
+    const p = parseFloat(progress);
+    const moonOffsetX = ((p - 50) / 50) * (2.1 * R);
+    const moonX = cx + moonOffsetX;
+    const moonY = cy;
+
+    const isTotality = (p >= 49.2 && p <= 50.8);
+
+    if (isTotality) {
+      const coronaGrad = moonCtx.createRadialGradient(cx, cy, R - 5, cx, cy, R + 34);
+      coronaGrad.addColorStop(0, '#fef08a');
+      coronaGrad.addColorStop(0.2, '#facc15');
+      coronaGrad.addColorStop(0.55, 'rgba(234, 88, 12, 0.45)');
+      coronaGrad.addColorStop(1, 'transparent');
+      moonCtx.fillStyle = coronaGrad;
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R + 34, 0, Math.PI * 2);
+      moonCtx.fill();
+
+      for (let i = 0; i < 28; i++) {
+        const ang = (i / 28) * Math.PI * 2;
+        const len = R + 14 + (Math.sin(i * 3.3) * 16);
+        moonCtx.beginPath();
+        moonCtx.moveTo(cx + Math.cos(ang) * (R + 2), cy + Math.sin(ang) * (R + 2));
+        moonCtx.lineTo(cx + Math.cos(ang) * len, cy + Math.sin(ang) * len);
+        moonCtx.strokeStyle = 'rgba(254, 240, 138, 0.55)';
+        moonCtx.lineWidth = 1.5;
+        moonCtx.stroke();
+      }
+    } else {
+      const sunGlow = moonCtx.createRadialGradient(cx, cy, R * 0.7, cx, cy, R * 1.35);
+      sunGlow.addColorStop(0, 'rgba(253, 224, 71, 0.3)');
+      sunGlow.addColorStop(1, 'transparent');
+      moonCtx.fillStyle = sunGlow;
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R * 1.35, 0, Math.PI * 2);
+      moonCtx.fill();
+    }
+
+    const sunGrad = moonCtx.createRadialGradient(cx - 15, cy - 15, 10, cx, cy, R);
+    sunGrad.addColorStop(0, '#ffffff');
+    sunGrad.addColorStop(0.25, '#fef08a');
+    sunGrad.addColorStop(0.7, '#f59e0b');
+    sunGrad.addColorStop(1, '#d97706');
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+    moonCtx.fillStyle = sunGrad;
+    moonCtx.fill();
+
+    moonCtx.beginPath();
+    moonCtx.arc(moonX, moonY, R + 1, 0, Math.PI * 2);
+    moonCtx.fillStyle = '#030712';
+    moonCtx.fill();
+
+    moonCtx.beginPath();
+    moonCtx.arc(moonX, moonY, R + 1, 0, Math.PI * 2);
+    moonCtx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    moonCtx.lineWidth = 1;
+    moonCtx.stroke();
+
+    if (p >= 47 && p <= 49.1) {
+      const flareAng = -Math.PI / 4;
+      const flareX = cx + Math.cos(flareAng) * R;
+      const flareY = cy + Math.sin(flareAng) * R;
+      const fGrad = moonCtx.createRadialGradient(flareX, flareY, 1, flareX, flareY, 20);
+      fGrad.addColorStop(0, '#ffffff');
+      fGrad.addColorStop(0.3, '#fef08a');
+      fGrad.addColorStop(1, 'transparent');
+      moonCtx.fillStyle = fGrad;
+      moonCtx.beginPath();
+      moonCtx.arc(flareX, flareY, 20, 0, Math.PI * 2);
+      moonCtx.fill();
+    } else if (p >= 50.9 && p <= 53) {
+      const flareAng = (3 * Math.PI) / 4;
+      const flareX = cx + Math.cos(flareAng) * R;
+      const flareY = cy + Math.sin(flareAng) * R;
+      const fGrad = moonCtx.createRadialGradient(flareX, flareY, 1, flareX, flareY, 20);
+      fGrad.addColorStop(0, '#ffffff');
+      fGrad.addColorStop(0.3, '#fef08a');
+      fGrad.addColorStop(1, 'transparent');
+      moonCtx.fillStyle = fGrad;
+      moonCtx.beginPath();
+      moonCtx.arc(flareX, flareY, 20, 0, Math.PI * 2);
+      moonCtx.fill();
+    }
+  }
+
+  function renderLunarEclipseCanvas(progress) {
+    if (!moonCtx) return;
+    const w = moonCanvas.width;
+    const h = moonCanvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const R = 72;
+
+    moonCtx.clearRect(0, 0, w, h);
+    moonCtx.fillStyle = '#020617';
+    moonCtx.fillRect(0, 0, w, h);
+
+    const p = parseFloat(progress);
+    const umbraCoverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2.2)));
+
+    const halo = moonCtx.createRadialGradient(cx, cy, R, cx, cy, R + 16);
+    if (umbraCoverage > 70) {
+      halo.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
+      halo.addColorStop(1, 'transparent');
+    } else {
+      halo.addColorStop(0, 'rgba(224, 242, 254, 0.15)');
+      halo.addColorStop(1, 'transparent');
+    }
+    moonCtx.fillStyle = halo;
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R + 16, 0, Math.PI * 2);
+    moonCtx.fill();
+
+    const fullGrad = moonCtx.createRadialGradient(cx - 15, cy - 15, 12, cx, cy, R);
+    fullGrad.addColorStop(0, '#ffffff');
+    fullGrad.addColorStop(0.4, '#f8fafc');
+    fullGrad.addColorStop(0.75, '#cbd5e1');
+    fullGrad.addColorStop(1, '#94a3b8');
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+    moonCtx.fillStyle = fullGrad;
+    moonCtx.fill();
+
+    drawLunarRelief(moonCtx, cx, cy, R, 'rgba(71, 85, 105, 0.45)', 'rgba(255, 255, 255, 0.45)');
+
+    if (umbraCoverage > 0) {
+      const shadowOffsetX = ((p - 50) / 50) * (2.4 * R);
+      const shadowX = cx + shadowOffsetX;
+      const shadowR = R * 1.5;
+
+      moonCtx.save();
+      moonCtx.beginPath();
+      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+      moonCtx.clip();
+
+      const shadowGrad = moonCtx.createRadialGradient(shadowX, cy, 10, shadowX, cy, shadowR);
+      shadowGrad.addColorStop(0, '#3f0c0c');
+      shadowGrad.addColorStop(0.35, '#7f1d1d');
+      shadowGrad.addColorStop(0.65, '#991b1b');
+      shadowGrad.addColorStop(0.88, '#b91c1c');
+      shadowGrad.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+
+      moonCtx.beginPath();
+      moonCtx.arc(shadowX, cy, shadowR, 0, Math.PI * 2);
+      moonCtx.fillStyle = shadowGrad;
+      moonCtx.fill();
+
+      if (umbraCoverage > 55) {
+        const bloodAlpha = ((umbraCoverage - 55) / 45) * 0.85;
+        moonCtx.fillStyle = `rgba(185, 28, 28, ${bloodAlpha})`;
+        moonCtx.beginPath();
+        moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+        moonCtx.fill();
+
+        drawLunarRelief(moonCtx, cx, cy, R, 'rgba(69, 10, 10, 0.55)', 'rgba(254, 202, 202, 0.25)');
+      }
+
+      moonCtx.restore();
+    }
+
+    moonCtx.beginPath();
+    moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
+    moonCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    moonCtx.lineWidth = 1;
+    moonCtx.stroke();
+  }
+
+  function renderMoonCanvas(day) {
     if (!moonCtx) return;
     const w = moonCanvas.width;
     const h = moonCanvas.height;
@@ -674,93 +866,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     moonCtx.clearRect(0, 0, w, h);
 
-    // CASO 1: MODO SIMULADOR DE ECLIPSE SOLAR
-    if (eclipseMode === 'solar') {
-      // Espacio profundo
-      moonCtx.fillStyle = '#030712';
-      moonCtx.fillRect(0, 0, w, h);
-
-      // Resplandor de la Corona Solar detrás del disco lunar
-      const corona = moonCtx.createRadialGradient(cx, cy, R - 6, cx, cy, R + 26);
-      corona.addColorStop(0, '#ffffff');
-      corona.addColorStop(0.2, '#fde047');
-      corona.addColorStop(0.55, '#f59e0b');
-      corona.addColorStop(0.85, 'rgba(239, 68, 68, 0.35)');
-      corona.addColorStop(1, 'transparent');
-
-      moonCtx.fillStyle = corona;
-      moonCtx.beginPath();
-      moonCtx.arc(cx, cy, R + 26, 0, Math.PI * 2);
-      moonCtx.fill();
-
-      // Destellos radiales de la atmósfera exterior del Sol
-      for (let i = 0; i < 20; i++) {
-        const ang = (i / 20) * Math.PI * 2;
-        const len = R + 14 + (Math.sin(i * 3.7) * 10);
-        moonCtx.beginPath();
-        moonCtx.moveTo(cx + Math.cos(ang) * (R + 2), cy + Math.sin(ang) * (R + 2));
-        moonCtx.lineTo(cx + Math.cos(ang) * len, cy + Math.sin(ang) * len);
-        moonCtx.strokeStyle = 'rgba(254, 240, 138, 0.45)';
-        moonCtx.lineWidth = 2;
-        moonCtx.stroke();
-      }
-
-      // Disco lunar opaco que eclipsa la fotosfera
-      moonCtx.beginPath();
-      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
-      moonCtx.fillStyle = '#030712';
-      moonCtx.fill();
-
-      // Efecto "Anillo de Diamante" característico en el limbo
-      const flareX = cx + Math.cos(-Math.PI / 4) * R;
-      const flareY = cy + Math.sin(-Math.PI / 4) * R;
-      const flareGrad = moonCtx.createRadialGradient(flareX, flareY, 1, flareX, flareY, 16);
-      flareGrad.addColorStop(0, '#ffffff');
-      flareGrad.addColorStop(0.3, '#fef08a');
-      flareGrad.addColorStop(1, 'transparent');
-      moonCtx.fillStyle = flareGrad;
-      moonCtx.beginPath();
-      moonCtx.arc(flareX, flareY, 16, 0, Math.PI * 2);
-      moonCtx.fill();
-      return;
-    }
-
-    // CASO 2: MODO SIMULADOR DE ECLIPSE LUNAR (LUNA DE SANGRE)
-    if (eclipseMode === 'lunar') {
-      // Resplandor cobrizo atmosférico refractado
-      const redGlow = moonCtx.createRadialGradient(cx, cy, R, cx, cy, R + 18);
-      redGlow.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
-      redGlow.addColorStop(1, 'transparent');
-      moonCtx.fillStyle = redGlow;
-      moonCtx.beginPath();
-      moonCtx.arc(cx, cy, R + 18, 0, Math.PI * 2);
-      moonCtx.fill();
-
-      // Esfera iluminada por la dispersión atmosférica terrestre
-      const bloodGrad = moonCtx.createRadialGradient(cx - 20, cy - 20, 15, cx, cy, R);
-      bloodGrad.addColorStop(0, '#f87171');
-      bloodGrad.addColorStop(0.35, '#dc2626');
-      bloodGrad.addColorStop(0.7, '#991b1b');
-      bloodGrad.addColorStop(1, '#450a0a');
-
-      moonCtx.beginPath();
-      moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
-      moonCtx.fillStyle = bloodGrad;
-      moonCtx.fill();
-
-      // Relieve de mares lunares visibles bajo la luz roja
-      drawLunarRelief(moonCtx, cx, cy, R, 'rgba(69, 10, 10, 0.55)', 'rgba(254, 202, 202, 0.25)');
-      return;
-    }
-
-    // CASO 3: FASES LUNARES REGULARES (TERMINADOR ELÍPTICO ASTRONÓMICO)
     const p = (day % 29.53) / 29.53;
     const phi = p * Math.PI * 2;
     const cosPhi = Math.cos(phi);
     const isWaxing = p <= 0.5;
     const rx = Math.max(0.1, Math.abs(R * cosPhi));
 
-    // Aura exterior muy sutil
     const outerAura = moonCtx.createRadialGradient(cx, cy, R, cx, cy, R + 12);
     outerAura.addColorStop(0, state.nightMode ? 'rgba(239, 68, 68, 0.12)' : 'rgba(224, 242, 254, 0.12)');
     outerAura.addColorStop(1, 'transparent');
@@ -769,7 +880,6 @@ document.addEventListener('DOMContentLoaded', () => {
     moonCtx.arc(cx, cy, R + 12, 0, Math.PI * 2);
     moonCtx.fill();
 
-    // Disco base en sombra (lado nocturno con suave luz cenicienta esférica)
     const darkSide = moonCtx.createRadialGradient(cx - 20, cy - 20, 10, cx, cy, R);
     if (state.nightMode) {
       darkSide.addColorStop(0, 'rgba(69, 10, 10, 0.6)');
@@ -785,30 +895,23 @@ document.addEventListener('DOMContentLoaded', () => {
     moonCtx.fillStyle = darkSide;
     moonCtx.fill();
 
-    // Relieve tenue en la cara oculta a la luz
     drawLunarRelief(moonCtx, cx, cy, R, 'rgba(3, 7, 18, 0.5)', 'rgba(255, 255, 255, 0.05)');
 
-    // Región iluminada mediante recorte con terminador elíptico exacto
     if (day > 0.4 && day < 29.1) {
       moonCtx.save();
       moonCtx.beginPath();
 
       if (isWaxing) {
-        // Creciente: semicírculo derecho
         moonCtx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);
-        // Terminador de regreso del polo sur al polo norte
         moonCtx.ellipse(cx, cy, rx, R, 0, Math.PI / 2, -Math.PI / 2, cosPhi >= 0);
       } else {
-        // Menguante: semicírculo izquierdo
         moonCtx.arc(cx, cy, R, Math.PI / 2, -Math.PI / 2, false);
-        // Terminador de regreso del polo norte al polo sur
         moonCtx.ellipse(cx, cy, rx, R, 0, -Math.PI / 2, Math.PI / 2, cosPhi >= 0);
       }
 
       moonCtx.closePath();
       moonCtx.clip();
 
-      // Gradiente de iluminación esférica
       const litGrad = moonCtx.createRadialGradient(
         cx + (isWaxing ? 25 : -25),
         cy - 20,
@@ -831,12 +934,10 @@ document.addEventListener('DOMContentLoaded', () => {
       moonCtx.fillStyle = litGrad;
       moonCtx.fill();
 
-      // Mares y cráteres detallados en la región iluminada
       drawLunarRelief(moonCtx, cx, cy, R, state.nightMode ? 'rgba(127, 29, 29, 0.6)' : 'rgba(71, 85, 105, 0.45)', 'rgba(255, 255, 255, 0.45)');
 
       moonCtx.restore();
 
-      // Penumbra sutil a lo largo del terminador
       moonCtx.save();
       moonCtx.beginPath();
       if (isWaxing) {
@@ -850,7 +951,6 @@ document.addEventListener('DOMContentLoaded', () => {
       moonCtx.restore();
     }
 
-    // Borde perimetral tenue
     moonCtx.beginPath();
     moonCtx.arc(cx, cy, R, 0, Math.PI * 2);
     moonCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255, 255, 255, 0.15)';
@@ -859,7 +959,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function drawLunarRelief(ctx, cx, cy, R, darkColor, lightColor) {
-    // Parches de mares lunares (Oceanus Procellarum, Mare Imbrium, Tranquillitatis, etc.)
     const maria = [
       { x: cx - 28, y: cy - 6, rx: 22, ry: 28, rot: 0.1 },
       { x: cx - 12, y: cy - 32, rx: 18, ry: 16, rot: -0.1 },
@@ -876,7 +975,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fill();
     });
 
-    // Cráter Tycho con sus rayos brillantes radiales en el polo sur
     const tychoX = cx - 4;
     const tychoY = cy + 44;
     ctx.strokeStyle = lightColor;
@@ -893,23 +991,21 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = lightColor;
     ctx.fill();
 
-    // Cráter Copérnico
     ctx.beginPath();
     ctx.arc(cx - 16, cy - 4, 3, 0, Math.PI * 2);
     ctx.fillStyle = lightColor;
     ctx.fill();
   }
 
-  function updateMoonPhase(day, eclipseMode = null) {
+  function updateMoonPhase(day) {
     state.moonDay = parseFloat(day);
-    state.moonEclipse = eclipseMode;
-    moonSlider.value = state.moonDay;
+    if (moonSlider && state.moonSimMode === 'moon') moonSlider.value = state.moonDay;
     const progress = state.moonDay / 29.53;
     const angle = progress * Math.PI * 2;
     const illum = Math.round(((1 - Math.cos(angle)) / 2) * 100);
 
-    phaseDay.textContent = `Día ${state.moonDay.toFixed(1)} de 29.5 días sinódicos`;
-    phaseIllum.textContent = `Iluminación de disco: ${illum}%`;
+    if (phaseDay) phaseDay.textContent = `Día ${state.moonDay.toFixed(1)} de 29.5 días sinódicos`;
+    if (phaseIllum) phaseIllum.textContent = `Iluminación de disco: ${illum}%`;
 
     let name = '';
     if (state.moonDay < 1.5 || state.moonDay > 28.0) name = 'Luna Nueva (Novilunio)';
@@ -921,30 +1017,164 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (state.moonDay < 23.5) name = 'Cuarto Menguante';
     else name = 'Luna Menguante Cóncava';
 
-    if (eclipseMode === 'solar') {
-      name = 'Eclipse Solar Total (Alineación Umbral)';
-    } else if (eclipseMode === 'lunar') {
-      name = 'Eclipse Lunar Total (Luna de Sangre)';
+    if (phaseName) phaseName.textContent = name;
+    renderMoonCanvas(state.moonDay);
+  }
+
+  function updateSolarEclipseProgress(val) {
+    state.solarProgress = parseFloat(val);
+    const p = state.solarProgress;
+    const coverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2)));
+
+    let name = '';
+    if (p >= 49.2 && p <= 50.8) {
+      name = 'Eclipse Solar Total (Corona y Alineación Umbral)';
+    } else if ((p >= 47 && p < 49.2) || (p > 50.8 && p <= 53)) {
+      name = 'Eclipse Solar: Fase de Anillo de Diamante';
+    } else if (coverage > 0) {
+      name = `Eclipse Solar Parcial (${coverage}% Cobertura)`;
+    } else {
+      name = 'Fotosfera Solar Directa (Tránsito no iniciado / finalizado)';
     }
 
-    phaseName.textContent = name;
-    renderMoonCanvas(state.moonDay, eclipseMode);
+    if (phaseName) phaseName.textContent = name;
+    if (phaseDay) phaseDay.textContent = `Tránsito Lunar: ${p.toFixed(1)}% del Evento`;
+    if (phaseIllum) phaseIllum.textContent = `Oscurecimiento Solar: ${coverage}%`;
+
+    renderSolarEclipseCanvas(p);
+  }
+
+  function updateLunarEclipseProgress(val) {
+    state.lunarProgress = parseFloat(val);
+    const p = state.lunarProgress;
+    const umbraCoverage = Math.max(0, Math.min(100, Math.round(100 - Math.abs(p - 50) * 2.2)));
+
+    let name = '';
+    if (p >= 46 && p <= 54) {
+      name = 'Eclipse Lunar Total (Luna de Sangre Cobriza)';
+    } else if (umbraCoverage > 0) {
+      name = `Eclipse Lunar: Entrada en Umbra (${umbraCoverage}% sumergida)`;
+    } else if (p > 10 && p < 90) {
+      name = 'Eclipse Lunar Penumbral (Atenuación de Disco)';
+    } else {
+      name = 'Luna Llena Plena (Fuera de Sombra Terrestre)';
+    }
+
+    if (phaseName) phaseName.textContent = name;
+    if (phaseDay) phaseDay.textContent = `Tránsito Umbral: ${p.toFixed(1)}% del Evento`;
+    if (phaseIllum) phaseIllum.textContent = p >= 46 && p <= 54 ? 'Filtro Rayleigh: 100% Luz Roja Refractada' : `Inmersión en Umbra: ${umbraCoverage}%`;
+
+    renderLunarEclipseCanvas(p);
+  }
+
+  function renderPhaseButtons(buttons) {
+    if (!phaseButtonsRow) return;
+    phaseButtonsRow.innerHTML = '';
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-tag';
+      btn.textContent = b.label;
+      btn.addEventListener('click', () => {
+        moonSlider.value = b.val;
+        if (state.moonSimMode === 'moon') {
+          updateMoonPhase(b.val);
+        } else if (state.moonSimMode === 'solar') {
+          updateSolarEclipseProgress(b.val);
+        } else if (state.moonSimMode === 'lunar') {
+          updateLunarEclipseProgress(b.val);
+        }
+        playTone(550, 'sine', 0.1, 0.06);
+      });
+      phaseButtonsRow.appendChild(btn);
+    });
+  }
+
+  function setMoonSimulationMode(mode, initialVal = null) {
+    state.moonSimMode = mode;
+    if (btnModeMoonPhases) btnModeMoonPhases.classList.toggle('active', mode === 'moon');
+    if (btnModeSolarEclipse) btnModeSolarEclipse.classList.toggle('active', mode === 'solar');
+    if (btnModeLunarEclipse) btnModeLunarEclipse.classList.toggle('active', mode === 'lunar');
+
+    if (mode === 'moon') {
+      if (sliderLabel) sliderLabel.textContent = 'Desplazamiento del Ciclo Lunar:';
+      moonSlider.min = '0';
+      moonSlider.max = '29.5';
+      moonSlider.step = '0.2';
+      const val = initialVal !== null ? initialVal : (state.moonDay !== undefined ? state.moonDay : 7.4);
+      moonSlider.value = val;
+      renderPhaseButtons([
+        { label: 'Nueva (0d)', val: 0 },
+        { label: 'Creciente (7.4d)', val: 7.4 },
+        { label: 'Llena (14.8d)', val: 14.8 },
+        { label: 'Menguante (22.1d)', val: 22.1 }
+      ]);
+      if (eclipseStatus) eclipseStatus.textContent = 'Arrastra el deslizador para apreciar la curvatura del terminador elíptico y el relieve de mares y cráteres.';
+      updateMoonPhase(val);
+    } else if (mode === 'solar') {
+      if (sliderLabel) sliderLabel.textContent = 'Progresión del Tránsito Lunar (Eclipse Solar):';
+      moonSlider.min = '0';
+      moonSlider.max = '100';
+      moonSlider.step = '0.5';
+      const val = initialVal !== null ? initialVal : (state.solarProgress !== undefined ? state.solarProgress : 50);
+      moonSlider.value = val;
+      renderPhaseButtons([
+        { label: 'Entrada (20%)', val: 20 },
+        { label: 'Anillo Diamante (48%)', val: 48 },
+        { label: 'Totalidad (50%)', val: 50 },
+        { label: 'Salida (80%)', val: 80 }
+      ]);
+      if (eclipseStatus) eclipseStatus.textContent = 'Desplaza la Luna a través del disco solar para experimentar el tránsito, el anillo de diamante y la corona de totalidad.';
+      updateSolarEclipseProgress(val);
+    } else if (mode === 'lunar') {
+      if (sliderLabel) sliderLabel.textContent = 'Progresión del Tránsito en Umbra (Eclipse Lunar):';
+      moonSlider.min = '0';
+      moonSlider.max = '100';
+      moonSlider.step = '0.5';
+      const val = initialVal !== null ? initialVal : (state.lunarProgress !== undefined ? state.lunarProgress : 50);
+      moonSlider.value = val;
+      renderPhaseButtons([
+        { label: 'Penumbral (15%)', val: 15 },
+        { label: 'Entrada Umbra (35%)', val: 35 },
+        { label: 'Luna de Sangre (50%)', val: 50 },
+        { label: 'Salida Umbra (70%)', val: 70 }
+      ]);
+      if (eclipseStatus) eclipseStatus.textContent = 'Mueve la Luna a través del cono de sombra de la Tierra para observar la entrada a la penumbra y la dispersión Rayleigh cobriza.';
+      updateLunarEclipseProgress(val);
+    }
   }
 
   moonSlider.addEventListener('input', (e) => {
-    eclipseStatus.textContent = 'Mueve el deslizador o pulsa una fase cardinal para simular el ciclo sinódico.';
-    updateMoonPhase(e.target.value, null);
-    playTone(200 + parseFloat(e.target.value) * 15, 'sine', 0.05, 0.02);
+    const val = parseFloat(e.target.value);
+    if (state.moonSimMode === 'solar') {
+      updateSolarEclipseProgress(val);
+      playTone(200 + val * 3, 'sine', 0.04, 0.02);
+    } else if (state.moonSimMode === 'lunar') {
+      updateLunarEclipseProgress(val);
+      playTone(200 + val * 3, 'sine', 0.04, 0.02);
+    } else {
+      updateMoonPhase(val);
+      playTone(200 + val * 15, 'sine', 0.04, 0.02);
+    }
   });
 
-  phaseButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const d = parseFloat(btn.dataset.day);
-      eclipseStatus.textContent = 'Mueve el deslizador o pulsa una fase cardinal para simular el ciclo sinódico.';
-      updateMoonPhase(d, null);
-      playTone(550, 'sine', 0.1, 0.06);
+  if (btnModeMoonPhases) {
+    btnModeMoonPhases.addEventListener('click', () => {
+      setMoonSimulationMode('moon');
+      playTone(520, 'sine', 0.1, 0.05);
     });
-  });
+  }
+  if (btnModeSolarEclipse) {
+    btnModeSolarEclipse.addEventListener('click', () => {
+      selectEclipse('solar');
+      playTone(600, 'sine', 0.1, 0.05);
+    });
+  }
+  if (btnModeLunarEclipse) {
+    btnModeLunarEclipse.addEventListener('click', () => {
+      selectEclipse('lunar');
+      playTone(550, 'sine', 0.1, 0.05);
+    });
+  }
 
   const eclipseGeometryCanvas = document.getElementById('eclipseGeometryCanvas');
   const egCtx = eclipseGeometryCanvas ? eclipseGeometryCanvas.getContext('2d') : null;
@@ -1268,11 +1498,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnEclipseLunar.classList.toggle('active', type === 'lunar');
 
     if (type === 'solar') {
-      updateMoonPhase(0, 'solar');
+      setMoonSimulationMode('solar', 50);
       if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Solar: La Luna entre el Sol y la Tierra (Conos de Umbra y Penumbra)';
       if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Luna se interpone en la línea de visión Sol-Tierra. Su sombra proyecta una estrecha franja de totalidad (umbra, ~150 km) donde la fotosfera queda oculta y se observa la corona solar, y una penumbra más ancha de eclipse parcial.';
     } else {
-      updateMoonPhase(14.8, 'lunar');
+      setMoonSimulationMode('lunar', 50);
       if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Lunar: La Tierra entre el Sol y la Luna Llena (Refracción Atmosférica)';
       if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Tierra bloquea la radiación directa del Sol. Los rayos solares atraviesan el borde atmosférico terrestre, el cual dispersa las longitudes azules (filtro Rayleigh) y desvía la luz roja hacia la Luna, otorgándole su característico tono cobrizo.';
     }
@@ -2147,7 +2377,7 @@ document.addEventListener('DOMContentLoaded', () => {
   populateGallery();
 
   switchModule('solar');
-  updateMoonPhase(7.4);
+  setMoonSimulationMode('moon', 7.4);
 
   window.addEventListener('resize', () => {
     if (state.currentModule === 'solar') initSolarCanvas();

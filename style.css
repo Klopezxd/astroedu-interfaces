@@ -541,28 +541,39 @@ body.affective-night-mode .nav-tab.active {
 
 .constellation-photo-card {
   width: 100%;
-  height: 420px;
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
-  background: #000;
+  background: #020617;
   border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.constellation-img-box {
+  width: 100%;
+  height: 420px;
+  background: #01040d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .constellation-real-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 
 .photo-info-dock {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 16px;
-  background: linear-gradient(180deg, transparent, rgba(3, 6, 17, 0.95));
+  position: relative;
+  padding: 12px 18px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -679,6 +690,13 @@ body.affective-night-mode .nav-tab.active {
 .phase-day, .phase-illum {
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.simulator-mode-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 
 .styled-slider {
@@ -883,15 +901,21 @@ body.affective-night-mode .btn-micro.active {
 .photo-view-box {
   position: relative;
   width: 100%;
-  height: 240px;
+  height: 260px;
   overflow: hidden;
-  background: #000;
+  background: #01040d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .eclipse-photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .photo-caption {
@@ -899,10 +923,12 @@ body.affective-night-mode .btn-micro.active {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 8px 12px;
-  background: rgba(3, 6, 17, 0.85);
-  font-size: 0.76rem;
-  color: var(--text-dim);
+  padding: 6px 12px;
+  background: rgba(2, 6, 23, 0.88);
+  backdrop-filter: blur(4px);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* MÓDULO 4: ANATOMÍA DE COMETAS */
@@ -1159,15 +1185,22 @@ body.affective-night-mode .btn-micro.active {
 
 .modal-img-container {
   width: 100%;
-  height: 380px;
-  background: #020617;
+  height: 420px;
+  background: #01040d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
 }
 
 .modal-img-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 

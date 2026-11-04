@@ -167,10 +167,14 @@
               
               <!-- Vista de Astrofotografía Real -->
               <div id="constellationPhotoCard" class="constellation-photo-card hidden">
-                <img id="constellationPhotoImg" src="" alt="Fotografía Real de Constelación" class="constellation-real-img">
+                <div class="constellation-img-box">
+                  <img id="constellationPhotoImg" src="" alt="Fotografía Real de Constelación" class="constellation-real-img">
+                </div>
                 <div class="photo-info-dock">
-                  <h4 id="constellationPhotoTitle">Orión el Cazador</h4>
-                  <p id="constellationPhotoCredit">Fotografía capturada por observatorios de amplio campo (NASA APOD / ESO)</p>
+                  <div class="photo-dock-text">
+                    <h4 id="constellationPhotoTitle">Orión el Cazador</h4>
+                    <p id="constellationPhotoCredit">Fotografía capturada por observatorios de amplio campo (NASA APOD / ESO)</p>
+                  </div>
                   <a id="constellationStellariumLink" href="https://stellarium-web.org/" target="_blank" rel="noopener" class="btn-pill btn-external">🌐 Explorar en vivo en Stellarium Web ↗</a>
                 </div>
               </div>
@@ -213,13 +217,18 @@
               </div>
 
               <div class="moon-controls-box">
-                <label for="moonSlider" class="slider-label">Desplazamiento del Ciclo Lunar:</label>
+                <div class="simulator-mode-row" id="simModeRow">
+                  <button id="btnModeMoonPhases" class="btn-micro active">🌙 Fases Lunares (29.5d)</button>
+                  <button id="btnModeSolarEclipse" class="btn-micro">🌑 Eclipse Solar Interactivo</button>
+                  <button id="btnModeLunarEclipse" class="btn-micro">🔴 Eclipse Lunar Interactivo</button>
+                </div>
+                <label for="moonSlider" class="slider-label" id="sliderLabel">Desplazamiento del Ciclo Lunar:</label>
                 <input type="range" id="moonSlider" min="0" max="29.5" step="0.2" value="7.4" class="styled-slider">
-                <div class="phase-buttons-row">
-                  <button class="btn-tag" data-day="0">Nueva (0d)</button>
-                  <button class="btn-tag" data-day="7.4">Creciente (7.4d)</button>
-                  <button class="btn-tag" data-day="14.8">Llena (14.8d)</button>
-                  <button class="btn-tag" data-day="22.1">Menguante (22.1d)</button>
+                <div class="phase-buttons-row" id="phaseButtonsRow">
+                  <button class="btn-tag" data-val="0">Nueva (0d)</button>
+                  <button class="btn-tag" data-val="7.4">Creciente (7.4d)</button>
+                  <button class="btn-tag" data-val="14.8">Llena (14.8d)</button>
+                  <button class="btn-tag" data-val="22.1">Menguante (22.1d)</button>
                 </div>
                 <p class="phase-quick-desc" id="eclipseStatus">Arrastra el deslizador para apreciar la curvatura del terminador elíptico y el relieve de mares y cráteres.</p>
               </div>
