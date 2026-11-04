@@ -428,9 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
         [2, 5], [4, 6],
         [5, 6]
       ],
-      photoUrl: 'https://images-assets.nasa.gov/image/PIA13083/PIA13083~medium.jpg',
-      photoTitle: 'Complejo de Orión: Betelgeuse, Rigel y Nebulosa M42 (NASA/JPL)',
-      credit: 'Telescopio Espacial Infrarrojo WISE • NASA / JPL-Caltech / UCLA',
+      photoUrl: 'img/constelacion_orion.jpg',
+      photoTitle: 'Astrofotografía de Orión: Cinturón, Betelgeuse y Rigel',
+      credit: 'Astrofotografía de Gran Campo • Constelación de Orión',
       stellariumUrl: 'https://stellarium-web.org/',
       info: 'Orión es la constelación más prominente del ecuador celeste. Betelgeuse (supergigante roja) y Rigel (supergigante azul) forman sus vértices opuestos, con las tres estrellas del "Cinturón de Orión" como guía universal hacia Sirio y las Pléyades.'
     },
@@ -446,9 +446,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Alkaid', x: 565, y: 145, mag: 1.8, color: '#60a5fa', tox: 12, toy: 4 }
       ],
       lines: [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 6]],
-      photoUrl: 'https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001427/GSFC_20171208_Archive_e001427~medium.jpg',
-      photoTitle: 'Gran Bóveda de la Osa Mayor y Galaxias Satélite (NASA)',
-      credit: 'NASA APOD / Digitized Sky Survey • Telescopio Hubble',
+      photoUrl: 'img/constelacion_osa_mayor.jpg',
+      photoTitle: 'Astrofotografía de la Osa Mayor y el Asterismo del Carro',
+      credit: 'Astrofotografía de Cielo Nocturno • Las 7 Estrellas del Carro',
       stellariumUrl: 'https://stellarium-web.org/',
       info: 'El asterismo del Carro permite trazar una línea recta imaginaria desde Merak hacia Dubhe y prolongarla cinco veces para localizar con precisión matemática a la Estrella Polar (Polaris) en el hemisferio norte.'
     },
@@ -462,9 +462,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Ginan', x: 390, y: 265, mag: 3.6, color: '#cbd5e1', tox: 12, toy: 14 }
       ],
       lines: [[0, 1], [2, 3]],
-      photoUrl: 'https://images-assets.nasa.gov/image/PIA14112/PIA14112~medium.jpg',
-      photoTitle: 'La Cruz del Sur y la Nebulosa Oscura Saco de Carbón (NASA/JPL)',
-      credit: 'NASA / JPL-Caltech / Observatorio Europeo Austral (ESO)',
+      photoUrl: 'img/constelacion_cruz_sur.jpg',
+      photoTitle: 'Astrofotografía de la Cruz del Sur (Crux) y Firmamento Austral',
+      credit: 'Astrofotografía Austral • Guía de Orientación Polar Sur',
       stellariumUrl: 'https://stellarium-web.org/',
       info: 'La joya estelar del hemisferio sur. Sirve como brújula natural para marinos y exploradores al prolongar 4.5 veces su brazo mayor para ubicar el Polo Sur Celeste.'
     }
@@ -955,6 +955,118 @@ document.addEventListener('DOMContentLoaded', () => {
   const eclipseRealPhotoImg = document.getElementById('eclipseRealPhotoImg');
   const photoTitleLabel = document.getElementById('photoTitleLabel');
   const eclipsePhotoCaption = document.getElementById('eclipsePhotoCaption');
+  const btnVideoOption1 = document.getElementById('btnVideoOption1');
+  const btnVideoOption2 = document.getElementById('btnVideoOption2');
+  const btnPhotoOption1 = document.getElementById('btnPhotoOption1');
+  const btnPhotoOption2 = document.getElementById('btnPhotoOption2');
+
+  const eclipseMediaData = {
+    solar: {
+      videos: [
+        { url: 'https://www.youtube-nocookie.com/embed/21lNzeoSbS4?rel=0', label: 'Time-lapse Total España (VideoFromSpace)', btnText: 'Video 1 (Time-lapse)' },
+        { url: 'https://www.youtube-nocookie.com/embed/79SPgKtvwKc?rel=0', label: 'Guía: Eclipse Anular vs Total vs Parcial (Exploratorium)', btnText: 'Video 2 (Guía Corta)' }
+      ],
+      photos: [
+        {
+          url: 'img/eclipse_solar_1.jpg',
+          title: 'Corona Solar y Campo Completo',
+          caption: 'Estructura magnética de plasma coronal visible exclusivamente durante los minutos de totalidad umbral.',
+          btnText: 'Toma 1'
+        },
+        {
+          url: 'img/eclipse_solar_2.jpg',
+          title: 'Secuencia de Fases y Anillo de Diamante',
+          caption: 'Alineación precisa entre la fotosfera solar y el disco lunar con desprendimiento de luz coronal.',
+          btnText: 'Toma 2'
+        }
+      ]
+    },
+    lunar: {
+      videos: [
+        { url: 'https://www.youtube-nocookie.com/embed/LK_44AbfH2Q?rel=0', label: 'Time-lapse 4K: Eclipse Lunar Total y Luna de Sangre', btnText: 'Video 1 (Time-lapse)' },
+        { url: 'https://www.youtube-nocookie.com/embed/2vGr1VifPyg?rel=0', label: 'Eclipse Lunar Total en 20 Segundos (BBC Earth)', btnText: 'Video 2 (En 20s)' }
+      ],
+      photos: [
+        {
+          url: 'img/eclipse_lunar_1.jpg',
+          title: 'Luna de Sangre en Umbra Total',
+          caption: 'Disco lunar inmerso en la umbra terrestre adquiriendo el característico tono cobrizo por dispersión Rayleigh.',
+          btnText: 'Toma 1'
+        },
+        {
+          url: 'img/eclipse_lunar_2.jpg',
+          title: 'Gradiente de Entrada en la Umbra',
+          caption: 'Registro secuencial del avance de la sombra terrestre sobre la superficie lunar.',
+          btnText: 'Toma 2'
+        }
+      ]
+    }
+  };
+
+  function updateEclipseMedia(videoIdx = 0, photoIdx = 0) {
+    const curType = state.eclipseType || 'solar';
+    const media = eclipseMediaData[curType];
+    if (!media) return;
+
+    state.eclipseVideoIndex = videoIdx;
+    state.eclipsePhotoIndex = photoIdx;
+
+    if (btnVideoOption1) {
+      btnVideoOption1.textContent = media.videos[0].btnText;
+      btnVideoOption1.classList.toggle('active', videoIdx === 0);
+    }
+    if (btnVideoOption2) {
+      btnVideoOption2.textContent = media.videos[1].btnText;
+      btnVideoOption2.classList.toggle('active', videoIdx === 1);
+    }
+
+    if (btnPhotoOption1) {
+      btnPhotoOption1.textContent = media.photos[0].btnText;
+      btnPhotoOption1.classList.toggle('active', photoIdx === 0);
+    }
+    if (btnPhotoOption2) {
+      btnPhotoOption2.textContent = media.photos[1].btnText;
+      btnPhotoOption2.classList.toggle('active', photoIdx === 1);
+    }
+
+    const vid = media.videos[videoIdx];
+    if (vid && eclipseVideoFrame) {
+      eclipseVideoFrame.src = vid.url;
+      if (videoTitleLabel) videoTitleLabel.textContent = vid.label;
+    }
+
+    const pic = media.photos[photoIdx];
+    if (pic && eclipseRealPhotoImg) {
+      eclipseRealPhotoImg.src = pic.url;
+      if (photoTitleLabel) photoTitleLabel.textContent = pic.title;
+      if (eclipsePhotoCaption) eclipsePhotoCaption.textContent = pic.caption;
+    }
+  }
+
+  if (btnVideoOption1) {
+    btnVideoOption1.addEventListener('click', () => {
+      updateEclipseMedia(0, state.eclipsePhotoIndex !== undefined ? state.eclipsePhotoIndex : 0);
+      playTone(520, 'sine', 0.08, 0.03);
+    });
+  }
+  if (btnVideoOption2) {
+    btnVideoOption2.addEventListener('click', () => {
+      updateEclipseMedia(1, state.eclipsePhotoIndex !== undefined ? state.eclipsePhotoIndex : 0);
+      playTone(580, 'sine', 0.08, 0.03);
+    });
+  }
+  if (btnPhotoOption1) {
+    btnPhotoOption1.addEventListener('click', () => {
+      updateEclipseMedia(state.eclipseVideoIndex !== undefined ? state.eclipseVideoIndex : 0, 0);
+      playTone(520, 'sine', 0.08, 0.03);
+    });
+  }
+  if (btnPhotoOption2) {
+    btnPhotoOption2.addEventListener('click', () => {
+      updateEclipseMedia(state.eclipseVideoIndex !== undefined ? state.eclipseVideoIndex : 0, 1);
+      playTone(580, 'sine', 0.08, 0.03);
+    });
+  }
 
   function renderEclipseGeometryCanvas(type = 'solar') {
     if (!egCtx) return;
@@ -1159,21 +1271,12 @@ document.addEventListener('DOMContentLoaded', () => {
       updateMoonPhase(0, 'solar');
       if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Solar: La Luna entre el Sol y la Tierra (Conos de Umbra y Penumbra)';
       if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Luna se interpone en la línea de visión Sol-Tierra. Su sombra proyecta una estrecha franja de totalidad (umbra, ~150 km) donde la fotosfera queda oculta y se observa la corona solar, y una penumbra más ancha de eclipse parcial.';
-      if (eclipseVideoFrame) eclipseVideoFrame.src = 'https://www.youtube-nocookie.com/embed/cxrLRbkOwKs?rel=0';
-      if (videoTitleLabel) videoTitleLabel.textContent = 'Totalidad del Eclipse Solar • NASA SVS';
-      if (eclipseRealPhotoImg) eclipseRealPhotoImg.src = 'https://images-assets.nasa.gov/image/PIA13083/PIA13083~medium.jpg';
-      if (photoTitleLabel) photoTitleLabel.textContent = 'Corona Solar y Anillo de Diamante';
-      if (eclipsePhotoCaption) eclipsePhotoCaption.textContent = 'Estructura magnética de la corona solar visible exclusivamente durante los minutos de totalidad umbral.';
     } else {
       updateMoonPhase(14.8, 'lunar');
       if (eclipseGeometryTitle) eclipseGeometryTitle.textContent = 'Eclipse Lunar: La Tierra entre el Sol y la Luna Llena (Refracción Atmosférica)';
       if (eclipseGeometryDesc) eclipseGeometryDesc.textContent = 'La Tierra bloquea la radiación directa del Sol. Los rayos solares atraviesan el borde atmosférico terrestre, el cual dispersa las longitudes azules (filtro Rayleigh) y desvía la luz roja hacia la Luna, otorgándole su característico tono cobrizo.';
-      if (eclipseVideoFrame) eclipseVideoFrame.src = 'https://www.youtube-nocookie.com/embed/wuhNZejHeBg?rel=0';
-      if (videoTitleLabel) videoTitleLabel.textContent = 'Dispersión Atmosférica y Luna de Sangre • NASA SVS';
-      if (eclipseRealPhotoImg) eclipseRealPhotoImg.src = 'https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001427/GSFC_20171208_Archive_e001427~medium.jpg';
-      if (photoTitleLabel) photoTitleLabel.textContent = 'Secuencia Fotográfica de Luna de Sangre';
-      if (eclipsePhotoCaption) eclipsePhotoCaption.textContent = 'Entrada del disco lunar en el cono de umbra de la Tierra durante la totalidad.';
     }
+    updateEclipseMedia(0, 0);
     renderEclipseGeometryCanvas(type);
     updateAstroDataCard('moon');
     playChime();
@@ -1493,6 +1596,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalDesc = document.getElementById('modalDesc');
   const modalSpecs = document.getElementById('modalSpecs');
   const modalImg = document.getElementById('modalImg');
+  const modalViewOptions = document.getElementById('modalViewOptions');
 
   const deepSkyObjects = [
     {
@@ -1501,8 +1605,9 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'Galaxia Espiral Gigante',
       dist: '2.5 millones de años luz',
       telescope: 'Hubble Space Telescope',
-      telescopeShort: 'Hubble / Spitzer',
+      telescopeShort: 'Hubble / Gran Campo',
       imgUrl: 'img/andromeda.jpg',
+      wideImgUrl: 'img/andromeda_desde_latierra.jpg',
       remoteFallback: 'https://images-assets.nasa.gov/image/PIA04921/PIA04921~medium.jpg',
       desc: 'El objeto astronómico más distante visible a simple vista bajo cielos oscuros. Alberga aproximadamente un billón de estrellas y una densa población de cúmulos globulares; se aproxima a la Vía Láctea a 110 km/s hacia una colisión dentro de 4.500 millones de años.'
     },
@@ -1568,8 +1673,41 @@ document.addEventListener('DOMContentLoaded', () => {
           <li><strong>Tipo de Objeto:</strong> ${obj.type}</li>
           <li><strong>Distancia Estimada:</strong> ${obj.dist}</li>
           <li><strong>Instrumento Principal:</strong> ${obj.telescope}</li>
-          <li><strong>Archivo Científico:</strong> NASA / ESA / STScI / JPL</li>
+          <li><strong>Archivo Científico:</strong> NASA / ESA / STScI / JPL / Astrofotografía Real</li>
         `;
+
+        if (modalViewOptions) {
+          modalViewOptions.innerHTML = '';
+          if (obj.wideImgUrl) {
+            const btnCore = document.createElement('button');
+            btnCore.className = 'btn-micro active';
+            btnCore.textContent = '🔭 Vista Telescópica Núcleo';
+
+            const btnWide = document.createElement('button');
+            btnWide.className = 'btn-micro';
+            btnWide.textContent = '🌌 Vista Gran Campo desde la Tierra';
+
+            btnCore.addEventListener('click', () => {
+              btnCore.classList.add('active');
+              btnWide.classList.remove('active');
+              modalImg.src = obj.imgUrl;
+              modalDesc.textContent = obj.desc;
+              playTone(520, 'sine', 0.08, 0.03);
+            });
+
+            btnWide.addEventListener('click', () => {
+              btnWide.classList.add('active');
+              btnCore.classList.remove('active');
+              modalImg.src = obj.wideImgUrl;
+              modalDesc.textContent = 'Astrofotografía capturada desde la superficie terrestre mediante exposición prolongada de gran campo. Muestra el firmamento nocturno completo con la galaxia de Andrómeda brillando como una suave espiral difusa entre el inmenso mar de estrellas de nuestra Vía Láctea.';
+              playTone(600, 'sine', 0.08, 0.03);
+            });
+
+            modalViewOptions.appendChild(btnCore);
+            modalViewOptions.appendChild(btnWide);
+          }
+        }
+
         viewerModal.classList.remove('hidden');
         playTone(620, 'sine', 0.15, 0.08);
       });

@@ -252,25 +252,33 @@
               <!-- Tarjetas Multimedia con Video Real de la NASA y Fotografía Científica -->
               <div class="eclipse-multimedia-grid">
                 
-                <!-- Video / Visualización Científica Real de la NASA -->
+                <!-- Video / Visualización Científica Real -->
                 <div class="multimedia-media-card">
                   <div class="media-card-header">
-                    <span class="media-badge">🎥 Video Científico • NASA Scientific Visualization Studio</span>
-                    <span id="videoTitleLabel" class="media-label">Totalidad del Eclipse Solar</span>
+                    <span class="media-badge">🎥 Video Documental</span>
+                    <span id="videoTitleLabel" class="media-label">Time-lapse Eclipse Solar</span>
+                    <div class="media-pills-row" id="videoPillsRow">
+                      <button id="btnVideoOption1" class="btn-micro active" title="Ver Video 1">Video 1 (Time-lapse)</button>
+                      <button id="btnVideoOption2" class="btn-micro" title="Ver Video 2">Video 2 (Guía)</button>
+                    </div>
                   </div>
                   <div class="video-embed-container" id="eclipseVideoContainer">
-                    <iframe id="eclipseVideoFrame" width="100%" height="240" src="https://www.youtube-nocookie.com/embed/cxrLRbkOwKs?rel=0" title="NASA Eclipse Visualization" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <iframe id="eclipseVideoFrame" width="100%" height="240" src="https://www.youtube-nocookie.com/embed/21lNzeoSbS4?rel=0" title="Eclipse Video Documental" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                   </div>
                 </div>
 
-                <!-- Fotografía Científica de Alta Resolución de la NASA -->
+                <!-- Fotografía Científica de Alta Resolución -->
                 <div class="multimedia-media-card">
                   <div class="media-card-header">
-                    <span class="media-badge">📷 Fotografía Telescópica • NASA APOD</span>
+                    <span class="media-badge">📷 Astrofotografía Real</span>
                     <span id="photoTitleLabel" class="media-label">Corona Solar y Anillo de Diamante</span>
+                    <div class="media-pills-row" id="photoPillsRow">
+                      <button id="btnPhotoOption1" class="btn-micro active" title="Ver Foto 1">Toma 1</button>
+                      <button id="btnPhotoOption2" class="btn-micro" title="Ver Foto 2">Toma 2</button>
+                    </div>
                   </div>
                   <div class="photo-view-box">
-                    <img id="eclipseRealPhotoImg" src="https://images-assets.nasa.gov/image/PIA13083/PIA13083~medium.jpg" alt="Fotografía Real Eclipse NASA" class="eclipse-photo-img">
+                    <img id="eclipseRealPhotoImg" src="img/eclipse_solar_1.jpg" alt="Fotografía Real Eclipse" class="eclipse-photo-img">
                     <div class="photo-caption" id="eclipsePhotoCaption">
                       Estructura magnética de la corona solar visible exclusivamente durante los minutos de totalidad umbral.
                     </div>
@@ -370,6 +378,7 @@
                   </div>
                   <div class="modal-details">
                     <h3 id="modalTitle">Título del Objeto</h3>
+                    <div class="modal-view-options" id="modalViewOptions"></div>
                     <p id="modalDesc">Descripción técnica del objeto astronómico...</p>
                     <ul class="modal-specs" id="modalSpecs"></ul>
                   </div>

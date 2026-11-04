@@ -810,6 +810,8 @@ body.affective-night-mode .nav-tab.active {
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   font-size: 0.78rem;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .media-badge {
@@ -819,6 +821,50 @@ body.affective-night-mode .nav-tab.active {
 
 .media-label {
   color: var(--text-muted);
+  flex: 1;
+}
+
+.media-pills-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.btn-micro {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-micro:hover {
+  color: var(--text-main);
+  border-color: var(--color-primary);
+}
+
+.btn-micro.active {
+  background: var(--color-primary);
+  color: var(--bg-deep);
+  border-color: var(--color-primary);
+}
+
+body.affective-night-mode .btn-micro.active {
+  background: #ef4444;
+  color: #110000;
+  border-color: #ef4444;
+}
+
+.modal-view-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .video-embed-container {
