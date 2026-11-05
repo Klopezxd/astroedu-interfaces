@@ -1,0 +1,74 @@
+{
+  ".bmp": {
+    "file": "principal.bmp",
+    "format": ".bmp",
+    "pixels": "Width (ancho): 1024 pixeles  Height (alto) : 768 pixeles",
+    "res": "72 ppp",
+    "mode": "RGB",
+    "size_bytes": 2359350,
+    "colors": 335
+  },
+  ".gif": {
+    "file": "principal.gif",
+    "format": ".gif",
+    "pixels": "Width (ancho): 1024 pixeles  Height (alto) : 768 pixeles",
+    "res": "72 ppp",
+    "mode": "Indexado (256 colores)",
+    "size_bytes": 41622,
+    "colors": 253
+  },
+  ".jpg": {
+    "file": "principal.jpg",
+    "format": ".jpg",
+    "pixels": "Width (ancho): 1024 pixeles  Height (alto) : 768 pixeles",
+    "res": "72 ppp",
+    "mode": "RGB",
+    "size_bytes": 52313,
+    "colors": 335
+  },
+  ".tiff": {
+    "file": "principal.tiff",
+    "format": ".tiff",
+    "pixels": "Width (ancho): 1024 pixels  Height (alto) : 768 pixels",
+    "res": "72 ppp",
+    "mode": "RGB",
+    "size_bytes": 30960,
+    "colors": 335
+  },
+  ".png": {
+    "file": "principal.png",
+    "format": ".png",
+    "pixels": "Width (ancho): 1024 pixels  Height (alto) : 768 pixels",
+    "res": "72 ppp",
+    "mode": "RGB",
+    "size_bytes": 24843,
+    "colors": 335
+  },
+  ".wmf": {
+    "file": "principal.wmf",
+    "format": ".wmf",
+    "pixels": "Width (ancho): 1024 pixels  Height (alto) : 768 pixels",
+    "res": "72 ppp",
+    "mode": "RGB (Metafile Vector+DIB)",
+    "size_bytes": 2359446,
+    "colors": 335
+  },
+  "wbmp": {
+    "file": "principal.wbmp",
+    "format": "wbmp",
+    "pixels": "Width (ancho): 1024 pixels  Height (alto) : 768 pixels",
+    "res": "72 ppp",
+    "mode": "Monocromático (1 bit)",
+    "size_bytes": 98310,
+    "colors": 2
+  },
+  "Jpeg 2000": {
+    "file": "principal.jp2",
+    "format": "Jpeg 2000",
+    "pixels": "Width (ancho): 1024 pixels  Height (alto) : 768 pixels",
+    "res": "72 ppp",
+    "mode": "RGB",
+    "size_bytes": 117959,
+    "colors": 335
+  }
+}

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" width="100%" height="100%">
+  <rect width="920" height="520" fill="#070b19" rx="12"/>
+  <text x="460" y="35" font-family="'Outfit', sans-serif" font-size="20" font-weight="bold" fill="#ef4444" text-anchor="middle">INTERFACES AFECTIVAS: TECNOLOGÍA QUE SIENTE Y SE ADAPTA</text>
+  <text x="460" y="60" font-family="'Outfit', sans-serif" font-size="12" fill="#fca5a5" text-anchor="middle">Bucle de Adaptación Psicofisiológica para Observación Nocturna en AstroEdu</text>
+  
+  <!-- 3 FASES DEL MODELO AFECTIVO VISTO EN CLASE -->
+  <g transform="translate(30, 85)">
+    <!-- Fase 1: Captura -->
+    <rect x="0" y="0" width="260" height="240" fill="#150303" stroke="#ef4444" stroke-width="2" rx="8"/>
+    <text x="130" y="30" font-size="14" font-weight="bold" fill="#ef4444" text-anchor="middle">1. Captura de Datos</text>
+    <text x="130" y="50" font-size="10" fill="#fca5a5" text-anchor="middle">(Estímulos y Entorno Humano)</text>
+    
+    <rect x="15" y="70" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="25" y="94" font-size="10" fill="#f87171">• Tiempo de Sesión Activa</text>
+    
+    <rect x="15" y="120" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="25" y="144" font-size="10" fill="#f87171">• Cadencia de Clics y Teclado</text>
+    
+    <rect x="15" y="170" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="25" y="194" font-size="10" fill="#f87171">• Conmutador de Modo Nocturno</text>
+
+    <!-- Conector 1 a 2 -->
+    <line x1="270" y1="120" x2="310" y2="120" stroke="#ef4444" stroke-width="2"/>
+
+    <!-- Fase 2: Procesamiento -->
+    <rect x="320" y="0" width="260" height="240" fill="#150303" stroke="#f59e0b" stroke-width="2" rx="8"/>
+    <text x="450" y="30" font-size="14" font-weight="bold" fill="#f59e0b" text-anchor="middle">2. Procesamiento</text>
+    <text x="450" y="50" font-size="10" fill="#ffd166" text-anchor="middle">(Inferencia de Estado y Fatiga)</text>
+    
+    <rect x="335" y="70" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="345" y="94" font-size="10" fill="#fbbf24">• Estimación de Carga Cognitiva</text>
+    
+    <rect x="335" y="120" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="345" y="144" font-size="10" fill="#fbbf24">• Detección de Deslumbramiento</text>
+    
+    <rect x="335" y="170" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="345" y="194" font-size="10" fill="#fbbf24">• Nivel de Confort Visual</text>
+
+    <!-- Conector 2 a 3 -->
+    <line x1="590" y1="120" x2="630" y2="120" stroke="#f59e0b" stroke-width="2"/>
+
+    <!-- Fase 3: Respuesta Adaptativa -->
+    <rect x="640" y="0" width="260" height="240" fill="#150303" stroke="#10b981" stroke-width="2" rx="8"/>
+    <text x="770" y="30" font-size="14" font-weight="bold" fill="#10b981" text-anchor="middle">3. Respuesta en la UI</text>
+    <text x="770" y="50" font-size="10" fill="#6ee7b7" text-anchor="middle">(Adaptación Empática en Vivo)</text>
+    
+    <rect x="655" y="70" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="665" y="94" font-size="10" fill="#34d399">• Activación Paleta Roja Escotópica</text>
+    
+    <rect x="655" y="120" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="665" y="144" font-size="10" fill="#34d399">• Sugerencia de Pausa Visual</text>
+    
+    <rect x="655" y="170" width="230" height="40" fill="#2b0808" rx="4"/>
+    <text x="665" y="194" font-size="10" fill="#34d399">• Tonos Sonoros de Baja Frecuencia</text>
+  </g>
+
+  <!-- FUNDAMENTO BIOLÓGICO Y ERGONÓMICO -->
+  <g transform="translate(30, 350)">
+    <rect width="870" height="140" fill="#111a33" stroke="rgba(239,68,68,0.3)" rx="8"/>
+    <text x="25" y="30" font-size="13" font-weight="bold" fill="#ef4444">FUNDAMENTACIÓN BIOLÓGICA Y COGNITIVA DEL MODO AFECTIVO NOCTURNO:</text>
+    <text x="25" y="55" font-size="11" fill="#f8fafc">• Visión Escotópica y Fotorreceptores: Los bastones de la retina tardan entre 20 y 30 minutos en adaptarse plenamente a la oscuridad mediante la acumulación de rodopsina.</text>
+    <text x="25" y="75" font-size="11" fill="#f8fafc">• Inmunidad a la Luz Roja: La rodopsina es insensible a longitudes de onda superiores a 650 nm (espectro rojo profundo), permitiendo consultar la pantalla sin destruir la adaptación nocturna.</text>
+    <text x="25" y="95" font-size="11" fill="#f8fafc">• Reducción del Estrés y la Fatiga: Al eliminar la luz azul nociva durante observaciones de campo, el usuario opera en un estado de calma cognitiva y alta receptividad al aprendizaje.</text>
+    <text x="25" y="115" font-size="11" fill="#f59e0b">• Conexión con los Apuntes: Materializa el axioma docente: "Un objeto bien diseñado reduce la ansiedad y potencia la concentración en la tarea principal".</text>
+  </g>
+</svg>

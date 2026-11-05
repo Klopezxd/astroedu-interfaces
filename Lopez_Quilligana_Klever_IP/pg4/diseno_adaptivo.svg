@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="100%" height="100%">
+  <rect width="900" height="500" fill="#070b19" rx="12"/>
+  <text x="450" y="40" font-family="'Outfit', sans-serif" font-size="22" font-weight="bold" fill="#38bdf8" text-anchor="middle">ESQUEMA DE DISEÑO ADAPTIVO - APLICACIÓN ASTROEDU</text>
+  <text x="450" y="65" font-family="'Outfit', sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle">Reconfiguración de la Retícula de 7 Zonas según Dispositivo y Breakpoint</text>
+  
+  <!-- DESKTOP (>1024px) -->
+  <g transform="translate(40, 95)">
+    <rect width="360" height="230" fill="#0f172a" stroke="#38bdf8" stroke-width="2" rx="8"/>
+    <text x="180" y="25" font-family="sans-serif" font-size="14" font-weight="bold" fill="#f8fafc" text-anchor="middle">1. Pantallas Grandes (Desktop &gt; 1024px)</text>
+    
+    <!-- Retícula completa -->
+    <rect x="15" y="40" width="80" height="30" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="55" y="60" font-size="10" fill="#94a3b8" text-anchor="middle">Zona 1: Logo</text>
+    
+    <rect x="105" y="40" width="140" height="30" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="175" y="60" font-size="10" fill="#94a3b8" text-anchor="middle">Zona 2: Título Proyecto</text>
+    
+    <rect x="255" y="40" width="90" height="30" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="300" y="60" font-size="9" fill="#f59e0b" text-anchor="middle">Zona 3: Banner</text>
+    
+    <rect x="15" y="80" width="220" height="25" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="125" y="97" font-size="10" fill="#38bdf8" text-anchor="middle">Zona 4: Menú Textual (6 Módulos)</text>
+    
+    <rect x="245" y="80" width="100" height="25" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="295" y="97" font-size="10" fill="#38bdf8" text-anchor="middle">Zona 5: Íconos</text>
+    
+    <rect x="15" y="115" width="220" height="100" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="125" y="170" font-size="12" font-weight="bold" fill="#f8fafc" text-anchor="middle">Zona 6: Área de Trabajo</text>
+    
+    <rect x="245" y="115" width="100" height="100" fill="#1e293b" stroke="#f59e0b" rx="4"/>
+    <text x="295" y="165" font-size="10" font-weight="bold" fill="#f59e0b" text-anchor="middle">Zona 7:</text>
+    <text x="295" y="180" font-size="9" fill="#f59e0b" text-anchor="middle">Interacción</text>
+  </g>
+
+  <!-- TABLET (768px - 1023px) -->
+  <g transform="translate(440, 95)">
+    <rect width="250" height="230" fill="#0f172a" stroke="#818cf8" stroke-width="2" rx="8"/>
+    <text x="125" y="25" font-family="sans-serif" font-size="13" font-weight="bold" fill="#f8fafc" text-anchor="middle">2. Tablets (768px - 1023px)</text>
+    
+    <rect x="15" y="40" width="220" height="30" fill="#1e293b" stroke="#818cf8" rx="4"/>
+    <text x="125" y="60" font-size="10" fill="#f8fafc" text-anchor="middle">Zonas 1, 2, 3: Cabecera Apilada</text>
+    
+    <rect x="15" y="78" width="220" height="25" fill="#1e293b" stroke="#818cf8" rx="4"/>
+    <text x="125" y="95" font-size="10" fill="#818cf8" text-anchor="middle">Zonas 4 y 5: Menú Scroll Horizontal</text>
+    
+    <rect x="15" y="110" width="220" height="80" fill="#1e293b" stroke="#818cf8" rx="4"/>
+    <text x="125" y="155" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">Zona 6: Contenido Principal</text>
+    
+    <rect x="15" y="195" width="220" height="25" fill="#1e293b" stroke="#f59e0b" rx="4"/>
+    <text x="125" y="212" font-size="9" fill="#f59e0b" text-anchor="middle">Zona 7: Interacción (Bajo el contenido)</text>
+  </g>
+
+  <!-- MÓVIL (<768px) -->
+  <g transform="translate(720, 95)">
+    <rect width="140" height="230" fill="#0f172a" stroke="#f59e0b" stroke-width="2" rx="8"/>
+    <text x="70" y="25" font-family="sans-serif" font-size="12" font-weight="bold" fill="#f8fafc" text-anchor="middle">3. Móvil (&lt;768px)</text>
+    
+    <rect x="10" y="40" width="120" height="25" fill="#1e293b" stroke="#f59e0b" rx="4"/>
+    <text x="70" y="56" font-size="8" fill="#f8fafc" text-anchor="middle">Logo + Hamburguesa</text>
+    
+    <rect x="10" y="70" width="120" height="20" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="70" y="84" font-size="8" fill="#38bdf8" text-anchor="middle">Íconos Táctiles &gt; 1cm</text>
+    
+    <rect x="10" y="96" width="120" height="90" fill="#1e293b" stroke="#38bdf8" rx="4"/>
+    <text x="70" y="145" font-size="10" font-weight="bold" fill="#f8fafc" text-anchor="middle">Zona 6 (100% W)</text>
+    
+    <rect x="10" y="192" width="120" height="28" fill="#1e293b" stroke="#f59e0b" rx="4"/>
+    <text x="70" y="210" font-size="8" fill="#f59e0b" text-anchor="middle">Zona 7: Drawer Colapsable</text>
+  </g>
+
+  <!-- 4 EJEMPLOS PRÁCTICOS -->
+  <g transform="translate(40, 350)">
+    <rect width="820" height="120" fill="#111a33" stroke="rgba(56,189,248,0.2)" rx="8"/>
+    <text x="20" y="25" font-size="13" font-weight="bold" fill="#38bdf8">4 EJEMPLOS DE DISEÑO ADAPTIVO IMPLEMENTADOS EN CÓDIGO:</text>
+    <text x="20" y="50" font-size="11" fill="#f8fafc">1. Reorganización de la Retícula CSS Grid: De 2 columnas (Zona 6 + 7) a 1 columna vertical fluida.</text>
+    <text x="20" y="70" font-size="11" fill="#f8fafc">2. Canvas Dinámico con auto-escalado: Redimensionamiento proporcional de órbitas y estrellas vía requestAnimationFrame.</text>
+    <text x="20" y="90" font-size="11" fill="#f8fafc">3. Zonas de Contacto Ergonómicas Táctiles: Botones de mínimo 44×44 px (1 cm real) para evitar pulsaciones erróneas.</text>
+    <text x="20" y="110" font-size="11" fill="#f8fafc">4. Tipografía Fluida con Unidades Relativas (rem/vw): Títulos de 18pt a 14pt sin romper el layout en pantallas estrechas.</text>
+  </g>
+</svg>

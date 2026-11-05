@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" width="100%" height="100%">
+  <rect width="920" height="540" fill="#070b19" rx="12"/>
+  <text x="460" y="35" font-family="'Outfit', sans-serif" font-size="20" font-weight="bold" fill="#38bdf8" text-anchor="middle">ARQUITECTURA DE LA INFORMACIÓN Y DISEÑO DE INTERACCIÓN (IxD)</text>
+  
+  <!-- Nivel 1: Raíz -->
+  <rect x="360" y="60" width="200" height="40" fill="#0284c7" stroke="#38bdf8" stroke-width="2" rx="6"/>
+  <text x="460" y="85" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">AstroEdu (Home / Retícula)</text>
+  
+  <!-- Conectores -->
+  <line x1="460" y1="100" x2="460" y2="130" stroke="#38bdf8" stroke-width="2"/>
+  <line x1="85" y1="130" x2="835" y2="130" stroke="#38bdf8" stroke-width="2"/>
+  
+  <!-- Nivel 2: 6 Módulos -->
+  <g transform="translate(20, 150)">
+    <!-- Mod 1 -->
+    <line x1="65" y1="-20" x2="65" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="0" y="0" width="130" height="60" fill="#1e293b" stroke="#38bdf8" rx="6"/>
+    <text x="65" y="24" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">1. Sistema Solar</text>
+    <text x="65" y="42" font-size="9" fill="#94a3b8" text-anchor="middle">• 8 Planetas<br/>• Órbitas Canvas</text>
+    
+    <!-- Mod 2 -->
+    <line x1="215" y1="-20" x2="215" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="150" y="0" width="130" height="60" fill="#1e293b" stroke="#38bdf8" rx="6"/>
+    <text x="215" y="24" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">2. Constelaciones</text>
+    <text x="215" y="42" font-size="9" fill="#94a3b8" text-anchor="middle">• Orión, Cruz Sur<br/>• Cartas Celestes</text>
+
+    <!-- Mod 3 -->
+    <line x1="365" y1="-20" x2="365" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="300" y="0" width="130" height="60" fill="#1e293b" stroke="#38bdf8" rx="6"/>
+    <text x="365" y="24" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">3. Fases Lunares</text>
+    <text x="365" y="42" font-size="9" fill="#94a3b8" text-anchor="middle">• Slider 29.5 días<br/>• Eclipses Sol/Luna</text>
+
+    <!-- Mod 4 -->
+    <line x1="515" y1="-20" x2="515" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="450" y="0" width="130" height="60" fill="#1e293b" stroke="#38bdf8" rx="6"/>
+    <text x="515" y="24" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">4. Meteoros</text>
+    <text x="515" y="42" font-size="9" fill="#94a3b8" text-anchor="middle">• Bólidos Canvas<br/>• Calendario Anual</text>
+
+    <!-- Mod 5 -->
+    <line x1="665" y1="-20" x2="665" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="600" y="0" width="130" height="60" fill="#1e293b" stroke="#38bdf8" rx="6"/>
+    <text x="665" y="24" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">5. Galaxias</text>
+    <text x="665" y="42" font-size="9" fill="#94a3b8" text-anchor="middle">• Hubble / JWST<br/>• Modal con Zoom</text>
+
+    <!-- Mod 6 -->
+    <line x1="815" y1="-20" x2="815" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="750" y="0" width="130" height="60" fill="#1e293b" stroke="#38bdf8" rx="6"/>
+    <text x="815" y="24" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">6. Astrofotografía</text>
+    <text x="815" y="42" font-size="9" fill="#94a3b8" text-anchor="middle">• ISO / Exposición<br/>• Checklist Bortle</text>
+  </g>
+
+  <!-- Flujo de Interacción IxD (Bucle de Acción - Realimentación) -->
+  <g transform="translate(40, 260)">
+    <rect width="840" height="120" fill="#111a33" stroke="#818cf8" stroke-width="1.5" rx="8"/>
+    <text x="20" y="26" font-size="13" font-weight="bold" fill="#818cf8">CICLO DEL DISEÑO DE INTERACCIÓN (IxD - NORMAN &amp; COOPER):</text>
+    
+    <!-- Pasos -->
+    <circle cx="100" cy="70" r="28" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+    <text x="100" y="74" font-size="10" font-weight="bold" fill="#38bdf8" text-anchor="middle">1. Acción</text>
+    <text x="100" y="110" font-size="9" fill="#94a3b8" text-anchor="middle">Clic / Arrastre / Alt+K</text>
+    
+    <line x1="135" y1="70" x2="225" y2="70" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <circle cx="260" cy="70" r="28" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+    <text x="260" y="74" font-size="10" font-weight="bold" fill="#f59e0b" text-anchor="middle">2. Estado</text>
+    <text x="260" y="110" font-size="9" fill="#94a3b8" text-anchor="middle">Actualización DOM/Canvas</text>
+    
+    <line x1="295" y1="70" x2="385" y2="70" stroke="#f59e0b" stroke-width="2"/>
+    
+    <circle cx="420" cy="70" r="28" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+    <text x="420" y="74" font-size="10" font-weight="bold" fill="#10b981" text-anchor="middle">3. Feedback</text>
+    <text x="420" y="110" font-size="9" fill="#94a3b8" text-anchor="middle">Audio WebAPI + Luz</text>
+    
+    <line x1="455" y1="70" x2="545" y2="70" stroke="#10b981" stroke-width="2"/>
+
+    <circle cx="580" cy="70" r="28" fill="#1e293b" stroke="#ec4899" stroke-width="2"/>
+    <text x="580" y="74" font-size="10" font-weight="bold" fill="#ec4899" text-anchor="middle">4. Cognición</text>
+    <text x="580" y="110" font-size="9" fill="#94a3b8" text-anchor="middle">Asimilación conceptual</text>
+
+    <line x1="615" y1="70" x2="705" y2="70" stroke="#ec4899" stroke-width="2"/>
+
+    <circle cx="740" cy="70" r="28" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+    <text x="740" y="74" font-size="10" font-weight="bold" fill="#38bdf8" text-anchor="middle">5. Conación</text>
+    <text x="740" y="110" font-size="9" fill="#94a3b8" text-anchor="middle">Resuelve Quiz / Avanza</text>
+  </g>
+
+  <!-- 5 Planos de Garrett (UX) -->
+  <g transform="translate(40, 400)">
+    <rect width="840" height="110" fill="#0f172a" stroke="rgba(56,189,248,0.2)" rx="8"/>
+    <text x="20" y="24" font-size="12" font-weight="bold" fill="#38bdf8">LOS 5 ELEMENTOS DE EXPERIENCIA DE USUARIO (JESSE JAMES GARRETT):</text>
+    <text x="20" y="45" font-size="10" fill="#f8fafc">1. Estrategia: Fortalecer el aprendizaje autónomo de astronomía sin barreras ni jerga incomprensible.</text>
+    <text x="20" y="62" font-size="10" fill="#f8fafc">2. Alcance: Simulaciones interactivas, cartas celestes dinámicas, calculador de fases y parámetros de cámara.</text>
+    <text x="20" y="79" font-size="10" fill="#f8fafc">3. Estructura: Árbol de contenidos de 6 módulos articulados con panel contextual de Zona 7.</text>
+    <text x="20" y="96" font-size="10" fill="#f8fafc">4. Esqueleto y Superficie: Retícula de 7 zonas, paleta de 3 colores armónicos y modo rojo nocturno escotópico.</text>
+  </g>
+</svg>
