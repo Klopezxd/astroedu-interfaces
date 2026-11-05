@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (modId === 'constellations') {
       displaySelectedConstellation();
     } else if (modId === 'moon') {
-      setMoonSimulationMode(state.moonSimMode || 'moon');
+      setMoonSimulationMode('moon');
     } else if (modId === 'meteors') {
       initMeteorCanvas();
       renderMeteors();
@@ -247,14 +247,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnTogglePlanetLabels = document.getElementById('btnTogglePlanetLabels');
 
   const planetsData = [
-    { id: 'mercury', name: 'Mercurio', type: 'Rocoso Interior', r: 4, dist: 40, speed: 0.040, color: '#94a3b8', desc: 'El más cercano al Sol, sin atmósfera significativa y temperaturas extremas (-180°C a 430°C).' },
-    { id: 'venus', name: 'Venus', type: 'Rocoso Interior', r: 6, dist: 65, speed: 0.028, color: '#fde047', desc: 'Efecto invernadero desbocado, atmósfera densa de CO2 y el más caliente del sistema solar.' },
-    { id: 'earth', name: 'Tierra', type: 'Rocoso Interior', r: 7, dist: 95, speed: 0.020, color: '#38bdf8', desc: 'Nuestro hogar. Único planeta conocido con agua líquida superficial y vida biológica activa.' },
-    { id: 'mars', name: 'Marte', type: 'Rocoso Interior', r: 5, dist: 125, speed: 0.015, color: '#f87171', desc: 'El planeta rojo. Rico en óxido de hierro, posee el volcán más alto del sistema (Monte Olimpo).' },
-    { id: 'jupiter', name: 'Júpiter', type: 'Gigante Gaseoso', r: 15, dist: 175, speed: 0.009, color: '#fbbf24', desc: 'El coloso del sistema solar con más de 90 lunas y su icónica Gran Mancha Roja.' },
-    { id: 'saturn', name: 'Saturno', type: 'Gigante Gaseoso', r: 12, dist: 230, speed: 0.006, color: '#fcd34d', hasRings: true, desc: 'Famoso por su espectacular sistema de anillos de hielo y roca de miles de km de ancho.' },
-    { id: 'uranus', name: 'Urano', type: 'Gigante Helado', r: 9, dist: 280, speed: 0.004, color: '#67e8f9', desc: 'Gira inclinado casi 98° sobre su plano orbital; atmósfera rica en metano y vientos extremos.' },
-    { id: 'neptune', name: 'Neptuno', type: 'Gigante Helado', r: 9, dist: 330, speed: 0.003, color: '#3b82f6', desc: 'El más lejano. Vientos supersónicos que superan los 2.000 km/h y un azul profundo característico.' }
+    { id: 'mercury', name: 'Mercurio', type: 'Rocoso Interior', r: 3.5, dist: 38, speed: 0.040, color: '#94a3b8', desc: 'El más cercano al Sol, sin atmósfera significativa y temperaturas extremas (-180°C a 430°C).' },
+    { id: 'venus', name: 'Venus', type: 'Rocoso Interior', r: 5.5, dist: 64, speed: 0.028, color: '#fde047', desc: 'Efecto invernadero desbocado, atmósfera densa de CO2 y el más caliente del sistema solar.' },
+    { id: 'earth', name: 'Tierra', type: 'Rocoso Interior', r: 6.5, dist: 94, speed: 0.020, color: '#38bdf8', desc: 'Nuestro hogar. Único planeta conocido con agua líquida superficial y vida biológica activa.' },
+    { id: 'mars', name: 'Marte', type: 'Rocoso Interior', r: 5.0, dist: 126, speed: 0.015, color: '#f87171', desc: 'El planeta rojo. Rico en óxido de hierro, posee el volcán más alto del sistema (Monte Olimpo).' },
+    { id: 'jupiter', name: 'Júpiter', type: 'Gigante Gaseoso', r: 13, dist: 168, speed: 0.009, color: '#fbbf24', desc: 'El coloso del sistema solar con más de 90 lunas y su icónica Gran Mancha Roja.' },
+    { id: 'saturn', name: 'Saturno', type: 'Gigante Gaseoso', r: 10.5, dist: 216, speed: 0.006, color: '#fcd34d', hasRings: true, desc: 'Famoso por su espectacular sistema de anillos de hielo y roca de miles de km de ancho.' },
+    { id: 'uranus', name: 'Urano', type: 'Gigante Helado', r: 8, dist: 262, speed: 0.004, color: '#67e8f9', desc: 'Gira inclinado casi 98° sobre su plano orbital; atmósfera rica en metano y vientos extremos.' },
+    { id: 'neptune', name: 'Neptuno', type: 'Gigante Helado', r: 8, dist: 310, speed: 0.003, color: '#3b82f6', desc: 'El más lejano. Vientos supersónicos que superan los 2.000 km/h y un azul profundo característico.' }
   ];
 
   let solarAngles = planetsData.map(() => Math.random() * Math.PI * 2);
@@ -273,7 +273,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const w = solarCanvas.width;
     const h = solarCanvas.height;
     const cx = w / 2;
-    const cy = h / 2;
+    // Centro óptico elevado para dejar espacio holgado a la botonera inferior
+    const cy = Math.round((h - 55) / 2);
+
+    // Ajuste dinámico de escala para que el 100% de las órbitas quepan sin desbordar
+    const maxAvailableX = (w - 70) / 2;
+    const maxAvailableY = (h - 95) / 2;
+    const scale = Math.min(1.0, maxAvailableX / 315, maxAvailableY / 145);
+    const orbitYRatio = 0.46; // Inclinación en perspectiva realista del plano orbital
 
     sCtx.fillStyle = state.nightMode ? '#0a0101' : '#030611';
     sCtx.fillRect(0, 0, w, h);
@@ -287,7 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Dibujar el Sol
-    const sunGrad = sCtx.createRadialGradient(cx, cy, 4, cx, cy, 26);
+    const sunR = Math.max(14, Math.round(22 * scale));
+    const sunGrad = sCtx.createRadialGradient(cx, cy, 3, cx, cy, sunR);
     if (state.nightMode) {
       sunGrad.addColorStop(0, '#ff9999');
       sunGrad.addColorStop(0.5, '#dc2626');
@@ -298,42 +306,46 @@ document.addEventListener('DOMContentLoaded', () => {
       sunGrad.addColorStop(1, 'transparent');
     }
     sCtx.beginPath();
-    sCtx.arc(cx, cy, 26, 0, Math.PI * 2);
+    sCtx.arc(cx, cy, sunR, 0, Math.PI * 2);
     sCtx.fillStyle = sunGrad;
     sCtx.fill();
 
     // Dibujar Órbitas y Planetas
     planetsData.forEach((p, idx) => {
-      // Órbita elíptica suave
+      const rx = p.dist * scale;
+      const ry = p.dist * orbitYRatio * scale;
+      const pr = Math.max(3, p.r * Math.sqrt(scale));
+
+      // Órbita elíptica suave y contenida
       sCtx.beginPath();
-      sCtx.ellipse(cx, cy, p.dist, p.dist * 0.75, 0, 0, Math.PI * 2);
-      sCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(56, 189, 248, 0.12)';
+      sCtx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      sCtx.strokeStyle = state.nightMode ? 'rgba(239, 68, 68, 0.18)' : 'rgba(56, 189, 248, 0.15)';
       sCtx.lineWidth = 1;
       sCtx.stroke();
 
       // Posición del planeta
-      const px = cx + Math.cos(solarAngles[idx]) * p.dist;
-      const py = cy + Math.sin(solarAngles[idx]) * (p.dist * 0.75);
+      const px = cx + Math.cos(solarAngles[idx]) * rx;
+      const py = cy + Math.sin(solarAngles[idx]) * ry;
 
       // Anillos de Saturno
       if (p.hasRings) {
         sCtx.beginPath();
-        sCtx.ellipse(px, py, p.r * 1.9, p.r * 0.7, Math.PI / 6, 0, Math.PI * 2);
-        sCtx.strokeStyle = state.nightMode ? '#7f1d1d' : 'rgba(252, 211, 77, 0.6)';
+        sCtx.ellipse(px, py, pr * 2.0, pr * 0.7, Math.PI / 6, 0, Math.PI * 2);
+        sCtx.strokeStyle = state.nightMode ? '#7f1d1d' : 'rgba(252, 211, 77, 0.7)';
         sCtx.lineWidth = 2.5;
         sCtx.stroke();
       }
 
       // Cuerpo del planeta
       sCtx.beginPath();
-      sCtx.arc(px, py, p.r, 0, Math.PI * 2);
+      sCtx.arc(px, py, pr, 0, Math.PI * 2);
       sCtx.fillStyle = state.nightMode ? '#b91c1c' : p.color;
       sCtx.fill();
 
       // Resalte de selección
       if (state.selectedPlanet === p.id) {
         sCtx.beginPath();
-        sCtx.arc(px, py, p.r + 5, 0, Math.PI * 2);
+        sCtx.arc(px, py, pr + 5, 0, Math.PI * 2);
         sCtx.strokeStyle = state.nightMode ? '#ef4444' : '#38bdf8';
         sCtx.lineWidth = 2;
         sCtx.stroke();
@@ -343,10 +355,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (state.showPlanetLabels) {
         sCtx.font = '10px Outfit, sans-serif';
         const txtWidth = sCtx.measureText(p.name).width;
-        sCtx.fillStyle = state.nightMode ? 'rgba(43, 7, 7, 0.85)' : 'rgba(15, 23, 42, 0.8)';
-        sCtx.fillRect(px + p.r + 4, py - 9, txtWidth + 6, 15);
+        sCtx.fillStyle = state.nightMode ? 'rgba(43, 7, 7, 0.85)' : 'rgba(15, 23, 42, 0.85)';
+        sCtx.fillRect(px + pr + 4, py - 9, txtWidth + 6, 15);
         sCtx.fillStyle = state.nightMode ? '#fca5a5' : '#f8fafc';
-        sCtx.fillText(p.name, px + p.r + 7, py + 2);
+        sCtx.fillText(p.name, px + pr + 7, py + 2);
       }
     });
 
@@ -957,9 +969,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnModeLunarEclipse) btnModeLunarEclipse.classList.toggle('active', mode === 'lunar');
 
     if (mode === 'moon') {
-      if (eclipseMultimediaSection) eclipseMultimediaSection.style.display = 'none';
-      if (moonPhasesGuideSection) moonPhasesGuideSection.style.display = 'flex';
-      if (eclipseVideoFrame && eclipseVideoFrame.src && eclipseVideoFrame.src.includes('youtube')) {
+      if (eclipseMultimediaSection) {
+        eclipseMultimediaSection.classList.add('hidden');
+        eclipseMultimediaSection.style.display = 'none';
+      }
+      if (moonPhasesGuideSection) {
+        moonPhasesGuideSection.classList.remove('hidden');
+        moonPhasesGuideSection.style.display = 'flex';
+      }
+      if (eclipseVideoFrame) {
         eclipseVideoFrame.src = 'about:blank';
       }
       if (sliderLabel) sliderLabel.textContent = 'Desplazamiento del Ciclo Lunar:';
@@ -978,8 +996,14 @@ document.addEventListener('DOMContentLoaded', () => {
       updateMoonPhase(val);
       updateAstroDataCard('moon');
     } else if (mode === 'solar') {
-      if (eclipseMultimediaSection) eclipseMultimediaSection.style.display = 'flex';
-      if (moonPhasesGuideSection) moonPhasesGuideSection.style.display = 'none';
+      if (eclipseMultimediaSection) {
+        eclipseMultimediaSection.classList.remove('hidden');
+        eclipseMultimediaSection.style.display = 'flex';
+      }
+      if (moonPhasesGuideSection) {
+        moonPhasesGuideSection.classList.add('hidden');
+        moonPhasesGuideSection.style.display = 'none';
+      }
       state.eclipseType = 'solar';
       if (btnEclipseSolar) btnEclipseSolar.classList.add('active');
       if (btnEclipseLunar) btnEclipseLunar.classList.remove('active');
@@ -1003,8 +1027,14 @@ document.addEventListener('DOMContentLoaded', () => {
       renderEclipseGeometryCanvas('solar');
       updateAstroDataCard('moon');
     } else if (mode === 'lunar') {
-      if (eclipseMultimediaSection) eclipseMultimediaSection.style.display = 'flex';
-      if (moonPhasesGuideSection) moonPhasesGuideSection.style.display = 'none';
+      if (eclipseMultimediaSection) {
+        eclipseMultimediaSection.classList.remove('hidden');
+        eclipseMultimediaSection.style.display = 'flex';
+      }
+      if (moonPhasesGuideSection) {
+        moonPhasesGuideSection.classList.add('hidden');
+        moonPhasesGuideSection.style.display = 'none';
+      }
       state.eclipseType = 'lunar';
       if (btnEclipseSolar) btnEclipseSolar.classList.remove('active');
       if (btnEclipseLunar) btnEclipseLunar.classList.add('active');
