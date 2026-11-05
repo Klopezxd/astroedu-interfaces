@@ -22,17 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
     showPlanetLabels: true,
     selectedPlanet: 'earth',
     selectedConstellation: 'orion',
-    constellationViewMode: 'chart',
+    moonSimMode: 'moon',
     moonDay: 7.4,
-    moonEclipse: null,
+    solarProgress: 50,
+    lunarProgress: 50,
     eclipseType: 'solar',
+    eclipseVideoIndex: 0,
+    eclipsePhotoIndex: 0,
     moduleQuizIndex: { solar: 0, constellations: 0, moon: 0, meteors: 0, galaxies: 0, astrophoto: 0 },
     cameraIso: 1600,
     cameraExp: 15,
     cameraFocus: 100,
-    bortleClass: 4,
-    interactionCount: 0,
-    sessionStartTime: Date.now()
+    bortleClass: 4
   };
 
   // ==========================================================================
@@ -124,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchModule(modId) {
     if (!moduleTitles[modId]) return;
     state.currentModule = modId;
-    state.interactionCount++;
     playTone(440, 'triangle', 0.08, 0.05);
 
     navTabs.forEach(tab => {
@@ -1984,16 +1984,25 @@ document.addEventListener('DOMContentLoaded', () => {
         </table>
       `;
     } else if (modId === 'moon') {
-      const isEclipse = state.eclipseType;
+      const isSolar = state.moonSimMode === 'solar';
+      const isLunar = state.moonSimMode === 'lunar';
+      const orbitalState = isSolar ? 'Eclipse Solar Total (Alineación Fotosférica Sol-Luna-Tierra)'
+                         : isLunar ? 'Eclipse Lunar Total (Refracción Rayleigh Cobriza)'
+                         : 'Ciclo Sinódico (Fases Lunares)';
+      const shadowGeometry = (isSolar || isLunar) ? 'Sicigia perfecta Sol-Tierra-Luna (Nodos orbitales)'
+                           : 'Inclinación orbital de 5.14° respecto a la eclíptica';
+      const cycleInfo = isSolar ? `Tránsito Solar: ${state.solarProgress || 50}% del evento`
+                      : isLunar ? `Inmersión en Umbra: ${state.lunarProgress || 50}%`
+                      : `${state.moonDay.toFixed(1)} / 29.53 días sinódicos`;
       astroDataCard.innerHTML = `
         <table class="astro-data-table">
           <tr><th>Cuerpo</th><td><strong>Luna (Satélite Natural)</strong></td></tr>
-          <tr><th>Día del Ciclo</th><td>${state.moonDay.toFixed(1)} / 29.53 días sinódicos</td></tr>
+          <tr><th>Día del Ciclo / Estado</th><td>${cycleInfo}</td></tr>
           <tr><th>Distancia Media</th><td>384.400 km (Perigeo 363k / Apogeo 405k)</td></tr>
           <tr><th>Diámetro Ecuatorial</th><td>3.474 km (27% del terrestre)</td></tr>
           <tr><th>Gravedad Superficial</th><td>1.62 m/s² (0.166 g)</td></tr>
-          <tr><th>Estado Orbital</th><td>${state.moonEclipse === 'solar' ? 'Eclipse Solar Total (Alineación Fotosférica)' : state.moonEclipse === 'lunar' ? 'Eclipse Lunar Total (Refracción Rayleigh Cobriza)' : 'Fase Lunar Estándar'}</td></tr>
-          <tr><th>Geometría de Sombra</th><td>${state.moonEclipse ? 'Sicigia perfecta Sol-Tierra-Luna' : 'Inclinación orbital de 5.14° respecto a la eclíptica'}</td></tr>
+          <tr><th>Estado Orbital</th><td>${orbitalState}</td></tr>
+          <tr><th>Geometría de Sombra</th><td>${shadowGeometry}</td></tr>
         </table>
       `;
     } else if (modId === 'meteors') {
