@@ -48,6 +48,11 @@
    (Rhodopsin Preservation) según fundamentos de ergonomía visual.
    ======================================================= */
 body.affective-night-mode {
+  background-color: #0d0202;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.12) 0%, transparent 60%),
+    linear-gradient(rgba(13, 2, 2, 0.93), rgba(13, 2, 2, 0.96)),
+    url('principal.jpg');
   --bg-deep: #0d0202;
   --bg-darker: #150303;
   --bg-card: #1f0505;
@@ -76,6 +81,13 @@ body.affective-night-mode {
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(3, 6, 17, 0.92), rgba(3, 6, 17, 0.96)),
+    url('principal.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
   color: var(--text-main);
   line-height: 1.5;
   min-height: 100vh;
@@ -262,6 +274,12 @@ body.affective-night-mode .pulse-indicator {
 }
 
 /* ZONA 4: MENÚ UNIFICADO CON ÍCONOS Y TEXTO */
+.zone-4-text-menu {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+}
+
 .nav-tabs-list {
   display: flex;
   gap: 6px;
@@ -316,6 +334,12 @@ body.affective-night-mode .nav-tab.active {
 }
 
 /* ZONA 5: INSIGNIA DE ATAJOS RÁPIDOS */
+.zone-5-icon-menu {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
 .shortcuts-badge {
   display: flex;
   align-items: center;
